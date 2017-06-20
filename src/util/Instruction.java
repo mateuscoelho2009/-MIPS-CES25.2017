@@ -2,18 +2,18 @@ package util;
 
 public class Instruction {
 	static public final String TYPER = "000000",
-						ADD = "100000", 
-						ADDI = "001000",
-						BEQ = "000101",
-						BLE = "000111",
-						BNE = "000100",
-						JMP = "000010",
-						LW = "100011",
-						MUL = "011000",
-						NOP = "000000",
-						SUB = "100010",
-						SW = "101011";
-						// O que é o LI??
+								ADD =  "100000", 
+								ADDI = "001000",
+								BEQ =  "000101",
+								BLE =  "000111",
+								BNE =  "000100",
+								JMP =  "000010",
+								LW  =  "100011",
+								MUL =  "011000",
+								NOP =  "000000",
+								SUB =  "100010",
+								SW  =  "101011";
+						// O que ï¿½ o LI??
 	static public enum INSTR_TYPE {R, I, J, UNDEFINED};
 	
 	String instr_mnemonic_;
@@ -52,6 +52,7 @@ public class Instruction {
 				break;
 			default: break;
 		}
+		//System.out.println(getMnemonic());
 	}
 	
 	private int convBinStr2Int (String binStr) {
