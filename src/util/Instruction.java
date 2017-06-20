@@ -18,7 +18,7 @@ public class Instruction {
 	
 	String instr_mnemonic_;
 	INSTR_TYPE type_;
-	int rs, rt, rd;
+	int rs, rt, rd, targetAddress, shamt, immediate;
 	
 	public Instruction (String byteCode) {
 		String opcode = byteCode.substring(0, 6);
@@ -31,6 +31,38 @@ public class Instruction {
 				break;
 			default: type_ = INSTR_TYPE.UNDEFINED; instr_mnemonic_ = opcode;
 		}
+		
+		if (type_ == INSTR_TYPE.R)
+			instr_mnemonic_ = byteCode.substring(26);
+		
+		switch (type_) {
+			case R:
+				rs = convBinStr2Int(byteCode.substring(6, 11));
+				rt = convBinStr2Int(byteCode.substring(11, 16));
+				rd = convBinStr2Int(byteCode.substring(16, 21));
+				shamt = convBinStr2Int(byteCode.substring(21, 26));
+				break;
+			case I:
+				rs = convBinStr2Int(byteCode.substring(6, 11));
+				rt = convBinStr2Int(byteCode.substring(11, 16));
+				immediate = convBinStr2Int(byteCode.substring(16));
+				break;
+			case J:
+				targetAddress = convBinStr2Int(byteCode.substring(6));
+				break;
+			default: break;
+		}
+	}
+	
+	private int convBinStr2Int (String binStr) {
+		int res = 0;
+		
+		for (int i = 0; i < binStr.length(); i++) {
+			res *= 2;
+			if (binStr.charAt(i) == 1) res += 1;
+		}
+		
+		return res;
 	}
 	
 	String getMnemonic () {
@@ -51,5 +83,13 @@ public class Instruction {
 	
 	int getRD() {
 		return rd;
+	}
+	
+	int getTargetAddress () {
+		return targetAddress;
+	}
+	
+	int getImmediate () {
+		return immediate;
 	}
 }
