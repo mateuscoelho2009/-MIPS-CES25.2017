@@ -33,6 +33,12 @@ public class Program {
 		pc_++;
 		return next;
 	}
+	public int getPC(){
+		return pc_*4;
+	}
+	public void setPC(int newPC){
+		pc_ = newPC/4;
+	}
 	public boolean end(){
 		return terminated;
 	}

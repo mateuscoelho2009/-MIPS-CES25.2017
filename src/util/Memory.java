@@ -7,9 +7,9 @@ public class Memory {
     	System.out.println("Inicializando a memória.");
 	}
 	public void write(int pos, String value){
-		mem[pos] = value;
+		mem[pos/4] = value;
 	}	
 	public String read(int pos){
-		return mem[pos];
+		return mem[pos/4];
 	}
 }

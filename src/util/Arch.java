@@ -14,17 +14,19 @@ public class Arch {
 	
     public static void main(String[] args) throws IOException {
     	System.out.println("Inicializando...");
-    	p = new Program("test_without_comments.txt");
+    	p = new Program("test_without_comments2.txt");
     	long clock = 0;
     	boolean done = true;
-    	while(!p.end()){
+    	while(!p.end()||!done){
     		System.out.print(clock + " - ");
     		if(done) {
     			ula.set(p.getNextInstruction());
     			done = false;
     		}
-    		else
+    		else{
         		done = ula.tick();
+    			System.out.println();
+			}
     		clock++;
     	}
     	System.out.println("Encerrando...");
