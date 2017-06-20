@@ -59,7 +59,7 @@ public class Instruction {
 		
 		for (int i = 0; i < binStr.length(); i++) {
 			res *= 2;
-			if (binStr.charAt(i) == 1) res += 1;
+			if (binStr.charAt(i) == '1') res += 1;
 		}
 		
 		return res;
@@ -83,6 +83,10 @@ public class Instruction {
 	
 	int getRD() {
 		return rd;
+	}
+	
+	int getShamt () {
+		return shamt;
 	}
 	
 	int getTargetAddress () {
