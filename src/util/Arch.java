@@ -16,13 +16,15 @@ public class Arch {
     	System.out.println("Inicializando...");
     	p = new Program("test_without_comments.txt");
     	long clock = 0;
-    	boolean done;
-		ula.set(p.getNextInstruction());
+    	boolean done = true;
     	while(!p.end()){
     		System.out.print(clock + " - ");
-    		done = ula.tick();
-    		if(done)
+    		if(done) {
     			ula.set(p.getNextInstruction());
+    			done = false;
+    		}
+    		else
+        		done = ula.tick();
     		clock++;
     	}
     	System.out.println("Encerrando...");
