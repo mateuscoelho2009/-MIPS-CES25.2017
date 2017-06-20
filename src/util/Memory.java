@@ -5,10 +5,10 @@ public class Memory {
 	public Memory(int size){
 		mem = new String[size];
 	}
-	public void storePosition(int pos, String value){
+	public void write(int pos, String value){
 		mem[pos] = value;
 	}	
-	public String loadPosition(int pos){
+	public String read(int pos){
 		return mem[pos];
 	}
 }
