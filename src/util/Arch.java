@@ -14,7 +14,7 @@ public class Arch {
 	
     public static void main(String[] args) throws IOException {
     	System.out.println("Inicializando...");
-    	p = new Program("test_without_comments2.txt");
+    	p = new Program("test_without_comments2_3.txt");
     	long clock = 0;
     	boolean done = true;
     	while(!p.end()||!done){
