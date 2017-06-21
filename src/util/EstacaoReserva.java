@@ -102,14 +102,14 @@ public class EstacaoReserva {
 					Qk = atuInst.rs;
 				else {
 					Qk = -1;
-					Vk = -2;
+					Vk = Arch.r.rInt(atuInst.rs);
 				}
 				if (Qk != -1 || 
-						(Arch.m.mBeingUsed(Arch.r.rInt(atuInst.rs) + atuInst.immediate) && Vj == -1))
-					Qj = Arch.r.rInt(atuInst.rs) + atuInst.immediate;
+						(Arch.m.mBeingUsed(Vk + atuInst.immediate) && Vj == -1))
+					Qj = Vk + atuInst.immediate;
 				else {
 					Qj = -1;
-					Vj = Arch.r.rInt(atuInst.rs);
+					Vj = Vk;
 				}
 				if (!hasDependencies()) {
 					address = (Vj+atuInst.immediate);

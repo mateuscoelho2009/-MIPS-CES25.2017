@@ -14,22 +14,22 @@ public class UlaTomasulo extends ULA {
 			default: System.out.println("Instrução Incorreta");
 					break;
 		}
-		System.out.println("Inst Carregada:"+mnemonic +" PC:"+Arch.p.getPC() );
+		System.out.println("Inst Carregada:"+mnemonic +" PC:"+inst.getPC() );
 	}
 	
 	protected void jump(int targetAddress, String mnemonic) {
 		this.target = targetAddress;
 		this.mnemonic = mnemonic;
-		ticker = 1;
+		ticker = 2;
 	}
 	
 	protected void arithmetic(int Vj, int Vk, int rd, String mnemonic){
 			this.Vj = Vj; this.Vk = Vk; this.rd = rd;
 			this.mnemonic = mnemonic;
 			if(mnemonic.equals(Instruction.MUL))
-				ticker = 3;
+				ticker = 4;
 			else
-				ticker = 1;
+				ticker = 2;
 	}
 	
 	protected void immediate(int rs, int rt, int immediate, String mnemonic){
@@ -37,9 +37,9 @@ public class UlaTomasulo extends ULA {
 		this.Vj = rs; this.Vk = rt;
 		this.mnemonic = mnemonic;
 		if(mnemonic.equals(Instruction.LW)||mnemonic.equals(Instruction.SW))
-			ticker = 4;
+			ticker = 5;
 		else
-			ticker = 1;
+			ticker = 2;
 	}
 	
 	public boolean tick(){

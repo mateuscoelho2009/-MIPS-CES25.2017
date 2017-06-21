@@ -23,10 +23,9 @@ public class Arch {
     			ula.set(p.getNextInstruction());
     			done = false;
     		}
-    		else{
-        		done = ula.tick();
-    			System.out.println();
-			}
+        	
+    		done = ula.tick();
+    		System.out.println();
     		clock++;
     	}
     	System.out.println("Encerrando...");

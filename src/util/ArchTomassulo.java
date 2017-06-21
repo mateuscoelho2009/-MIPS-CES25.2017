@@ -53,8 +53,9 @@ public class ArchTomassulo {
 
     		if (hasNoBranchInst()) {
     			Instruction inst = Arch.p.getNextInstruction();
+    			inst.setPC(Arch.p.getPC());
 	    		switch (inst.getMnemonic()) {
-	    		case Instruction.ADD: case Instruction.SUB:
+	    		case Instruction.ADD: case Instruction.SUB: case Instruction.ADDI:
 	    			if (!add[0].isBusy()) add[0].passInstruction(inst);
 	    			else if (!add[1].isBusy()) add[1].passInstruction(inst);
 	    			else if (!add[2].isBusy()) add[2].passInstruction(inst);

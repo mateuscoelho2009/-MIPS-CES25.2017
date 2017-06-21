@@ -23,25 +23,25 @@ public class ULA {
 	protected void jump(int targetAddress, String mnemonic) {
 		this.target = targetAddress;
 		this.mnemonic = mnemonic;
-		ticker = 1;
+		ticker = 2;
 	}
 	
 	protected void arithmetic(int rs, int rt, int rd, String mnemonic){
 			this.rs = rs; this.rt = rt; this.rd = rd;
 			this.mnemonic = mnemonic;
 			if(mnemonic.equals(Instruction.MUL))
-				ticker = 3;
+				ticker = 4;
 			else
-				ticker = 1;
+				ticker = 2;
 	}
 	
 	protected void immediate(int rs, int rt, int immediate, String mnemonic){
 		this.rs = rs; this.rt = rt; this.immediate = immediate;
 		this.mnemonic = mnemonic;
 		if(mnemonic.equals(Instruction.LW)||mnemonic.equals(Instruction.SW))
-			ticker = 4;
+			ticker = 5;
 		else
-			ticker = 1;
+			ticker = 2;
 	}
 	
 	public boolean tick(){

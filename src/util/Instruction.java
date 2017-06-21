@@ -18,9 +18,50 @@ public class Instruction {
 	
 	String instr_mnemonic_;
 	INSTR_TYPE type_;
-	int rs, rt, rd, targetAddress, shamt, immediate;
+	int rs, rt, rd, targetAddress, shamt, immediate, pc;
 	
 	public Instruction (String byteCode) {
+		String opcode = byteCode.substring(0, 6);
+		switch(opcode) {
+			case TYPER: type_ = INSTR_TYPE.R; break;
+			case ADDI: case BEQ: case BLE: case LW: case SW:
+				type_ = INSTR_TYPE.I; instr_mnemonic_ = opcode;
+				break;
+			case JMP: type_ = INSTR_TYPE.J; instr_mnemonic_ = opcode;
+				break;
+			default: type_ = INSTR_TYPE.UNDEFINED; instr_mnemonic_ = opcode;
+		}
+		
+		if (type_ == INSTR_TYPE.R)
+			instr_mnemonic_ = byteCode.substring(26,32);
+		
+		switch (type_) {
+			case R:
+				rs = convBinStr2Int(byteCode.substring(6, 11));
+				rt = convBinStr2Int(byteCode.substring(11, 16));
+				rd = convBinStr2Int(byteCode.substring(16, 21));
+				shamt = convBinStr2Int(byteCode.substring(21, 26));
+				break;
+			case I:
+				rs = convBinStr2Int(byteCode.substring(6, 11));
+				rt = convBinStr2Int(byteCode.substring(11, 16));
+				int imm_sgn = convBinStr2Int(byteCode.substring(16,17));
+				immediate = convBinStr2Int(byteCode.substring(17,32));
+				if (imm_sgn==1)
+					immediate = immediate*-1;
+				
+				break;
+			case J:
+				targetAddress = convBinStr2Int(byteCode.substring(6,32));
+				break;
+			default: break;
+		}
+		//System.out.println(getMnemonic());
+		pc = 0;
+	}
+	
+	public Instruction (String byteCode, int pc) {
+		this.pc = pc;
 		String opcode = byteCode.substring(0, 6);
 		switch(opcode) {
 			case TYPER: type_ = INSTR_TYPE.R; break;
@@ -100,5 +141,13 @@ public class Instruction {
 	
 	int getImmediate () {
 		return immediate;
+	}
+	
+	int getPC() {
+		return pc;
+	}
+	
+	void setPC(int pc_) {
+		pc = pc_;
 	}
 }
