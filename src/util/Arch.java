@@ -30,6 +30,7 @@ public class Arch {
     		clock++;
     	}
     	System.out.println("Encerrando...");
+    	System.out.println("R2 = " + Arch.r.rInt(2));
     }
 }
 

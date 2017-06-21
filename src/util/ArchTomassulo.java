@@ -24,7 +24,6 @@ public class ArchTomassulo {
 		}
 		add[2] = new EstacaoReserva();
 		
-		// TODO Auto-generated constructor stub
 		load[0].setId(STATION_ID.LOAD1);
 		load[1].setId(STATION_ID.LOAD2);
 		add[0].setId(STATION_ID.ADD1);
@@ -64,13 +63,11 @@ public class ArchTomassulo {
 	    		case Instruction.MUL:
 	    			if (!mult[0].isBusy()) mult[0].passInstruction(inst);
 	    			else if (!mult[1].isBusy()) mult[1].passInstruction(inst);
-	    			else if (!mult[2].isBusy()) mult[2].passInstruction(inst);
 	    			else Arch.p.setPC(Arch.p.getPC() - 4);
 	    			break;
 	    		case Instruction.LW: case Instruction.SW:
 	    			if (!load[0].isBusy()) load[0].passInstruction(inst);
 	    			else if (!load[1].isBusy()) load[1].passInstruction(inst);
-	    			else if (!load[2].isBusy()) load[2].passInstruction(inst);
 	    			else Arch.p.setPC(Arch.p.getPC() - 4);
 	    			break;
 	    		default:
@@ -98,6 +95,7 @@ public class ArchTomassulo {
     		clock++;
     	}
     	System.out.println("Encerrando...");
+    	System.out.println("R2 = " + Arch.r.rInt(2));
     }
 
 	private static boolean hasNoBranchInst() {

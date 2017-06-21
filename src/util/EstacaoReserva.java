@@ -43,9 +43,12 @@ public class EstacaoReserva {
 	boolean hasDependencies () {
 		switch(Op) {
 		case R:
-			return (Qj != -1 && Qk != -1);
+			return (Qj != -1 || Qk != -1);
 		case I:
-			return (Qj != -1);
+			if (atuInst.instr_mnemonic_.equals(Instruction.LW)
+					|| atuInst.instr_mnemonic_.equals(Instruction.SW))
+				return (Qj != -1);
+			return false;
 		case J:
 			return false;
 		default:
@@ -85,6 +88,7 @@ public class EstacaoReserva {
 					Vj = Arch.r.rInt(atuInst.rs);
 				}
 				if (!hasDependencies()) {
+					address = (Vj+atuInst.immediate);
 					Vk = atuInst.rt;
 					ula.set(atuInst, Vj, Vk);
 					Arch.r.setUsed(atuInst.rt, id_);
@@ -97,6 +101,7 @@ public class EstacaoReserva {
 					Vj = Arch.r.rInt(atuInst.rs);
 				}
 				if (!hasDependencies()) {
+					address = (Vj+atuInst.immediate);
 					Vk = atuInst.rt;
 					ula.set(atuInst, Vj, Vk);
 					Arch.m.setUsed(Vj + atuInst.immediate, id_);
@@ -145,10 +150,12 @@ public class EstacaoReserva {
 				default:
 					break;
 				}
-				Qj = -1;
-				Qk = -1;
+				Op = INSTR_TYPE.UNDEFINED;
 				Vj = -1;
 				Vk = -1;
+				Qj = -1;
+				Qk = -1;
+				address = -1;
 				hasJump = false;
 			}
 		}
