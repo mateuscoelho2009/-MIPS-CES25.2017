@@ -63,8 +63,8 @@ public class UlaTomasulo extends ULA {
 				System.out.print("SUB/ R"+rd+" = "+Arch.r.read(rd) + " = "+ Arch.r.rInt(rd));
 				break;
 			case Instruction.ADDI:
-				Arch.r.wInt(rt, (Arch.r.rInt(rs)+immediate));
-				System.out.print("ADDI/ R"+rt+" = "+Arch.r.read(rt) + " = "+ Arch.r.rInt(rt));
+				Arch.r.wInt(Vk, (Vj+immediate));
+				System.out.print("ADDI/ R"+Vk+" = "+Arch.r.read(Vk) + " = "+ Arch.r.rInt(Vk));
 				break;
 			case Instruction.BEQ:
 				//If(R[rs]=R[rt]) { PC=PC+4+Imm}

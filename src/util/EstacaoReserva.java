@@ -43,10 +43,12 @@ public class EstacaoReserva {
 	boolean hasDependencies () {
 		switch(Op) {
 		case R:
+			if (atuInst.instr_mnemonic_.equals(Instruction.NOP)) return false;
 			return (Qj != -1 || Qk != -1);
 		case I:
 			if (atuInst.instr_mnemonic_.equals(Instruction.LW)
-					|| atuInst.instr_mnemonic_.equals(Instruction.SW))
+					|| atuInst.instr_mnemonic_.equals(Instruction.SW)
+					|| atuInst.instr_mnemonic_.equals(Instruction.ADDI))
 				return (Qj != -1);
 			return false;
 		case J:
@@ -62,6 +64,9 @@ public class EstacaoReserva {
 
 		switch(Op) {
 		case R:
+			if (atuInst.instr_mnemonic_.equals(Instruction.NOP)) {
+				break;
+			}
 			if (Arch.r.rBeingUsed(atuInst.rs) && Vj == -1)
 				Qj = atuInst.rs;
 			else {
@@ -80,8 +85,27 @@ public class EstacaoReserva {
 			}
 			break;
 		case I:
-			if (atuInst.instr_mnemonic_.equals(Instruction.LW)) {
-				if (Arch.m.mBeingUsed(Arch.r.rInt(atuInst.rs) + atuInst.immediate) && Vj == -1)
+			if (atuInst.instr_mnemonic_.equals(Instruction.ADDI)) {
+				if (Arch.r.rBeingUsed(atuInst.rs) && Vj == -1)
+					Qj = atuInst.rs;
+				else {
+					Qj = -1;
+					Vj = Arch.r.rInt(atuInst.rs);
+				}
+				if (!hasDependencies()) {
+					Vk = atuInst.rt;
+					ula.set(atuInst, Vj, Vk);
+					Arch.r.setUsed(Vk, id_);
+				}
+			} else if (atuInst.instr_mnemonic_.equals(Instruction.LW)) {
+				if (Arch.r.rBeingUsed(atuInst.rs) && Vk == -1)
+					Qk = atuInst.rs;
+				else {
+					Qk = -1;
+					Vk = -2;
+				}
+				if (Qk != -1 || 
+						(Arch.m.mBeingUsed(Arch.r.rInt(atuInst.rs) + atuInst.immediate) && Vj == -1))
 					Qj = Arch.r.rInt(atuInst.rs) + atuInst.immediate;
 				else {
 					Qj = -1;
@@ -135,14 +159,20 @@ public class EstacaoReserva {
 			if (!isBusy()) {
 				switch(Op) {
 				case R:
+					if (atuInst.instr_mnemonic_.equals(Instruction.NOP)) break;
 					if (Arch.r.rBeingUsedBy(atuInst.rd) == id_)
 						Arch.r.clearUsed(atuInst.rd);
 					break;
 				case I:
-					if (atuInst.instr_mnemonic_.equals(Instruction.LW)) {
-						Arch.r.clearUsed(atuInst.rt);
+					if (atuInst.instr_mnemonic_.equals(Instruction.ADDI)) {
+						if (Arch.r.rBeingUsedBy(atuInst.rt) == id_)
+							Arch.r.clearUsed(atuInst.rt);
+					} else if (atuInst.instr_mnemonic_.equals(Instruction.LW)) {
+						if (Arch.r.rBeingUsedBy(atuInst.rt) == id_)
+							Arch.r.clearUsed(atuInst.rt);
 					} else if (atuInst.instr_mnemonic_.equals(Instruction.SW)) {
-						Arch.m.clearUsed(Vj + atuInst.immediate);
+						if (Arch.m.mBeingUsedBy(Vj + atuInst.immediate) == id_)
+							Arch.m.clearUsed(Vj + atuInst.immediate);
 					}
 					break;
 				case J:

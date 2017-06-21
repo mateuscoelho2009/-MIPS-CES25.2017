@@ -58,20 +58,43 @@ public class ArchTomassulo {
 	    			if (!add[0].isBusy()) add[0].passInstruction(inst);
 	    			else if (!add[1].isBusy()) add[1].passInstruction(inst);
 	    			else if (!add[2].isBusy()) add[2].passInstruction(inst);
-	    			else Arch.p.setPC(Arch.p.getPC() - 4);
+	    			else {
+	    				System.out.println("Não há espaço na estação de reserva ADD");
+	    				Arch.p.setPC(Arch.p.getPC() - 4);
+	    			}
 	    			break;
 	    		case Instruction.MUL:
 	    			if (!mult[0].isBusy()) mult[0].passInstruction(inst);
 	    			else if (!mult[1].isBusy()) mult[1].passInstruction(inst);
-	    			else Arch.p.setPC(Arch.p.getPC() - 4);
+	    			else {
+	    				System.out.println("Não há espaço na estação de reserva MULT");
+	    				Arch.p.setPC(Arch.p.getPC() - 4);
+	    			}
 	    			break;
 	    		case Instruction.LW: case Instruction.SW:
 	    			if (!load[0].isBusy()) load[0].passInstruction(inst);
 	    			else if (!load[1].isBusy()) load[1].passInstruction(inst);
-	    			else Arch.p.setPC(Arch.p.getPC() - 4);
+	    			else {
+	    				System.out.println("Não há espaço na estação de reserva LOAD");
+	    				Arch.p.setPC(Arch.p.getPC() - 4);
+	    			}
+	    			break;
+	    		case Instruction.NOP:
+	    			if (!add[0].isBusy()) add[0].passInstruction(inst);
+	    			else if (!add[1].isBusy()) add[1].passInstruction(inst);
+	    			else if (!add[2].isBusy()) add[2].passInstruction(inst);
+	    			else if (!mult[0].isBusy()) mult[0].passInstruction(inst);
+	    			else if (!mult[1].isBusy()) mult[1].passInstruction(inst);
+	    			else if (!load[0].isBusy()) load[0].passInstruction(inst);
+	    			else if (!load[1].isBusy()) load[1].passInstruction(inst);
+	    			else {
+	    				System.out.println("Não há espaço nas estações de reserva para NOP");
+	    				Arch.p.setPC(Arch.p.getPC() - 4);
+	    			}
 	    			break;
 	    		default:
 	    			if (isAnyOneBusy()) { // Caso seja Jump, espera todos acabarem suas respectivas operações
+	    				System.out.println("Instrução JUMP: esperando outras instruções acabarem a execução");
 	    				Arch.p.setPC(Arch.p.getPC() - 4);
 	    				break;
 	    			}
