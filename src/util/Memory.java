@@ -8,6 +8,7 @@ public class Memory {
 	
 	public Memory(int size){
 		mem = new String[size];
+		Qi = new ArchTomassulo.STATION_ID[size];
 		for(int i=0; i<mem.length;i++) {
 			mem[i]="00000000000000000000000000000000";
 			Qi[i] = STATION_ID.NONE;

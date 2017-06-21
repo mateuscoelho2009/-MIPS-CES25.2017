@@ -17,7 +17,7 @@ public class ULA {
 			default: System.out.println("Instrução Incorreta");
 					break;
 		}
-		System.out.println("Inst Carregada:"+mnemonic +" PC:"+Arch.p.getPC() );
+		System.out.println("Inst Carregada:"+mnemonic +" PC:"+Arch.p.getPC());
 	}
 	
 	protected void jump(int targetAddress, String mnemonic) {
