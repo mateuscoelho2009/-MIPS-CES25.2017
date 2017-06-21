@@ -7,6 +7,7 @@ public class EstacaoReserva {
 	UlaTomasulo ula;
 	Instruction atuInst;
 	boolean busy;
+	boolean hasJump;
 	INSTR_TYPE Op;
 	int Vj, Vk, Qj, Qk, address;
 
@@ -20,6 +21,7 @@ public class EstacaoReserva {
 		Qj = -1;
 		Qk = -1;
 		address = -1;
+		hasJump = false;
 	}
 
 	public void setId(ArchTomassulo.STATION_ID id) {
@@ -39,7 +41,16 @@ public class EstacaoReserva {
 	}
 
 	boolean hasDependencies () {
-		return (Qj == -1) || (Qk == -1);
+		switch(Op) {
+		case R:
+			return (Qj != -1 && Qk != -1);
+		case I:
+			return (Qj != -1);
+		case J:
+			return false;
+		default:
+			return false;
+		}
 	}
 
 	void checkDependencies () {
@@ -48,13 +59,13 @@ public class EstacaoReserva {
 
 		switch(Op) {
 		case R:
-			if (Arch.r.rBeingUsed(atuInst.rs))
+			if (Arch.r.rBeingUsed(atuInst.rs) && Vj == -1)
 				Qj = atuInst.rs;
 			else {
 				Qj = -1;
 				Vj = Arch.r.rInt(atuInst.rs);
 			}
-			if (Arch.r.rBeingUsed(atuInst.rt))
+			if (Arch.r.rBeingUsed(atuInst.rt) && Vk == -1)
 				Qk = atuInst.rt;
 			else {
 				Qk = -1;
@@ -67,7 +78,7 @@ public class EstacaoReserva {
 			break;
 		case I:
 			if (atuInst.instr_mnemonic_.equals(Instruction.LW)) {
-				if (Arch.m.mBeingUsed(Arch.r.rInt(atuInst.rs) + atuInst.immediate))
+				if (Arch.m.mBeingUsed(Arch.r.rInt(atuInst.rs) + atuInst.immediate) && Vj == -1)
 					Qj = Arch.r.rInt(atuInst.rs) + atuInst.immediate;
 				else {
 					Qj = -1;
@@ -79,7 +90,7 @@ public class EstacaoReserva {
 					Arch.r.setUsed(atuInst.rt, id_);
 				}
 			} else if (atuInst.instr_mnemonic_.equals(Instruction.SW)) {
-				if (Arch.r.rBeingUsed(atuInst.rs))
+				if (Arch.r.rBeingUsed(atuInst.rs) && Vj == -1)
 					Qj = atuInst.rs;
 				else {
 					Qj = -1;
@@ -93,10 +104,12 @@ public class EstacaoReserva {
 			}
 			else {
 				ula.set(atuInst);
+				hasJump = true;
 			}
 			break;
 		case J:
 			ula.set(atuInst);
+			hasJump = true;
 			break;
 		default:
 			ula.set(atuInst);
@@ -124,7 +137,7 @@ public class EstacaoReserva {
 					if (atuInst.instr_mnemonic_.equals(Instruction.LW)) {
 						Arch.r.clearUsed(atuInst.rt);
 					} else if (atuInst.instr_mnemonic_.equals(Instruction.SW)) {
-							Arch.m.clearUsed(Vj + atuInst.immediate);
+						Arch.m.clearUsed(Vj + atuInst.immediate);
 					}
 					break;
 				case J:
@@ -132,7 +145,16 @@ public class EstacaoReserva {
 				default:
 					break;
 				}
+				Qj = -1;
+				Qk = -1;
+				Vj = -1;
+				Vk = -1;
+				hasJump = false;
 			}
 		}
+	}
+	
+	boolean hasJump () {
+		return hasJump;
 	}
 }
