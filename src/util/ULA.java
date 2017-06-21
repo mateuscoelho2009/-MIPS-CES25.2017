@@ -88,11 +88,9 @@ public class ULA {
 				break;
 			case Instruction.LW:
 				//R[rt]=MEM[R[rs]+ImmExt]
-				System.out.println("rt="+rt+"/rs="+rs+"/immed="+immediate);
-				System.out.println("LW/ R"+rt+" = MEM["+Arch.r.rInt(rs)+"+"+immediate+"] = "+ Arch.r.read(rt));
+				System.out.print("LW/ R"+rt+" = MEM["+Arch.r.rInt(rs)+"+"+immediate+"] = ");
 				Arch.r.write(rt, Arch.m.read(Arch.r.rInt(rs)+immediate));
-				System.out.print("LW/ R"+rt+" = MEM["+Arch.r.rInt(rs)+"+"+immediate+"] = "+ Arch.r.read(rt));
-				System.out.println("rt="+rt+"/rs="+rs+"/immed="+immediate);
+				System.out.print(Arch.r.read(rt));
 				break;
 			case Instruction.SW:
 				//MEM[R[rs]+ImmExt]=R[rt]
