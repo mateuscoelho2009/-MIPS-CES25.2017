@@ -33,7 +33,7 @@ public class Instruction {
 		}
 		
 		if (type_ == INSTR_TYPE.R)
-			instr_mnemonic_ = byteCode.substring(26);
+			instr_mnemonic_ = byteCode.substring(26,32);
 		
 		switch (type_) {
 			case R:
@@ -45,10 +45,14 @@ public class Instruction {
 			case I:
 				rs = convBinStr2Int(byteCode.substring(6, 11));
 				rt = convBinStr2Int(byteCode.substring(11, 16));
-				immediate = convBinStr2Int(byteCode.substring(16));
+				int imm_sgn = convBinStr2Int(byteCode.substring(16,17));
+				immediate = convBinStr2Int(byteCode.substring(17,32));
+				if (imm_sgn==1)
+					immediate = immediate*-1;
+				
 				break;
 			case J:
-				targetAddress = convBinStr2Int(byteCode.substring(6));
+				targetAddress = convBinStr2Int(byteCode.substring(6,32));
 				break;
 			default: break;
 		}

@@ -9,13 +9,17 @@ public class Register {
     	System.out.println("Inicializando os registradores.");
 	}
 	public void write(int pos, String value){
-		r[pos] = value;
+		if (pos!=0)
+			r[pos] = value;
+		//System.out.println("r["+pos+"] = "+r[pos]);
 	}	
 	public String read(int pos){
 		return r[pos];
 	}
 	public void wInt(int pos, int number){
-		r[pos] = Integer.toBinaryString(number);
+		if (pos!=0)
+			r[pos] = String.format("%16s", Integer.toBinaryString(number)).replace(' ', '0');
+		//System.out.println("r["+pos+"] = "+r[pos]);
 	}
 	public int rInt(int pos){
 		return Integer.parseInt(r[pos], 2);
