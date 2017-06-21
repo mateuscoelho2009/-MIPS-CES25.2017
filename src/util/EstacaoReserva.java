@@ -66,11 +66,40 @@ public class EstacaoReserva {
 			}
 			break;
 		case I:
-
+			if (atuInst.instr_mnemonic_.equals(Instruction.LW)) {
+				if (Arch.m.mBeingUsed(Arch.r.rInt(atuInst.rs) + atuInst.immediate))
+					Qj = Arch.r.rInt(atuInst.rs) + atuInst.immediate;
+				else {
+					Qj = -1;
+					Vj = Arch.r.rInt(atuInst.rs);
+				}
+				if (!hasDependencies()) {
+					Vk = atuInst.rt;
+					ula.set(atuInst, Vj, Vk);
+					Arch.r.setUsed(atuInst.rt, id_);
+				}
+			} else if (atuInst.instr_mnemonic_.equals(Instruction.SW)) {
+				if (Arch.r.rBeingUsed(atuInst.rs))
+					Qj = atuInst.rs;
+				else {
+					Qj = -1;
+					Vj = Arch.r.rInt(atuInst.rs);
+				}
+				if (!hasDependencies()) {
+					Vk = atuInst.rt;
+					ula.set(atuInst, Vj, Vk);
+					Arch.m.setUsed(Vj + atuInst.immediate, id_);
+				}
+			}
+			else {
+				ula.set(atuInst);
+			}
 			break;
 		case J:
+			ula.set(atuInst);
 			break;
 		default:
+			ula.set(atuInst);
 			break;
 		}
 	}
@@ -92,7 +121,11 @@ public class EstacaoReserva {
 						Arch.r.clearUsed(atuInst.rd);
 					break;
 				case I:
-					
+					if (atuInst.instr_mnemonic_.equals(Instruction.LW)) {
+						Arch.r.clearUsed(atuInst.rt);
+					} else if (atuInst.instr_mnemonic_.equals(Instruction.SW)) {
+							Arch.m.clearUsed(Vj + atuInst.immediate);
+					}
 					break;
 				case J:
 					break;

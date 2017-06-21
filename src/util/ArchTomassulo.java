@@ -7,8 +7,8 @@ public class ArchTomassulo {
 	public static enum STATION_ID {LOAD1, LOAD2, ADD1, ADD2, ADD3, MULT1, MULT2, NONE};
 	
 	// Já usa memória e registradores do Arch
-	public static Register r = new Register();
-	public static Memory m = new Memory(4000);
+	//public static Register r = new Register();
+	//public static Memory m = new Memory(4000);
 	public static Program p;
 	public static EstacaoReserva[] load = new EstacaoReserva[2], 
 									add = new EstacaoReserva[3],
