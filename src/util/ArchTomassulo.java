@@ -4,12 +4,26 @@ import java.io.IOException;
 
 public class ArchTomassulo {
 
+	public static enum STATION_ID {LOAD1, LOAD2, ADD1, ADD2, ADD3, MULT1, MULT2, NONE};
+	
+	// Já usa memória e registradores do Arch
 	public static Register r = new Register();
 	public static Memory m = new Memory(4000);
 	public static Program p;
 	public static EstacaoReserva[] load = new EstacaoReserva[2], 
 									add = new EstacaoReserva[3],
 									mult = new EstacaoReserva[2];
+	
+	public ArchTomassulo() {
+		// TODO Auto-generated constructor stub
+		load[0].setId(STATION_ID.LOAD1);
+		load[1].setId(STATION_ID.LOAD2);
+		add[0].setId(STATION_ID.ADD1);
+		add[1].setId(STATION_ID.ADD2);
+		add[2].setId(STATION_ID.ADD3);
+		mult[0].setId(STATION_ID.MULT1);
+		mult[1].setId(STATION_ID.MULT2);
+	}
 	
 	public static void main(String[] args) throws IOException {
     	System.out.println("Inicializando...");

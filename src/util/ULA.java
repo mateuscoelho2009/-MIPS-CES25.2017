@@ -1,8 +1,8 @@
 package util;
 
 public class ULA {
-	private int rs,rt,rd,target,immediate,ticker=1;
-	private String mnemonic;
+	protected int rs,rt,rd,target,immediate,ticker=1;
+	protected String mnemonic;
 	public ULA(){
     	System.out.println("Inicializando a ULA.");
 	}
@@ -20,13 +20,13 @@ public class ULA {
 		System.out.println("Inst Carregada:"+mnemonic +" PC:"+Arch.p.getPC() );
 	}
 	
-	private void jump(int targetAddress, String mnemonic) {
+	protected void jump(int targetAddress, String mnemonic) {
 		this.target = targetAddress;
 		this.mnemonic = mnemonic;
 		ticker = 1;
 	}
 	
-	private void arithmetic(int rs, int rt, int rd, String mnemonic){
+	protected void arithmetic(int rs, int rt, int rd, String mnemonic){
 			this.rs = rs; this.rt = rt; this.rd = rd;
 			this.mnemonic = mnemonic;
 			if(mnemonic.equals(Instruction.MUL))
@@ -35,7 +35,7 @@ public class ULA {
 				ticker = 1;
 	}
 	
-	private void immediate(int rs, int rt, int immediate, String mnemonic){
+	protected void immediate(int rs, int rt, int immediate, String mnemonic){
 		this.rs = rs; this.rt = rt; this.immediate = immediate;
 		this.mnemonic = mnemonic;
 		if(mnemonic.equals(Instruction.LW)||mnemonic.equals(Instruction.SW))
