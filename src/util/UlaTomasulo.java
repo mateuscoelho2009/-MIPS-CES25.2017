@@ -1,7 +1,8 @@
 package util;
 
 public class UlaTomasulo extends ULA {
-	int Vj, Vk, A;
+	public int Vj, Vk, A, result;
+	public String auxRes;
 	
 	public void set(Instruction inst, int Vj, int Vk){
 		switch (inst.getType()) {
@@ -48,23 +49,23 @@ public class UlaTomasulo extends ULA {
 			return false;
 		switch (mnemonic){
 			case Instruction.ADD:
-				Arch.r.wInt(rd, (Vj+Vk));
-				System.out.print("ADD/ R"+rd+" = "+Arch.r.read(rd) + " = "+ Arch.r.rInt(rd));
+				//Arch.r.wInt(rd, (Vj+Vk));
+				result = Vj + Vk;
 				break;
 			case Instruction.MUL:
-				Arch.r.wInt(rd, (Vj*Vk));
-				System.out.print("MUL/ R"+rd+" = "+Arch.r.read(rd) + " = "+ Arch.r.rInt(rd));
+				//Arch.r.wInt(rd, (Vj*Vk));
+				result = Vj * Vk;
 				break;
 			case Instruction.NOP:
 				System.out.print("NOP");
 				break;
 			case Instruction.SUB:
-				Arch.r.wInt(rd, (Vj-Vk));
-				System.out.print("SUB/ R"+rd+" = "+Arch.r.read(rd) + " = "+ Arch.r.rInt(rd));
+				//Arch.r.wInt(rd, (Vj-Vk));
+				result = Vj - Vk;
 				break;
 			case Instruction.ADDI:
-				Arch.r.wInt(Vk, (Vj+immediate));
-				System.out.print("ADDI/ R"+Vk+" = "+Arch.r.read(Vk) + " = "+ Arch.r.rInt(Vk));
+				//Arch.r.wInt(Vk, (Vj+immediate));
+				result = Vj + immediate;
 				break;
 			case Instruction.BEQ:
 				//If(R[rs]=R[rt]) { PC=PC+4+Imm}
@@ -87,8 +88,9 @@ public class UlaTomasulo extends ULA {
 			case Instruction.LW:
 				//R[rt]=MEM[R[rs]+ImmExt]
 				System.out.print("LW/ R"+Vk+" = MEM["+Vj+"+"+immediate+"] = ");
-				Arch.r.write(Vk, Arch.m.read(Vj+immediate));
-				System.out.print(Arch.r.read(Vk));
+				//Arch.r.write(Vk, Arch.m.read(Vj+immediate));
+				auxRes = Arch.m.read(Vj+immediate);
+				result = Integer.parseInt (auxRes, 2);
 				break;
 			case Instruction.SW:
 				//MEM[R[rs]+ImmExt]=R[rt]

@@ -112,10 +112,11 @@ public class ArchTomassulo {
     		mult[0].tick();
     		mult[1].tick();
     		
-    		load[0].tick();
-    		load[1].tick();
+    		if (load[0].isBusy())
+    			load[0].tick();
+    		else load[1].tick();
+    		
     		System.out.println();
-
     		clock++;
     	}
     	System.out.println("Encerrando...");
