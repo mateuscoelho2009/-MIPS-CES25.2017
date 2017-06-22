@@ -38,8 +38,10 @@ public class RS {
 		return true;
 	}
 	public void tick(Instruction inst){
-		if(state==STATE.FREE)
-			state=issue(ArchTomassulo.inst);
+		if(state==STATE.FREE) {
+			state=issue(inst);
+			atuInst = inst;
+		}
 		else
 			System.out.println("Erro!");
 	}
@@ -47,17 +49,24 @@ public class RS {
 	public void tick(){
 		switch(state){
 		case FREE:
-			//System.out.println("Não era pra estar aqui!");
+			//System.out.println("NÃ£o era pra estar aqui!");
 			//state=issue(ArchTomassulo.inst);
 			break;
 		case ISSUE:
-			state=execute();
+			state=issue(atuInst);
 			break;
 		case EXECUTE:
-			state=execute();				
+			state=execute();
 			break;		
 		case WRITE:
 			state=write();
+			Op = INSTR_TYPE.UNDEFINED;
+			Vj = -1;
+			Vk = -1;
+			Qj = -1;
+			Qk = -1;
+			address = -1;
+			hasJump = false;
 		}			
 	}
 
@@ -76,12 +85,14 @@ public class RS {
 				Qk = -1;
 			}
 		}
-		/* 
-		∀x(if (RegisterStat[x].Qi=r) {Regs[x] ← result; RegisterStat[x].Qi ← 0});
-		∀x(if (RS[x].Qj=r) {RS[x].Vj ← result;RS[x].Qj ← 0});
-		∀x(if (RS[x].Qk=r) {RS[x].Vk ← result;RS[x].Qk ← 0});
-		RS[r].Busy ← no;
-		*/
+
+		Op = INSTR_TYPE.UNDEFINED;
+		Vj = -1;
+		Vk = -1;
+		Qj = -1;
+		Qk = -1;
+		address = -1;
+		hasJump = false;
 		return STATE.FREE;
 	}
 
@@ -89,7 +100,7 @@ public class RS {
 		atuInst = inst;
 		Op = inst.getType();
 		checkDependencies();
-		ula.set(inst,Vj,Vk);
+		//ula.set(inst,Vj,Vk);
 		return STATE.ISSUE;
 	}
 
@@ -100,8 +111,8 @@ public class RS {
 			return (Qj != -1 || Qk != -1);
 		case I:
 			if (atuInst.instr_mnemonic_.equals(Instruction.LW)
-					|| atuInst.instr_mnemonic_.equals(Instruction.SW)
-					|| atuInst.instr_mnemonic_.equals(Instruction.ADDI))
+					|| atuInst.instr_mnemonic_.equals(Instruction.ADDI)
+					|| atuInst.instr_mnemonic_.equals(Instruction.SW))
 				return (Qj != -1);
 			return false;
 		case J: default:
@@ -109,8 +120,7 @@ public class RS {
 		}
 	}
 
-	void checkDependencies () {
-		// TODO: ???.
+	public void checkDependencies () {
 		if (!isBusy()) return;
 
 		switch(Op) {
@@ -172,7 +182,7 @@ public class RS {
 					Qk = Arch.r.rBeingUsedBy(atuInst.rt);
 				else {
 					Qk = -1;
-					Vk = Arch.r.rInt(atuInst.rs);
+					Vk = Arch.r.rInt(atuInst.rt);
 				}
 				if (!hasDependencies()) {
 					address = (Vj+atuInst.immediate);
@@ -197,15 +207,16 @@ public class RS {
 	}
 
 	public STATE execute() {
-		if (hasDependencies()) {
+		/*if (hasDependencies()) {
 			checkDependencies();
-		}
+		}*/
 
-		if (isBusy() && !hasDependencies()) {
+		//if (isBusy()/* && !hasDependencies()*/) {
 			if (!ula.tick())
 				return STATE.EXECUTE;
+			return STATE.WRITE;
 
-			// Terminou Operacao
+			/*// Terminou Operacao
 			if (!isBusy()) {
 				switch(Op) {
 				case R:
@@ -271,8 +282,8 @@ public class RS {
 				return STATE.WRITE;
 			}
 
-		}
-		return STATE.EXECUTE;
+		}*/
+		
 	}
 	
 	boolean hasJump () {

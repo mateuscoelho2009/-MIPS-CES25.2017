@@ -1,5 +1,6 @@
 package util;
 
+import util.Instruction.INSTR_TYPE;
 import util.RS.STATE;
 import util.RS.TYPE;
 
@@ -10,53 +11,50 @@ public class RsLoad extends RS {
 		_type = TYPE.LOAD;
 	}
 	public STATE issue(Instruction inst) {
-		/*atuInst = inst;
-		Op = inst.getType();
-		checkDependencies();
-		ula.set(inst,Vj,Vk);*/
-		if(Arch.r.rBeingUsed(inst.rs))
-			Qj = Arch.r.rBeingUsedBy(inst.rs);
-		else {
-			Vj = Arch.r.rInt(inst.rs);
-			Qj = -1;
+		if (inst.instr_mnemonic_.equals(Instruction.NOP)
+				|| inst.instr_mnemonic_.equals(Instruction.JMP)) {
+			ula.set(inst);
+			return STATE.EXECUTE;
 		}
-		address = inst.immediate;
-		if(inst.getMnemonic()=="100011") { // LW
-			Arch.r.setUsed(inst.rd,id_);
-		}
-		if(inst.getMnemonic()=="101011") { // SW
-			if(Arch.r.rBeingUsed(inst.rs)){
-				Qk = Arch.r.rBeingUsedBy(inst.rs);
-			} else {
-					Vk = Arch.r.rInt(inst.rt);
-					Qk = -1;
+		else if (inst.instr_mnemonic_.equals(Instruction.LW)
+				|| inst.instr_mnemonic_.equals(Instruction.SW)
+				|| inst.instr_mnemonic_.equals(Instruction.ADDI)) {
+			if(Arch.r.rBeingUsed(inst.rs))
+				Qj = Arch.r.rBeingUsedBy(inst.rs);
+			else {
+				Vj = Arch.r.rInt(inst.rs);
+				Qj = -1;
+			}
+			address = inst.immediate;
+			if (!hasDependencies()) {
+				if(inst.getMnemonic()=="100011"
+						|| inst.instr_mnemonic_.equals(Instruction.ADDI)) { // LW
+					Arch.r.setUsed(inst.rt,id_);
+					Vk = inst.rt;
 				}
-		}		
-		
-		ula.set(inst,Vj,Vk);
-		return STATE.ISSUE;
-		/*
-
-		if (RegisterStat[rs].Qi≠0)
-			{RS[r].Qj ← RegisterStat[rs].Qi}
-		else 
-			{RS[r].Vj ← Regs[rs]; 
-			RS[r].Qj ← 0}; 
-		RS[r].A ← imm; RS[r].Busy ← yes;
-		
-		//Load only
-		RegisterStat[rt].Qi ← r;
-		
-		//Store only
-		if (RegisterStat[rt].Qi≠0)
-			{RS[r].Qk ← RegisterStat[rs].Qi}
-		else 
-			{RS[r].Vk ← Regs[rt]; 
-			RS[r].Qk ← 0};
-		 */
+				if(inst.getMnemonic()=="101011") { // SW
+					if(Arch.r.rBeingUsed(inst.rt)){
+						Qk = Arch.r.rBeingUsedBy(inst.rt);
+						return STATE.ISSUE;
+					} else {
+						Vk = Arch.r.rInt(inst.rt);
+						Qk = -1;
+					}
+				}
+				ula.set(inst, Vj, Vk);
+				return STATE.EXECUTE;
+			}
+					
+			
+			return STATE.ISSUE;
+		}
+		else {
+			hasJump = true;
+			ula.set(inst);
+			return STATE.EXECUTE;
+		}
 	}
 	public STATE write(){
-		
 		
 		if(ula.mnemonic=="101011"){
 			if(Qk == -1)
@@ -80,6 +78,14 @@ public class RsLoad extends RS {
 				}
 			}
 		}
+		
+		Op = INSTR_TYPE.UNDEFINED;
+		Vj = -1;
+		Vk = -1;
+		Qj = -1;
+		Qk = -1;
+		address = -1;
+		hasJump = false;
 		return STATE.FREE;
 	}
 	

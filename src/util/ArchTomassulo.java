@@ -1,6 +1,7 @@
 package util;
 
 import java.io.IOException;
+import java.util.concurrent.TimeUnit;
 
 import org.hamcrest.core.IsAnything;
 
@@ -55,7 +56,7 @@ public class ArchTomassulo {
     			//rStates();
     			for (int i=0;i<rs.length && !findRS;i++){
     	    		switch (inst.getMnemonic()) {
-    	    		case Instruction.ADD: case Instruction.SUB: case Instruction.ADDI:
+    	    		case Instruction.ADD: case Instruction.SUB:
     	    			if (!rs[i].isBusy() && rs[i].type()==RS.TYPE.ADD){ 
     	    				rs[i].tick(inst);
     	    				ticked[i]=true;
@@ -69,15 +70,22 @@ public class ArchTomassulo {
     	    				findRS = true;
     	    			}
     	    			break;
-    	    		case Instruction.LW: case Instruction.SW:
+    	    		case Instruction.LW: case Instruction.SW: case Instruction.ADDI:
     	    			if (!rs[i].isBusy() && rs[i].type()==RS.TYPE.LOAD){ 
     	    				rs[i].tick(inst);
     	    				ticked[i]=true;
     	    				findRS = true;
     	    			}
     	    			break;
-    	    		default:
+    	    		case Instruction.JMP: case Instruction.NOP:
     	    			if (!rs[i].isBusy()){ 
+    	    				rs[i].tick(inst);
+    	    				ticked[i]=true;
+    	    				findRS = true;
+    	    			}
+    	    			break;
+    	    		default:
+    	    			if (!isAnyOneBusy()) {
     	    				rs[i].tick(inst);
     	    				ticked[i]=true;
     	    				findRS = true;
@@ -100,6 +108,12 @@ public class ArchTomassulo {
     				rs[i].tick();
     		}
     		
+    		try {
+				TimeUnit.SECONDS.sleep(1);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
     		System.out.println();
     		clock++;
     	}
