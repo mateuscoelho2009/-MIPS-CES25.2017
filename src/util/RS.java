@@ -15,7 +15,7 @@ public class RS {
 	INSTR_TYPE Op;
 	public int Vj, Vk, address;
 	public int Qj, Qk;
-	private TYPE _type = TYPE.NONE;
+	protected TYPE _type = TYPE.NONE;
 
 	public RS(int id) {
 		id_ = id;
@@ -36,11 +36,18 @@ public class RS {
 			return false;
 		return true;
 	}
+	public void tick(Instruction inst){
+		if(state==STATE.FREE)
+			state=issue(ArchTomassulo.inst);
+		else
+			System.out.println("Erro!");
+	}
 	
 	public void tick(){
 		switch(state){
 		case FREE:
-			state=issue(atuInst);
+			//System.out.println("Não era pra estar aqui!");
+			//state=issue(ArchTomassulo.inst);
 			break;
 		case ISSUE:
 			state=execute();
@@ -51,8 +58,6 @@ public class RS {
 		case WRITE:
 			state=STATE.FREE;
 		}			
-
-			
 	}
 
 	public STATE write() {
@@ -64,6 +69,7 @@ public class RS {
 		atuInst = inst;
 		Op = inst.getType();
 		checkDependencies();
+		ula.set(inst,Vj,Vk);
 		return STATE.ISSUE;
 	}
 
@@ -78,9 +84,7 @@ public class RS {
 					|| atuInst.instr_mnemonic_.equals(Instruction.ADDI))
 				return (Qj != -1);
 			return false;
-		case J:
-			return false;
-		default:
+		case J: default:
 			return false;
 		}
 	}
@@ -265,7 +269,9 @@ public class RS {
 			this.Vk = result;
 		}
 	}
-
+	public STATE getState(){
+		return state;
+	}
 	public TYPE type() {
 		return _type;
 	}

@@ -1,10 +1,12 @@
 package util;
 
+import util.RS.TYPE;
+
 public class RsMult extends RS {
 
 	public RsMult(int id) {
 		super(id);
-		// TODO Auto-generated constructor stub
+		_type = TYPE.MULT;
 	}
 
 }

@@ -47,7 +47,8 @@ public class UlaT extends Ula {
 		ticker--;
 		if(ticker>0)
 			return false;
-		switch (mnemonic){
+		System.out.println("UlaT: "+this.mnemonic);
+		switch (this.mnemonic){
 			case Instruction.ADD:
 				//Arch.r.wInt(rd, (Vj+Vk));
 				result = Vj + Vk;

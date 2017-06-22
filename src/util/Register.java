@@ -39,7 +39,6 @@ public class Register {
 		Qi[pos] = -1;
 	}
 	public int rBeingUsedBy(int pos) {
-		// TODO Auto-generated method stub
 		return Qi[pos];
 	}
 }

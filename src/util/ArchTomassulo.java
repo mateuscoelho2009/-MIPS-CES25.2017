@@ -14,7 +14,8 @@ public class ArchTomassulo {
 	//public static Program p;
 	public static Cdb cdb = new Cdb();
 	public static RS[] rs = new RS[7];
-	
+	public static Instruction inst;
+	private static boolean[] ticked= new boolean[7];
 	public static void init() {
 		rs[0] = new RsLoad(0);
 		rs[1] = new RsLoad(1);
@@ -23,6 +24,11 @@ public class ArchTomassulo {
 		rs[4] = new RsAdd(4);
 		rs[5] = new RsMult(5);
 		rs[6] = new RsMult(6);
+	}
+	
+	public static void rStates(){
+		for (int i=0; i< rs.length;i++)
+			System.out.println(rs[i].getState());
 	}
 	
 	static boolean isAnyOneBusy () {
@@ -38,34 +44,44 @@ public class ArchTomassulo {
     	init();
     	long clock = 0;
     	while(!Arch.p.end()){
+    		for(int j=0;j<ticked.length;j++){
+    			ticked[j]=false;
+    		}
     		System.out.print(clock + " - ");
     		if (hasNoBranchInst()) {
-    			Instruction inst = Arch.p.getNextInstruction();
+    			inst = Arch.p.getNextInstruction();
     			inst.setPC(Arch.p.getPC());
     			boolean findRS = false;
+    			System.out.println(inst.getMnemonic());
+    			//rStates();
     			for (int i=0;i<rs.length && !findRS;i++){
     	    		switch (inst.getMnemonic()) {
     	    		case Instruction.ADD: case Instruction.SUB: case Instruction.ADDI:
     	    			if (!rs[i].isBusy() && rs[i].type()==RS.TYPE.ADD){ 
-    	    				rs[i].issue(inst);
+    	    				System.out.println("aqui");
+    	    				rs[i].tick(inst);
+    	    				ticked[i]=true;
     	    				findRS = true;
     	    			}
     	    			break;
     	    		case Instruction.MUL:
     	    			if (!rs[i].isBusy() && rs[i].type()==RS.TYPE.MULT){ 
-    	    				rs[i].issue(inst);
+    	    				rs[i].tick(inst);
+    	    				ticked[i]=true;
     	    				findRS = true;
     	    			}
     	    			break;
     	    		case Instruction.LW: case Instruction.SW:
     	    			if (!rs[i].isBusy() && rs[i].type()==RS.TYPE.LOAD){ 
-    	    				rs[i].issue(inst);
+    	    				rs[i].tick(inst);
+    	    				ticked[i]=true;
     	    				findRS = true;
     	    			}
     	    			break;
     	    		default:
     	    			if (!rs[i].isBusy()){ 
-    	    				rs[i].issue(inst);
+    	    				rs[i].tick(inst);
+    	    				ticked[i]=true;
     	    				findRS = true;
     	    			}
     	    			break;
@@ -75,13 +91,15 @@ public class ArchTomassulo {
     				Arch.p.setPC(Arch.p.getPC() - 4);
     				System.out.println("Não há estação de reserva disponível");
     			}
+    			//rStates();
     				
 
     		}
 
     		//done = ula.tick();
     		for (int i=0;i<rs.length;i++){
-    			rs[i].tick();
+    			if(ticked[i]==false)
+    				rs[i].tick();
     		}
     		
     		System.out.println();
