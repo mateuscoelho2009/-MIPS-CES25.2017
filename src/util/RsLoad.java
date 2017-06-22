@@ -30,6 +30,7 @@ public class RsLoad extends RS {
 				if(inst.getMnemonic()=="100011"
 						|| inst.instr_mnemonic_.equals(Instruction.ADDI)) { // LW
 					Arch.r.setUsed(inst.rt,id_);
+					Vk = inst.rt;
 				}
 				if(inst.getMnemonic()=="101011") { // SW
 					if(Arch.r.rBeingUsed(inst.rt)){
