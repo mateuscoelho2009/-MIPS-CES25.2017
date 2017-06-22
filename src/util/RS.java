@@ -2,6 +2,7 @@ package util;
 
 //import util.ArchTomassulo.STATION_ID;
 import util.Instruction.INSTR_TYPE;
+import util.RS.TYPE;
 
 public class RS {
 	public static enum TYPE {NONE,LOAD,ADD,MULT}
@@ -15,6 +16,7 @@ public class RS {
 	INSTR_TYPE Op;
 	public int Vj, Vk, address;
 	public int Qj, Qk;
+	private TYPE _type = TYPE.NONE;
 
 	public RS(int id) {
 		id_ = id;
@@ -258,5 +260,9 @@ public class RS {
 			this.Qk = -1;
 			this.Vk = result;
 		}
+	}
+
+	public TYPE type() {
+		return _type;
 	}
 }

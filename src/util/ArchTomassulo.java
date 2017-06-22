@@ -47,66 +47,43 @@ public class ArchTomassulo {
     			for (int i=0;i<rs.length && !findRS;i++){
     	    		switch (inst.getMnemonic()) {
     	    		case Instruction.ADD: case Instruction.SUB: case Instruction.ADDI:
-    	    			if (!rs[i].isBusy()) 
+    	    			if (!rs[i].isBusy() && rs[i].type()==RS.TYPE.ADD){ 
     	    				rs[i].issue(inst);
-    	    			else {
-    	    				System.out.println("N�o h� espa�o na esta��o de reserva ADD");
-    	    				Arch.p.setPC(Arch.p.getPC() - 4);
+    	    				findRS = true;
     	    			}
     	    			break;
     	    		case Instruction.MUL:
-    	    			if (!mult[0].isBusy()) mult[0].passInstruction(inst);
-    	    			else if (!mult[1].isBusy()) mult[1].passInstruction(inst);
-    	    			else {
-    	    				System.out.println("N�o h� espa�o na esta��o de reserva MULT");
-    	    				Arch.p.setPC(Arch.p.getPC() - 4);
+    	    			if (!rs[i].isBusy() && rs[i].type()==RS.TYPE.MULT){ 
+    	    				rs[i].issue(inst);
+    	    				findRS = true;
     	    			}
     	    			break;
     	    		case Instruction.LW: case Instruction.SW:
-    	    			if (!load[0].isBusy()) load[0].passInstruction(inst);
-    	    			else if (!load[1].isBusy()) load[1].passInstruction(inst);
-    	    			else {
-    	    				System.out.println("N�o h� espa�o na esta��o de reserva LOAD");
-    	    				Arch.p.setPC(Arch.p.getPC() - 4);
-    	    			}
-    	    			break;
-    	    		case Instruction.NOP: case Instruction.JMP:
-    	    			if (!add[0].isBusy()) add[0].passInstruction(inst);
-    	    			else if (!add[1].isBusy()) add[1].passInstruction(inst);
-    	    			else if (!add[2].isBusy()) add[2].passInstruction(inst);
-    	    			else if (!mult[0].isBusy()) mult[0].passInstruction(inst);
-    	    			else if (!mult[1].isBusy()) mult[1].passInstruction(inst);
-    	    			else if (!load[0].isBusy()) load[0].passInstruction(inst);
-    	    			else if (!load[1].isBusy()) load[1].passInstruction(inst);
-    	    			else {
-    	    				System.out.println("N�o h� espa�o nas esta��es de reserva para NOP");
-    	    				Arch.p.setPC(Arch.p.getPC() - 4);
+    	    			if (!rs[i].isBusy() && rs[i].type()==RS.TYPE.LOAD){ 
+    	    				rs[i].issue(inst);
+    	    				findRS = true;
     	    			}
     	    			break;
     	    		default:
-    	    			if (isAnyOneBusy()) { // Caso seja Jump, espera todos acabarem suas respectivas opera��es
-    	    				System.out.println("Instru��o JUMP: esperando outras instru��es acabarem a execu��o");
-    	    				Arch.p.setPC(Arch.p.getPC() - 4);
-    	    				break;
+    	    			if (!rs[i].isBusy()){ 
+    	    				rs[i].issue(inst);
+    	    				findRS = true;
     	    			}
-    	    			add[0].passInstruction(inst);
     	    			break;
     	    		}   				
     			}
+    			if (!findRS){
+    				Arch.p.setPC(Arch.p.getPC() - 4);
+    				System.out.println("Não há estação de reserva disponível");
+    			}
+    				
 
     		}
 
     		//done = ula.tick();
-    		add[0].tick();
-    		add[1].tick();
-    		add[2].tick();
-    		
-    		mult[0].tick();
-    		mult[1].tick();
-    		
-    		if (load[0].isBusy())
-    			load[0].tick();
-    		else load[1].tick();
+    		for (int i=0;i<rs.length;i++){
+    			rs[i].tick();
+    		}
     		
     		System.out.println();
     		clock++;
