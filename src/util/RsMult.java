@@ -46,4 +46,12 @@ public class RsMult extends RS {
 			RegisterStat[rd].Q ← r;
 		 */
 	}
+	public STATE execute() {
+		if(Qj == -1 && Qk == -1){
+			if (!ula.tick())
+				return STATE.EXECUTE;
+
+		}	
+		return STATE.WRITE;
+	}
 }
