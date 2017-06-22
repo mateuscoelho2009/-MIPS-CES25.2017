@@ -23,7 +23,6 @@ public class ArchTomassulo {
 		rs[4] = new RsAdd(4);
 		rs[5] = new RsMult(5);
 		rs[6] = new RsMult(6);
-		rs[7] = new RsMult(7);
 	}
 	
 	static boolean isAnyOneBusy () {

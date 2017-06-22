@@ -2,7 +2,6 @@ package util;
 
 //import util.ArchTomassulo.STATION_ID;
 import util.Instruction.INSTR_TYPE;
-import util.RS.TYPE;
 
 public class RS {
 	public static enum TYPE {NONE,LOAD,ADD,MULT}
@@ -179,7 +178,8 @@ public class RS {
 		}
 
 		if (isBusy() && !hasDependencies()) {
-			busy = !ula.tick();
+			if (!ula.tick())
+				return STATE.EXECUTE;
 
 			// Terminou Operacao
 			if (!isBusy()) {
@@ -243,15 +243,19 @@ public class RS {
 				Qk = -1;
 				address = -1;
 				hasJump = false;
+
+				return STATE.WRITE;
 			}
+
 		}
+		return STATE.EXECUTE;
 	}
 	
 	boolean hasJump () {
 		return hasJump;
 	}
 	
-	public void putResult(ArchTomassulo.STATION_ID id, int result){
+	public void putResult(int id, int result){
 		if (this.Qj == id) {
 			this.Qj = -1;
 			this.Vj = result;
