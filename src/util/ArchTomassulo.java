@@ -1,45 +1,41 @@
 package util;
 
 import java.io.IOException;
+import java.util.concurrent.TimeUnit;
 
 import org.hamcrest.core.IsAnything;
 
 public class ArchTomassulo {
 
-	public static enum STATION_ID {LOAD1, LOAD2, ADD1, ADD2, ADD3, MULT1, MULT2, NONE};
+	//public static enum STATION_ID {LOAD1, LOAD2, ADD1, ADD2, ADD3, MULT1, MULT2, NONE};
 	
-	// Já usa memória e registradores do Arch
+	// Jï¿½ usa memï¿½ria e registradores do Arch
 	//public static Register r = new Register();
 	//public static Memory m = new Memory(4000);
 	//public static Program p;
-	public static EstacaoReserva[] load = new EstacaoReserva[2], 
-									add = new EstacaoReserva[3],
-									mult = new EstacaoReserva[2];
-	
+	public static Cdb cdb = new Cdb();
+	public static RS[] rs = new RS[7];
+	public static Instruction inst;
+	private static boolean[] ticked= new boolean[7];
 	public static void init() {
-		for (int i = 0; i < 2; i++) {
-			mult[i] = new EstacaoReserva();
-			add[i] = new EstacaoReserva();
-			load[i] = new EstacaoReserva();
-		}
-		add[2] = new EstacaoReserva();
-		
-		load[0].setId(STATION_ID.LOAD1);
-		load[1].setId(STATION_ID.LOAD2);
-		add[0].setId(STATION_ID.ADD1);
-		add[1].setId(STATION_ID.ADD2);
-		add[2].setId(STATION_ID.ADD3);
-		mult[0].setId(STATION_ID.MULT1);
-		mult[1].setId(STATION_ID.MULT2);
+		rs[0] = new RsLoad(0);
+		rs[1] = new RsLoad(1);
+		rs[2] = new RsAdd(2);
+		rs[3] = new RsAdd(3);
+		rs[4] = new RsAdd(4);
+		rs[5] = new RsMult(5);
+		rs[6] = new RsMult(6);
+	}
+	
+	public static void rStates(){
+		for (int i=0; i< rs.length;i++)
+			System.out.println(rs[i].getState());
 	}
 	
 	static boolean isAnyOneBusy () {
-		for (int i = 0; i < 2; i++) {
-			if (mult[i].isBusy()) return true;
-			if (add[i].isBusy()) return true;
-			if (load[i].isBusy()) return true;
+		for (int i = 0; i < rs.length; i++) {
+			if (rs[i].isBusy()) return true;
 		}
-		if (add[2].isBusy()) return true;
 		return false;
 	}
 	
@@ -49,73 +45,75 @@ public class ArchTomassulo {
     	init();
     	long clock = 0;
     	while(!Arch.p.end()){
+    		for(int j=0;j<ticked.length;j++){
+    			ticked[j]=false;
+    		}
     		System.out.print(clock + " - ");
-
     		if (hasNoBranchInst()) {
-    			Instruction inst = Arch.p.getNextInstruction();
+    			inst = Arch.p.getNextInstruction();
     			inst.setPC(Arch.p.getPC());
-	    		switch (inst.getMnemonic()) {
-	    		case Instruction.ADD: case Instruction.SUB: case Instruction.ADDI:
-	    			if (!add[0].isBusy()) add[0].passInstruction(inst);
-	    			else if (!add[1].isBusy()) add[1].passInstruction(inst);
-	    			else if (!add[2].isBusy()) add[2].passInstruction(inst);
-	    			else {
-	    				System.out.println("Não há espaço na estação de reserva ADD");
-	    				Arch.p.setPC(Arch.p.getPC() - 4);
-	    			}
-	    			break;
-	    		case Instruction.MUL:
-	    			if (!mult[0].isBusy()) mult[0].passInstruction(inst);
-	    			else if (!mult[1].isBusy()) mult[1].passInstruction(inst);
-	    			else {
-	    				System.out.println("Não há espaço na estação de reserva MULT");
-	    				Arch.p.setPC(Arch.p.getPC() - 4);
-	    			}
-	    			break;
-	    		case Instruction.LW: case Instruction.SW:
-	    			if (!load[0].isBusy()) load[0].passInstruction(inst);
-	    			else if (!load[1].isBusy()) load[1].passInstruction(inst);
-	    			else {
-	    				System.out.println("Não há espaço na estação de reserva LOAD");
-	    				Arch.p.setPC(Arch.p.getPC() - 4);
-	    			}
-	    			break;
-	    		case Instruction.NOP:
-	    			if (!add[0].isBusy()) add[0].passInstruction(inst);
-	    			else if (!add[1].isBusy()) add[1].passInstruction(inst);
-	    			else if (!add[2].isBusy()) add[2].passInstruction(inst);
-	    			else if (!mult[0].isBusy()) mult[0].passInstruction(inst);
-	    			else if (!mult[1].isBusy()) mult[1].passInstruction(inst);
-	    			else if (!load[0].isBusy()) load[0].passInstruction(inst);
-	    			else if (!load[1].isBusy()) load[1].passInstruction(inst);
-	    			else {
-	    				System.out.println("Não há espaço nas estações de reserva para NOP");
-	    				Arch.p.setPC(Arch.p.getPC() - 4);
-	    			}
-	    			break;
-	    		default:
-	    			if (isAnyOneBusy()) { // Caso seja Jump, espera todos acabarem suas respectivas operações
-	    				System.out.println("Instrução JUMP: esperando outras instruções acabarem a execução");
-	    				Arch.p.setPC(Arch.p.getPC() - 4);
-	    				break;
-	    			}
-	    			add[0].passInstruction(inst);
-	    			break;
-	    		}
+    			boolean findRS = false;
+    			//rStates();
+    			for (int i=0;i<rs.length && !findRS;i++){
+    	    		switch (inst.getMnemonic()) {
+    	    		case Instruction.ADD: case Instruction.SUB:
+    	    			if (!rs[i].isBusy() && rs[i].type()==RS.TYPE.ADD){ 
+    	    				rs[i].tick(inst);
+    	    				ticked[i]=true;
+    	    				findRS = true;
+    	    			}
+    	    			break;
+    	    		case Instruction.MUL:
+    	    			if (!rs[i].isBusy() && rs[i].type()==RS.TYPE.MULT){ 
+    	    				rs[i].tick(inst);
+    	    				ticked[i]=true;
+    	    				findRS = true;
+    	    			}
+    	    			break;
+    	    		case Instruction.LW: case Instruction.SW: case Instruction.ADDI:
+    	    			if (!rs[i].isBusy() && rs[i].type()==RS.TYPE.LOAD){ 
+    	    				rs[i].tick(inst);
+    	    				ticked[i]=true;
+    	    				findRS = true;
+    	    			}
+    	    			break;
+    	    		case Instruction.JMP: case Instruction.NOP:
+    	    			if (!rs[i].isBusy()){ 
+    	    				rs[i].tick(inst);
+    	    				ticked[i]=true;
+    	    				findRS = true;
+    	    			}
+    	    			break;
+    	    		default:
+    	    			if (!isAnyOneBusy()) {
+    	    				rs[i].tick(inst);
+    	    				ticked[i]=true;
+    	    				findRS = true;
+    	    			}
+    	    			break;
+    	    		}   				
+    			}
+    			if (!findRS){
+    				Arch.p.setPC(Arch.p.getPC() - 4);
+    				System.out.println("NÃ£o hÃ¡ estaÃ§Ã£o de reserva disponÃ­vel");
+    			}
+    			//rStates();
+    				
+
     		}
 
     		//done = ula.tick();
-    		add[0].tick();
-    		add[1].tick();
-    		add[2].tick();
+    		for (int i=0;i<rs.length;i++){
+    			if(ticked[i]==false)
+    				rs[i].tick();
+    		}
     		
-    		mult[0].tick();
-    		mult[1].tick();
-    		
-    		if (load[0].isBusy())
-    			load[0].tick();
-    		else load[1].tick();
-    		
+    		try {
+				TimeUnit.SECONDS.sleep(1);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
     		System.out.println();
     		clock++;
     	}
@@ -124,12 +122,9 @@ public class ArchTomassulo {
     }
 
 	private static boolean hasNoBranchInst() {
-		for (int i = 0; i < 2; i++) {
-			if (mult[i].hasJump()) return false;
-			if (add[i].hasJump()) return false;
-			if (load[i].hasJump()) return false;
+		for (int i = 0; i < rs.length; i++) {
+			if (rs[i].hasJump()) return false;
 		}
-		if (add[2].hasJump()) return false;
 		return true;
 	}
 }

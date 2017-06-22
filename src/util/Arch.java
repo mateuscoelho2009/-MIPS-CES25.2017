@@ -8,7 +8,7 @@ public class Arch {
 	public static Register r = new Register();
 	public static Memory m = new Memory(4000);
 	public static Program p;
-	public static ULA ula = new ULA();
+	public static Ula ula = new Ula();
 	
 
 	

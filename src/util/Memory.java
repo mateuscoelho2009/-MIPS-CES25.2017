@@ -1,17 +1,15 @@
 package util;
 
-import util.ArchTomassulo.STATION_ID;
-
 public class Memory {
 	private String[] mem;
-	private ArchTomassulo.STATION_ID[] Qi;
+	private int[] Qi;
 	
 	public Memory(int size){
 		mem = new String[size];
-		Qi = new ArchTomassulo.STATION_ID[size];
+		Qi = new int[size];
 		for(int i=0; i<mem.length;i++) {
 			mem[i]="00000000000000000000000000000000";
-			Qi[i] = STATION_ID.NONE;
+			Qi[i] = -1;
 		}
     	System.out.println("Inicializando a memória.");
 	}
@@ -25,15 +23,15 @@ public class Memory {
 		return mem[pos];
 	}
 	public boolean mBeingUsed (int pos) {
-		return (Qi[pos] != STATION_ID.NONE);
+		return (Qi[pos] != -1);
 	}
-	public void setUsed (int pos, ArchTomassulo.STATION_ID instr) {
+	public void setUsed (int pos, int instr) {
 		Qi[pos] = instr;
 	}
 	public void clearUsed (int pos) {
-		Qi[pos] = STATION_ID.NONE;
+		Qi[pos] = -1;
 	}
-	public STATION_ID mBeingUsedBy(int pos) {
+	public int mBeingUsedBy(int pos) {
 		// TODO Auto-generated method stub
 		return Qi[pos];
 	}
