@@ -1,14 +1,12 @@
 package util;
 
-public class ULA {
-	protected int rs,rt,rd,target,immediate,ticker=1;
-	protected String mnemonic;
-	public ULA(){
-    	System.out.println("Inicializando a ULA.");
-	}
-	public void set(Instruction inst){
+public class UlaT extends Ula {
+	public int Vj, Vk, A, result;
+	public String auxRes;
+	
+	public void set(Instruction inst, int Vj, int Vk){
 		switch (inst.getType()) {
-			case R:	arithmetic(inst.getRS(), inst.getRT(), inst.getRD(), inst.getMnemonic());
+			case R:	arithmetic(Vj, Vk, inst.getRD(), inst.getMnemonic());
 					break;
 			case I: immediate(inst.getRS(), inst.getRT(), inst.getImmediate(), inst.getMnemonic());
 					break;
@@ -17,7 +15,7 @@ public class ULA {
 			default: System.out.println("Instrução Incorreta");
 					break;
 		}
-		System.out.println("Inst Carregada:"+mnemonic +" PC:"+Arch.p.getPC());
+		System.out.println("Inst Carregada:"+mnemonic +" PC:"+inst.getPC() );
 	}
 	
 	protected void jump(int targetAddress, String mnemonic) {
@@ -26,8 +24,8 @@ public class ULA {
 		ticker = 2;
 	}
 	
-	protected void arithmetic(int rs, int rt, int rd, String mnemonic){
-			this.rs = rs; this.rt = rt; this.rd = rd;
+	protected void arithmetic(int Vj, int Vk, int rd, String mnemonic){
+			this.Vj = Vj; this.Vk = Vk; this.rd = rd;
 			this.mnemonic = mnemonic;
 			if(mnemonic.equals(Instruction.MUL))
 				ticker = 4;
@@ -37,6 +35,7 @@ public class ULA {
 	
 	protected void immediate(int rs, int rt, int immediate, String mnemonic){
 		this.rs = rs; this.rt = rt; this.immediate = immediate;
+		this.Vj = rs; this.Vk = rt;
 		this.mnemonic = mnemonic;
 		if(mnemonic.equals(Instruction.LW)||mnemonic.equals(Instruction.SW))
 			ticker = 5;
@@ -50,23 +49,23 @@ public class ULA {
 			return false;
 		switch (mnemonic){
 			case Instruction.ADD:
-				Arch.r.wInt(rd, (Arch.r.rInt(rs)+Arch.r.rInt(rt)));
-				System.out.print("ADD/ R"+rd+" = "+Arch.r.read(rd) + " = "+ Arch.r.rInt(rd));
+				//Arch.r.wInt(rd, (Vj+Vk));
+				result = Vj + Vk;
 				break;
 			case Instruction.MUL:
-				Arch.r.wInt(rd, (Arch.r.rInt(rs)*Arch.r.rInt(rt)));
-				System.out.print("MUL/ R"+rd+" = "+Arch.r.read(rd) + " = "+ Arch.r.rInt(rd));
+				//Arch.r.wInt(rd, (Vj*Vk));
+				result = Vj * Vk;
 				break;
 			case Instruction.NOP:
 				System.out.print("NOP");
 				break;
 			case Instruction.SUB:
-				Arch.r.wInt(rd, (Arch.r.rInt(rs)-Arch.r.rInt(rt)));
-				System.out.print("SUB/ R"+rd+" = "+Arch.r.read(rd) + " = "+ Arch.r.rInt(rd));
+				//Arch.r.wInt(rd, (Vj-Vk));
+				result = Vj - Vk;
 				break;
 			case Instruction.ADDI:
-				Arch.r.wInt(rt, (Arch.r.rInt(rs)+immediate));
-				System.out.print("ADDI/ R"+rt+" = "+Arch.r.read(rt) + " = "+ Arch.r.rInt(rt));
+				//Arch.r.wInt(Vk, (Vj+immediate));
+				result = Vj + immediate;
 				break;
 			case Instruction.BEQ:
 				//If(R[rs]=R[rt]) { PC=PC+4+Imm}
@@ -88,14 +87,15 @@ public class ULA {
 				break;
 			case Instruction.LW:
 				//R[rt]=MEM[R[rs]+ImmExt]
-				System.out.print("LW/ R"+rt+" = MEM["+Arch.r.rInt(rs)+"+"+immediate+"] = ");
-				Arch.r.write(rt, Arch.m.read(Arch.r.rInt(rs)+immediate));
-				System.out.print(Arch.r.read(rt));
+				System.out.print("LW/ R"+Vk+" = MEM["+Vj+"+"+immediate+"] = ");
+				//Arch.r.write(Vk, Arch.m.read(Vj+immediate));
+				auxRes = Arch.m.read(Vj+immediate);
+				result = Integer.parseInt (auxRes, 2);
 				break;
 			case Instruction.SW:
 				//MEM[R[rs]+ImmExt]=R[rt]
-				Arch.m.write(Arch.r.rInt(rs)+immediate, Arch.r.read(rt));
-				System.out.print("SW/ MEM["+Arch.r.rInt(rs)+"+"+immediate+"] = R"+rt+" = "+ Arch.r.read(rt));
+				Arch.m.write(Vj+immediate, Arch.r.read(Vk));
+				System.out.print("SW/ MEM["+Vj+"+"+immediate+"] = R"+Vk+" = "+ Arch.r.read(Vk));
 				break;
 			case Instruction.JMP:
 				Arch.p.setPC(target);
@@ -107,5 +107,4 @@ public class ULA {
 		}		
 		return true;
 	}
-
 }

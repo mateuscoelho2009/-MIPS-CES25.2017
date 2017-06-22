@@ -1,16 +1,15 @@
 package util;
 
-import util.ArchTomassulo.STATION_ID;
 
 public class Register {
 	private String[] r;
-	private ArchTomassulo.STATION_ID[] Qi;
+	private int[] Qi;
 	public Register(){
 		r = new String[32];
-		Qi = new ArchTomassulo.STATION_ID[32];
+		Qi = new int[32];
 		for(int i=0; i<r.length;i++) {
 			r[i]="00000000000000000000000000000000";
-			Qi[i] = STATION_ID.NONE;
+			Qi[i] = -1;
 		}
     	System.out.println("Inicializando os registradores.");
 	}
@@ -31,15 +30,15 @@ public class Register {
 		return Integer.parseInt(r[pos], 2);
 	}
 	public boolean rBeingUsed (int pos) {
-		return (Qi[pos] != STATION_ID.NONE);
+		return (Qi[pos] != -1);
 	}
-	public void setUsed (int pos, ArchTomassulo.STATION_ID instr) {
+	public void setUsed (int pos, int instr) {
 		Qi[pos] = instr;
 	}
 	public void clearUsed (int pos) {
-		Qi[pos] = STATION_ID.NONE;
+		Qi[pos] = -1;
 	}
-	public STATION_ID rBeingUsedBy(int pos) {
+	public int rBeingUsedBy(int pos) {
 		// TODO Auto-generated method stub
 		return Qi[pos];
 	}

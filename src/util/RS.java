@@ -1,57 +1,81 @@
 package util;
 
-import util.ArchTomassulo.STATION_ID;
+//import util.ArchTomassulo.STATION_ID;
 import util.Instruction.INSTR_TYPE;
 
-public class EstacaoReserva {
-	ArchTomassulo.STATION_ID id_;
-	UlaTomasulo ula;
+public class RS {
+	public static enum TYPE {NONE,LOAD,ADD,MULT}
+	public static enum STATE {FREE,ISSUE,EXECUTE,WRITE}
+	int id_;
+	UlaT ula;
 	Instruction atuInst;
-	boolean busy;
+	//boolean busy;
+	STATE state;
 	boolean hasJump;
 	INSTR_TYPE Op;
 	public int Vj, Vk, address;
-	public ArchTomassulo.STATION_ID Qj, Qk;
+	public int Qj, Qk;
 
-	public EstacaoReserva() {
-		// TODO Auto-generated constructor stub
-		ula = new UlaTomasulo();
-		busy = false;
+	public RS(int id) {
+		id_ = id;
+		ula = new UlaT();
+		state = STATE.FREE;
+		//busy = false;
 		Op = INSTR_TYPE.UNDEFINED;
 		Vj = -1;
 		Vk = -1;
-		Qj = STATION_ID.NONE;
-		Qk = STATION_ID.NONE;
+		Qj = -1;
+		Qk = -1;
 		address = -1;
 		hasJump = false;
 	}
 
-	public void setId(ArchTomassulo.STATION_ID id) {
-		id_ = id;
-	}
-
 	public boolean isBusy() {
-		return busy;
+		if(state==STATE.FREE)
+			return false;
+		return true;
+	}
+	
+	public void tick(){
+		switch(state){
+		case FREE:
+			state=issue(atuInst);
+			break;
+		case ISSUE:
+			state=execute();
+			break;
+		case EXECUTE:
+			state=write();				
+			break;		
+		case WRITE:
+			state=STATE.FREE;
+		}			
+
+			
 	}
 
-	public void passInstruction(Instruction inst) {
+	public STATE write() {
+		// TODO Auto-generated method stub
+		return STATE.WRITE;
+	}
+
+	public STATE issue(Instruction inst) {
 		atuInst = inst;
 		Op = inst.getType();
-		busy = true;
-
 		checkDependencies();
+		return STATE.ISSUE;
 	}
 
 	boolean hasDependencies () {
 		switch(Op) {
 		case R:
 			if (atuInst.instr_mnemonic_.equals(Instruction.NOP)) return false;
-			return (Qj != STATION_ID.NONE || Qk != STATION_ID.NONE);
+			return (Qj != -1 || Qk != -1);
 		case I:
 			if (atuInst.instr_mnemonic_.equals(Instruction.LW)
 					|| atuInst.instr_mnemonic_.equals(Instruction.SW)
 					|| atuInst.instr_mnemonic_.equals(Instruction.ADDI))
-				return (Qj != STATION_ID.NONE);
+				return (Qj != -1);
 			return false;
 		case J:
 			return false;
@@ -61,7 +85,7 @@ public class EstacaoReserva {
 	}
 
 	void checkDependencies () {
-		// TODO: Checar dependencias.
+		// TODO: ???.
 		if (!isBusy()) return;
 
 		switch(Op) {
@@ -72,13 +96,13 @@ public class EstacaoReserva {
 			if (Arch.r.rBeingUsed(atuInst.rs) && Vj == -1)
 				Qj = Arch.r.rBeingUsedBy(atuInst.rs);
 			else {
-				Qj = STATION_ID.NONE;
+				Qj = -1;
 				Vj = Arch.r.rInt(atuInst.rs);
 			}
 			if (Arch.r.rBeingUsed(atuInst.rt) && Vk == -1)
 				Qk = Arch.r.rBeingUsedBy(atuInst.rt);
 			else {
-				Qk = STATION_ID.NONE;
+				Qk = -1;
 				Vk = Arch.r.rInt(atuInst.rt);
 			}
 			if (!hasDependencies()) {
@@ -91,7 +115,7 @@ public class EstacaoReserva {
 				if (Arch.r.rBeingUsed(atuInst.rs) && Vj == -1)
 					Qj = Arch.r.rBeingUsedBy(atuInst.rs);
 				else {
-					Qj = STATION_ID.NONE;
+					Qj = -1;
 					Vj = Arch.r.rInt(atuInst.rs);
 				}
 				if (!hasDependencies()) {
@@ -103,7 +127,7 @@ public class EstacaoReserva {
 				if (Arch.r.rBeingUsed(atuInst.rs) && Vj == -1)
 					Qj = Arch.r.rBeingUsedBy(atuInst.rs);
 				else {
-					Qj = STATION_ID.NONE;
+					Qj = -1;
 					Vj = Arch.r.rInt(atuInst.rs);
 				}
 				if (!hasDependencies()) {
@@ -116,13 +140,13 @@ public class EstacaoReserva {
 				if (Arch.r.rBeingUsed(atuInst.rs) && Vj == -1)
 					Qj = Arch.r.rBeingUsedBy(atuInst.rs);
 				else {
-					Qj = STATION_ID.NONE;
+					Qj = -1;
 					Vj = Arch.r.rInt(atuInst.rs);
 				}
 				if (Arch.r.rBeingUsed(atuInst.rt) && Vj == -1)
 					Qk = Arch.r.rBeingUsedBy(atuInst.rt);
 				else {
-					Qk = STATION_ID.NONE;
+					Qk = -1;
 					Vk = Arch.r.rInt(atuInst.rs);
 				}
 				if (!hasDependencies()) {
@@ -147,12 +171,11 @@ public class EstacaoReserva {
 		}
 	}
 
-	public void tick() {
+	public STATE execute() {
 		if (hasDependencies()) {
 			checkDependencies();
 		}
 
-		// TODO Auto-generated method stub
 		if (isBusy() && !hasDependencies()) {
 			busy = !ula.tick();
 
@@ -168,31 +191,8 @@ public class EstacaoReserva {
 							System.out.print("R Op/ R"+i+" = "+Arch.r.read(i) + " = "+ Arch.r.rInt(i));
 						}
 					}
-					for (int i = 0; i < 2; i++) {
-						if (ArchTomassulo.add[i].Qj == id_) {
-							ArchTomassulo.add[i].Qj = STATION_ID.NONE;
-							ArchTomassulo.add[i].Vj = ula.result;
-						}
-						if (ArchTomassulo.add[i].Qk == id_) {
-							ArchTomassulo.add[i].Qk = STATION_ID.NONE;
-							ArchTomassulo.add[i].Vk = ula.result;
-						}
-						if (ArchTomassulo.mult[i].Qj == id_) {
-							ArchTomassulo.mult[i].Qj = STATION_ID.NONE;
-							ArchTomassulo.mult[i].Vj = ula.result;
-						}
-						if (ArchTomassulo.mult[i].Qk == id_) {
-							ArchTomassulo.mult[i].Qk = STATION_ID.NONE;
-							ArchTomassulo.mult[i].Vk = ula.result;
-						}
-					}
-					if (ArchTomassulo.add[2].Qj == id_) {
-						ArchTomassulo.add[2].Qj = STATION_ID.NONE;
-						ArchTomassulo.add[2].Vj = ula.result;
-					}
-					if (ArchTomassulo.add[2].Qk == id_) {
-						ArchTomassulo.add[2].Qk = STATION_ID.NONE;
-						ArchTomassulo.add[2].Vk = ula.result;
+					for (int i = 0; i < ArchTomassulo.rs.length; i++) {
+						ArchTomassulo.rs[i].putResult(id_,ula.result);
 					}
 					break;
 				case I:
@@ -204,39 +204,8 @@ public class EstacaoReserva {
 								System.out.print("ADDI/ R"+Vk+" = "+Arch.r.read(i) + " = "+ Arch.r.rInt(i));
 							}
 						}
-						for (int i = 0; i < 2; i++) {
-							if (ArchTomassulo.add[i].Qj == id_) {
-								ArchTomassulo.add[i].Qj = STATION_ID.NONE;
-								ArchTomassulo.add[i].Vj = ula.result;
-							}
-							if (ArchTomassulo.add[i].Qk == id_) {
-								ArchTomassulo.add[i].Qk = STATION_ID.NONE;
-								ArchTomassulo.add[i].Vk = ula.result;
-							}
-							if (ArchTomassulo.mult[i].Qj == id_) {
-								ArchTomassulo.mult[i].Qj = STATION_ID.NONE;
-								ArchTomassulo.mult[i].Vj = ula.result;
-							}
-							if (ArchTomassulo.mult[i].Qk == id_) {
-								ArchTomassulo.mult[i].Qk = STATION_ID.NONE;
-								ArchTomassulo.mult[i].Vk = ula.result;
-							}
-							if (ArchTomassulo.load[i].Qj == id_) {
-								ArchTomassulo.load[i].Qj = STATION_ID.NONE;
-								ArchTomassulo.load[i].Vj = ula.result;
-							}
-							if (ArchTomassulo.load[i].Qk == id_) {
-								ArchTomassulo.load[i].Qk = STATION_ID.NONE;
-								ArchTomassulo.load[i].Vk = ula.result;
-							}
-						}
-						if (ArchTomassulo.add[2].Qj == id_) {
-							ArchTomassulo.add[2].Qj = STATION_ID.NONE;
-							ArchTomassulo.add[2].Vj = ula.result;
-						}
-						if (ArchTomassulo.add[2].Qk == id_) {
-							ArchTomassulo.add[2].Qk = STATION_ID.NONE;
-							ArchTomassulo.add[2].Vk = ula.result;
+						for (int i = 0; i < ArchTomassulo.rs.length; i++) {
+							ArchTomassulo.rs[i].putResult(id_,ula.result);
 						}
 					} else if (atuInst.instr_mnemonic_.equals(Instruction.LW)) {
 						if (Arch.r.rBeingUsedBy(atuInst.rt) == id_) {
@@ -253,14 +222,7 @@ public class EstacaoReserva {
 							}
 						}
 						for (int i = 0; i < 2; i++) {
-							if (ArchTomassulo.load[i].Qj == id_) {
-								ArchTomassulo.load[i].Qj = STATION_ID.NONE;
-								ArchTomassulo.load[i].Vj = ula.result;
-							}
-							if (ArchTomassulo.load[i].Qk == id_) {
-								ArchTomassulo.load[i].Qk = STATION_ID.NONE;
-								ArchTomassulo.load[i].Vk = ula.result;
-							}
+
 						}
 					} else if (atuInst.instr_mnemonic_.equals(Instruction.SW)) {
 						//if (Arch.m.mBeingUsedBy(Vj + atuInst.immediate) == id_)
@@ -275,8 +237,8 @@ public class EstacaoReserva {
 				Op = INSTR_TYPE.UNDEFINED;
 				Vj = -1;
 				Vk = -1;
-				Qj = STATION_ID.NONE;
-				Qk = STATION_ID.NONE;
+				Qj = -1;
+				Qk = -1;
 				address = -1;
 				hasJump = false;
 			}
@@ -285,5 +247,16 @@ public class EstacaoReserva {
 	
 	boolean hasJump () {
 		return hasJump;
+	}
+	
+	public void putResult(ArchTomassulo.STATION_ID id, int result){
+		if (this.Qj == id) {
+			this.Qj = -1;
+			this.Vj = result;
+		}
+		if (this.Qk == id) {
+			this.Qk = -1;
+			this.Vk = result;
+		}
 	}
 }
