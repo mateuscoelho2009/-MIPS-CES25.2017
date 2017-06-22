@@ -59,7 +59,10 @@ public class RsLoad extends RS {
 		
 		
 		if(ula.mnemonic=="101011"){
-			Arch.m.write(address,String.format("%16s", Integer.toBinaryString(Vk)).replace(' ', '0'));
+			if(Qk == -1)
+				Arch.m.write(address,String.format("%16s", Integer.toBinaryString(Vk)).replace(' ', '0'));
+			else 
+				return STATE.WRITE;
 		}
 		else{
 			for(int x=0;x<32;x++){
@@ -78,5 +81,23 @@ public class RsLoad extends RS {
 			}
 		}
 		return STATE.FREE;
+	}
+	
+
+	public STATE execute() {
+		if (Qj == -1 && Qk == -1) {
+			if (!ula.tick() && ula.mnemonic!="100011")
+				return STATE.EXECUTE;
+			if(ula.mnemonic=="100011"){
+				address = Vj+address;
+				ula.result = Integer.parseInt(Arch.m.read(address), 2);
+			}
+			//RS[r].A ← RS[r].Vj + RS[r].A; 
+			//Read from Mem[RS[r].A]
+			// Terminou Operacao
+
+				return STATE.WRITE;
+		}
+		return STATE.EXECUTE;
 	}
 }

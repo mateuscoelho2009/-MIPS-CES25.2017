@@ -52,4 +52,6 @@ public class RsAdd extends RS {
 		}	
 		return STATE.WRITE;
 	}
+	
+	
 }
