@@ -29,7 +29,8 @@ public class ArchTomassulo {
 	
 	public static void rStates(){
 		for (int i=0; i< rs.length;i++)
-			System.out.println(rs[i].getState());
+			System.out.print(i+":"+rs[i].getState()+"/");
+		System.out.println();
 	}
 	
 	static boolean isAnyOneBusy () {
@@ -48,12 +49,12 @@ public class ArchTomassulo {
     		for(int j=0;j<ticked.length;j++){
     			ticked[j]=false;
     		}
-    		System.out.print(clock + " - ");
+    		System.out.println(clock + ":");
     		if (hasNoBranchInst()) {
     			inst = Arch.p.getNextInstruction();
     			inst.setPC(Arch.p.getPC());
     			boolean findRS = false;
-    			//rStates();
+    			rStates();
     			for (int i=0;i<rs.length && !findRS;i++){
     	    		switch (inst.getMnemonic()) {
     	    		case Instruction.ADD: case Instruction.SUB:
@@ -97,7 +98,7 @@ public class ArchTomassulo {
     				Arch.p.setPC(Arch.p.getPC() - 4);
     				System.out.println("Não há estação de reserva disponível");
     			}
-    			//rStates();
+    			rStates();
     				
 
     		}
