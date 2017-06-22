@@ -1,5 +1,6 @@
 package util;
 
+import util.Instruction.INSTR_TYPE;
 import util.RS.STATE;
 
 public class RsAdd extends RS {
@@ -42,5 +43,13 @@ public class RsAdd extends RS {
 			RS[r].Busy ← yes; 
 			RegisterStat[rd].Q ← r;
 		 */
+	}
+	public STATE execute() {
+		if(Qj == -1 && Qk == -1){
+			if (!ula.tick())
+				return STATE.EXECUTE;
+
+		}	
+		return STATE.WRITE;
 	}
 }

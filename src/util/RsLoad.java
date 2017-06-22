@@ -55,4 +55,28 @@ public class RsLoad extends RS {
 			RS[r].Qk ← 0};
 		 */
 	}
+	public STATE write(){
+		
+		
+		if(ula.mnemonic=="101011"){
+			Arch.m.write(address,String.format("%16s", Integer.toBinaryString(Vk)).replace(' ', '0'));
+		}
+		else{
+			for(int x=0;x<32;x++){
+				if(Arch.r.rBeingUsedBy(x)==id_){
+					Arch.r.wInt(x,ula.result);
+					Arch.r.setUsed(x, -1);
+				}
+				if(Qj==id_){
+					Vj = ula.result;
+					Qj = -1;
+				}
+				if(Qk==id_){
+					Vk = ula.result;
+					Qk = -1;
+				}
+			}
+		}
+		return STATE.FREE;
+	}
 }

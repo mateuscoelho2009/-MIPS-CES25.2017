@@ -2,6 +2,7 @@ package util;
 
 //import util.ArchTomassulo.STATION_ID;
 import util.Instruction.INSTR_TYPE;
+import util.RS.STATE;
 
 public class RS {
 	public static enum TYPE {NONE,LOAD,ADD,MULT}
@@ -53,16 +54,35 @@ public class RS {
 			state=execute();
 			break;
 		case EXECUTE:
-			state=write();				
+			state=execute();				
 			break;		
 		case WRITE:
-			state=STATE.FREE;
+			state=write();
 		}			
 	}
 
-	public STATE write() {
-		// TODO Auto-generated method stub
-		return STATE.WRITE;
+	public STATE write(){
+		for(int x=0;x<32;x++){
+			if(Arch.r.rBeingUsedBy(x)==id_){
+				Arch.r.wInt(x,ula.result);
+				Arch.r.setUsed(x, -1);
+			}
+			if(Qj==id_){
+				Vj = ula.result;
+				Qj = -1;
+			}
+			if(Qk==id_){
+				Vk = ula.result;
+				Qk = -1;
+			}
+		}
+		/* 
+		∀x(if (RegisterStat[x].Qi=r) {Regs[x] ← result; RegisterStat[x].Qi ← 0});
+		∀x(if (RS[x].Qj=r) {RS[x].Vj ← result;RS[x].Qj ← 0});
+		∀x(if (RS[x].Qk=r) {RS[x].Vk ← result;RS[x].Qk ← 0});
+		RS[r].Busy ← no;
+		*/
+		return STATE.FREE;
 	}
 
 	public STATE issue(Instruction inst) {
