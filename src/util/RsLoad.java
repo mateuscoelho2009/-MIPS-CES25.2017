@@ -102,8 +102,8 @@ public class RsLoad extends RS {
 			//Read from Mem[RS[r].A]
 			// Terminou Operacao
 
-				return STATE.WRITE;
+			return STATE.WRITE;
 		}
-		return STATE.EXECUTE;
+		return STATE.WRITE;
 	}
 }

@@ -150,4 +150,19 @@ public class Instruction {
 	void setPC(int pc_) {
 		pc = pc_;
 	}
+
+	public void print() {
+		System.out.println(instr_mnemonic_);
+		if (instr_mnemonic_.equals(ADD)) System.out.println("ADD");
+		if (instr_mnemonic_.equals(ADDI)) System.out.println("ADDI");
+		if (instr_mnemonic_.equals(BEQ)) System.out.println("BEQ");
+		if (instr_mnemonic_.equals(BLE)) System.out.println("BLE");
+		if (instr_mnemonic_.equals(BNE)) System.out.println("BNE");
+		if (instr_mnemonic_.equals(JMP)) System.out.println("JMP");
+		if (instr_mnemonic_.equals(LW)) System.out.println("LW");
+		if (instr_mnemonic_.equals(MUL)) System.out.println("MUL");
+		if (instr_mnemonic_.equals(NOP)) System.out.println("NOP");
+		if (instr_mnemonic_.equals(SUB)) System.out.println("SUB");
+		if (instr_mnemonic_.equals(SW)) System.out.println("SW");
+	}
 }

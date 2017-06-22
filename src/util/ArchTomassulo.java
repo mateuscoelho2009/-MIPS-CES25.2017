@@ -53,6 +53,7 @@ public class ArchTomassulo {
     		if (hasNoBranchInst()) {
     			inst = Arch.p.getNextInstruction();
     			inst.setPC(Arch.p.getPC());
+    			inst.print();
     			boolean findRS = false;
     			rStates();
     			for (int i=0;i<rs.length && !findRS;i++){
