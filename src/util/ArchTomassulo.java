@@ -5,6 +5,8 @@ import java.util.concurrent.TimeUnit;
 
 import org.hamcrest.core.IsAnything;
 
+import GUI.GUI;
+
 public class ArchTomassulo {
 
 	//public static enum STATION_ID {LOAD1, LOAD2, ADD1, ADD2, ADD3, MULT1, MULT2, NONE};
@@ -15,9 +17,10 @@ public class ArchTomassulo {
 	//public static Program p;
 	public static Cdb cdb = new Cdb();
 	public static RS[] rs = new RS[7];
+	private int N_RS = 7;
 	public static Instruction inst;
 	private static boolean[] ticked= new boolean[7];
-	public static void init() {
+	public ArchTomassulo() {
 		rs[0] = new RsLoad(0);
 		rs[1] = new RsLoad(1);
 		rs[2] = new RsAdd(2);
@@ -39,10 +42,9 @@ public class ArchTomassulo {
 		return false;
 	}
 	
-	public static void main(String[] args) throws IOException {
-    	System.out.println("Inicializando...");
-    	Arch.p = new Program("test_without_comments2.txt");
-    	init();
+	public void run (String path) throws IOException{
+    	
+    	Arch.p = new Program(path);
     	long clock = 0;
     	while(!Arch.p.end()){
     		for(int j=0;j<ticked.length;j++){
@@ -126,5 +128,12 @@ public class ArchTomassulo {
 			if (rs[i].hasJump()) return false;
 		}
 		return true;
+	}
+
+	public RS[] getRS() {
+		return rs;
+	}
+	public int getNumberOfRS() {
+		return N_RS;
 	}
 }

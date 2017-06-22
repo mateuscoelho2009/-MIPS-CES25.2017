@@ -95,6 +95,9 @@ public class RS {
 		hasJump = false;
 		return STATE.FREE;
 	}
+	public Object[] getInfo() {
+		return new Object[] {id_, _type, isBusy(), "Dest",  Vj, Vk, Qj, Qk, address};
+	}
 
 	public STATE issue(Instruction inst) {
 		atuInst = inst;

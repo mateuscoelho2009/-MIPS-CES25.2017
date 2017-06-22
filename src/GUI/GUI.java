@@ -9,10 +9,10 @@ public class GUI {
 	public GUI(ArchTomassulo arch) {
 		_arch = arch;
 		String[] estacaoReservaTitle = new String[] {"ID", "Tipo", "Busy", "Instrução", "Dest.", "Vj", "Vk", "Qj", "Qk", "A"};
-		Object[][] estacaoReservaData = populateData("estacao"); //TODO: PopulateData	
+		Object[][] estacaoReservaData = populateData("estacao"); 	
 		_estacaoReserva = new DynamicTableGUI("Estação Reserva", estacaoReservaTitle, estacaoReservaData);
 		
-		String[] registradoresTitle = new String[] {"Nome", "Qi", "Vi"};
+		/*String[] registradoresTitle = new String[] {"Nome", "Qi", "Vi"};
 		Object[][] registradoresData = populateData("registradores"); 
 		_registradores = new DynamicTableGUI ("Registradores", registradoresTitle, registradoresData);
 		
@@ -26,13 +26,19 @@ public class GUI {
 		
 		String[] statusTitle = new String[] {"Clock corrente", "PC", "Número de Instruções Concluídas", "CPI"};
 		Object[][] statusData = populateData("status"); 
-		_status = new DynamicTableGUI ("Status", statusTitle, statusData);
+		_status = new DynamicTableGUI ("Status", statusTitle, statusData);*/
 		
 		_controlButton = new ControlButtonGUI(this);
  	}
 	private Object[][] populateData(String string) {
-		// TODO Auto-generated method stub
-		return null;
+		Object[][] data = null;
+		if (string == "estacao") {
+			data = new Object [_arch.getNumberOfRS()][];
+			for (int i = 0; i < _arch.getNumberOfRS(); i++) {
+				data[i] = _arch.getRS()[i].getInfo();
+			}
+		}
+		return data;
 	}
 	public void runCycle() {
 		Object[][] estacaoData = populateData("estacao");
