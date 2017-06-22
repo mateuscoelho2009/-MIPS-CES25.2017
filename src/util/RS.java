@@ -69,7 +69,7 @@ public class RS {
 		atuInst = inst;
 		Op = inst.getType();
 		checkDependencies();
-		ula.set(inst,Vj,Vk);
+		//ula.set(inst,Vj,Vk);
 		return STATE.ISSUE;
 	}
 
@@ -80,17 +80,17 @@ public class RS {
 			return (Qj != -1 || Qk != -1);
 		case I:
 			if (atuInst.instr_mnemonic_.equals(Instruction.LW)
-					|| atuInst.instr_mnemonic_.equals(Instruction.SW)
 					|| atuInst.instr_mnemonic_.equals(Instruction.ADDI))
 				return (Qj != -1);
+			else if (atuInst.instr_mnemonic_.equals(Instruction.SW))
+				return (Qj != -1 || Qk != -1);
 			return false;
 		case J: default:
 			return false;
 		}
 	}
 
-	void checkDependencies () {
-		// TODO: ???.
+	public void checkDependencies () {
 		if (!isBusy()) return;
 
 		switch(Op) {
@@ -152,7 +152,7 @@ public class RS {
 					Qk = Arch.r.rBeingUsedBy(atuInst.rt);
 				else {
 					Qk = -1;
-					Vk = Arch.r.rInt(atuInst.rs);
+					Vk = Arch.r.rInt(atuInst.rt);
 				}
 				if (!hasDependencies()) {
 					address = (Vj+atuInst.immediate);

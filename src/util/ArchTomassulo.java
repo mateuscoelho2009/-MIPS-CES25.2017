@@ -76,8 +76,15 @@ public class ArchTomassulo {
     	    				findRS = true;
     	    			}
     	    			break;
-    	    		default:
+    	    		case Instruction.JMP: case Instruction.NOP:
     	    			if (!rs[i].isBusy()){ 
+    	    				rs[i].tick(inst);
+    	    				ticked[i]=true;
+    	    				findRS = true;
+    	    			}
+    	    			break;
+    	    		default:
+    	    			if (!isAnyOneBusy()) {
     	    				rs[i].tick(inst);
     	    				ticked[i]=true;
     	    				findRS = true;
