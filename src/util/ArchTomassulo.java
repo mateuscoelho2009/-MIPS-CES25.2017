@@ -52,13 +52,11 @@ public class ArchTomassulo {
     			inst = Arch.p.getNextInstruction();
     			inst.setPC(Arch.p.getPC());
     			boolean findRS = false;
-    			System.out.println(inst.getMnemonic());
     			//rStates();
     			for (int i=0;i<rs.length && !findRS;i++){
     	    		switch (inst.getMnemonic()) {
     	    		case Instruction.ADD: case Instruction.SUB: case Instruction.ADDI:
     	    			if (!rs[i].isBusy() && rs[i].type()==RS.TYPE.ADD){ 
-    	    				System.out.println("aqui");
     	    				rs[i].tick(inst);
     	    				ticked[i]=true;
     	    				findRS = true;
