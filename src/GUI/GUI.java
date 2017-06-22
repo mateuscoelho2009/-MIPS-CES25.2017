@@ -4,7 +4,6 @@ import util.ArchTomassulo;
 
 public class GUI {
 	private DynamicTableGUI _estacaoReserva, _registradores, _bufferReord, _memory, _status;
-	private ControlButtonGUI _controlButton;
 	private ArchTomassulo _arch;
 	public GUI(ArchTomassulo arch) {
 		_arch = arch;
@@ -27,8 +26,7 @@ public class GUI {
 		String[] statusTitle = new String[] {"Clock corrente", "PC", "Número de Instruções Concluídas", "CPI"};
 		Object[][] statusData = populateData("status"); 
 		_status = new DynamicTableGUI ("Status", statusTitle, statusData);*/
-		
-		_controlButton = new ControlButtonGUI(this);
+	
  	}
 	private Object[][] populateData(String string) {
 		Object[][] data = null;
@@ -44,7 +42,7 @@ public class GUI {
 		Object[][] estacaoData = populateData("estacao");
 		_estacaoReserva.updateTable(estacaoData);
 		
-		Object[][] registradoresData = populateData("registradores"); 
+		/*Object[][] registradoresData = populateData("registradores"); 
 		_registradores.updateTable(registradoresData);
 		
 		Object[][] bufferReordData = populateData("rob");
@@ -54,7 +52,7 @@ public class GUI {
 		_memory.updateTable(memoryData);
 		
 		Object[][] statusData = populateData("status");
-		_status.updateTable(statusData);
+		_status.updateTable(statusData);*/
 		
 	}
 	public void setRunning(boolean b) {

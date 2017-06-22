@@ -18,9 +18,10 @@ public class ArchTomassulo {
 	public static Cdb cdb = new Cdb();
 	public static RS[] rs = new RS[7];
 	private int N_RS = 7;
+	private int _clock = 0;
 	public static Instruction inst;
 	private static boolean[] ticked= new boolean[7];
-	public ArchTomassulo() {
+	public ArchTomassulo(String path) throws IOException {
 		rs[0] = new RsLoad(0);
 		rs[1] = new RsLoad(1);
 		rs[2] = new RsAdd(2);
@@ -28,6 +29,7 @@ public class ArchTomassulo {
 		rs[4] = new RsAdd(4);
 		rs[5] = new RsMult(5);
 		rs[6] = new RsMult(6);
+		Arch.p = new Program(path);
 	}
 	
 	public static void rStates(){
@@ -42,15 +44,13 @@ public class ArchTomassulo {
 		return false;
 	}
 	
-	public void run (String path) throws IOException{
-    	
-    	Arch.p = new Program(path);
-    	long clock = 0;
-    	while(!Arch.p.end()){
+	public void run () throws IOException{   	
+    	_clock++;
+    	if(!Arch.p.end()){
     		for(int j=0;j<ticked.length;j++){
     			ticked[j]=false;
     		}
-    		System.out.print(clock + " - ");
+    		System.out.print(_clock + " - ");
     		if (hasNoBranchInst()) {
     			inst = Arch.p.getNextInstruction();
     			inst.setPC(Arch.p.getPC());
@@ -117,10 +117,11 @@ public class ArchTomassulo {
 				e.printStackTrace();
 			}
     		System.out.println();
-    		clock++;
     	}
-    	System.out.println("Encerrando...");
-    	System.out.println("R2 = " + Arch.r.rInt(2));
+    	else {
+	    	System.out.println("Encerrando...");
+	    	System.out.println("R2 = " + Arch.r.rInt(2));
+    	}
     }
 
 	private static boolean hasNoBranchInst() {
