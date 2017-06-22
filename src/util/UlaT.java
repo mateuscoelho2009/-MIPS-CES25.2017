@@ -70,7 +70,7 @@ public class UlaT extends Ula {
 				break;
 			case Instruction.BEQ:
 				//If(R[rs]=R[rt]) { PC=PC+4+Imm}
-				if(Arch.r.rInt(rs)==Arch.r.rInt(rt)) 
+				if(Arch.r.rInt(rs)==Arch.r.rInt(rt))
 					Arch.p.setPC(Arch.p.getPC()+4+immediate);
 				System.out.print("BEQ/ PC = "+ Arch.p.getPC());
 				break;
