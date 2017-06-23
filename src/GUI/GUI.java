@@ -58,9 +58,9 @@ public class GUI {
 		/*
 		Object[][] bufferReordData = populateData("rob");
 		_bufferReord.updateTable(bufferReordData);
-		
+		*/
 		Object[][] memoryData =  populateData("memory"); 
-		_memory.updateTable(memoryData);*/
+		_memory.updateTable(memoryData);
 		
 		Object[][] statusData = populateData("status");
 		_status.updateTable(statusData);

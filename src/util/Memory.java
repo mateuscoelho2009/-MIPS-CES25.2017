@@ -17,11 +17,13 @@ public class Memory {
     	System.out.println("Inicializando a memória.");
 	}
 	public void write(int pos, String value){
+		setUsed(pos, 1);
 		mem[pos] = value;
 		System.out.println("Save mem["+pos+"] = "+mem[pos]);
 			
 	}	
 	public String read(int pos){
+		setUsed(pos, 1);
 		System.out.println("Read mem["+pos+"] = "+mem[pos]);
 		return mem[pos];
 	}
@@ -44,9 +46,10 @@ public class Memory {
 		for (int i = 0; i < _memSize; i++) {
 			if (mBeingUsed(i)) usedMem.add(i);
 		}
+		System.out.println("MEM SIZE USED: " + usedMem.size());
 		Object[][] data = new Object[usedMem.size()][];
 		for (int i = 0; i < usedMem.size(); i++) {
-			data[i] = new Object[] {usedMem.get(i), mBeingUsedBy(usedMem.get(i))}; 
+			data[i] = new Object[] {usedMem.get(i), mem[usedMem.get(i)]}; 
 		}
 		return data;
 		
