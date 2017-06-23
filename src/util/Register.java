@@ -34,6 +34,7 @@ public class Register {
 	}
 	public void setUsed (int pos, int instr) {
 		Qi[pos] = instr;
+		System.out.println("R" + pos + " Used now by " + instr);
 	}
 	public void clearUsed (int pos) {
 		Qi[pos] = -1;
@@ -42,6 +43,6 @@ public class Register {
 		return Qi[pos];
 	}
 	public Object[] getInfo(int rID) {
-		return new Object[] {rID, Qi[rID], "?"};
+		return new Object[] {rID, Qi[rID], rInt(rID)};
 	}
 }

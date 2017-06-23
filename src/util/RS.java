@@ -16,6 +16,7 @@ public class RS {
 	INSTR_TYPE Op;
 	public int Vj, Vk, address;
 	public int Qj, Qk;
+	boolean firstTimeIssue = true;
 	protected TYPE _type = TYPE.NONE;
 
 	public RS(int id) {
@@ -67,6 +68,8 @@ public class RS {
 			Qk = -1;
 			address = -1;
 			hasJump = false;
+			firstTimeIssue = true;
+			atuInst = null;
 		}			
 	}
 
@@ -76,14 +79,17 @@ public class RS {
 				Arch.r.wInt(x,ula.result);
 				Arch.r.setUsed(x, -1);
 			}
-			if(Qj==id_){
-				Vj = ula.result;
-				Qj = -1;
-			}
-			if(Qk==id_){
-				Vk = ula.result;
-				Qk = -1;
-			}
+			for (int i=0;i<ArchTomassulo.rs.length;i++){
+				if(ArchTomassulo.rs[i].Qj==id_){
+					ArchTomassulo.rs[i].Vj = ula.result;
+					ArchTomassulo.rs[i].Qj = -1;
+				}
+				if(ArchTomassulo.rs[i].Qk==id_){
+					ArchTomassulo.rs[i].Vk = ula.result;
+					ArchTomassulo.rs[i].Qk = -1;
+				}
+    		}
+			
 		}
 
 		Op = INSTR_TYPE.UNDEFINED;
@@ -96,7 +102,7 @@ public class RS {
 		return STATE.FREE;
 	}
 	public Object[] getInfo() {
-		return new Object[] {id_, _type, isBusy(), "Dest",  Vj, Vk, Qj, Qk, address};
+		return new Object[] {id_, _type, isBusy(), (atuInst != null)? atuInst.instr_mnemonic_:"",  Vj, Vk, Qj, Qk, address, state};
 	}
 
 	public STATE issue(Instruction inst) {
@@ -114,9 +120,10 @@ public class RS {
 			return (Qj != -1 || Qk != -1);
 		case I:
 			if (atuInst.instr_mnemonic_.equals(Instruction.LW)
-					|| atuInst.instr_mnemonic_.equals(Instruction.ADDI)
-					|| atuInst.instr_mnemonic_.equals(Instruction.SW))
+					|| atuInst.instr_mnemonic_.equals(Instruction.ADDI))
 				return (Qj != -1);
+			if (atuInst.instr_mnemonic_.equals(Instruction.SW))
+				return (Qj != -1 || Qk != -1);
 			return false;
 		case J: default:
 			return false;
@@ -215,9 +222,9 @@ public class RS {
 		}*/
 
 		//if (isBusy()/* && !hasDependencies()*/) {
-			if (!ula.tick())
-				return STATE.EXECUTE;
-			return STATE.WRITE;
+		if (!ula.tick())
+			return STATE.EXECUTE;
+		return STATE.WRITE;
 
 			/*// Terminou Operacao
 			if (!isBusy()) {

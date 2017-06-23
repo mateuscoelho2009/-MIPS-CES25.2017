@@ -9,6 +9,8 @@ public class RsAdd extends RS {
 		_type = TYPE.ADD;
 	}
 	public STATE issue(Instruction inst) {
+		Op = inst.getType();
+		atuInst = inst;
 		if (inst.instr_mnemonic_.equals(Instruction.NOP)
 				|| inst.instr_mnemonic_.equals(Instruction.JMP)) {
 			ula.set(inst);
@@ -16,20 +18,23 @@ public class RsAdd extends RS {
 		}
 		else if (inst.instr_mnemonic_.equals(Instruction.ADD)
 				|| inst.instr_mnemonic_.equals(Instruction.SUB)) {
-			if(Arch.r.rBeingUsed(inst.rs))
-				Qj = Arch.r.rBeingUsedBy(inst.rs);
-			else {
-				Vj = Arch.r.rInt(inst.rs);
-				Qj = -1;
-			}
-			if(Arch.r.rBeingUsed(inst.rt))
-				Qk = Arch.r.rBeingUsedBy(inst.rt);
-			else {
-				Vk = Arch.r.rInt(inst.rt);
-				Qk = -1;
+			if (firstTimeIssue) {
+				if(Arch.r.rBeingUsed(inst.rs))
+					Qj = Arch.r.rBeingUsedBy(inst.rs);
+				else {
+					Vj = Arch.r.rInt(inst.rs);
+					Qj = -1;
+				}
+				if(Arch.r.rBeingUsed(inst.rt))
+					Qk = Arch.r.rBeingUsedBy(inst.rt);
+				else {
+					Vk = Arch.r.rInt(inst.rt);
+					Qk = -1;
+				}
+				Arch.r.setUsed(inst.rd,id_);
+				firstTimeIssue = false;
 			}
 			if (!hasDependencies()) {
-				Arch.r.setUsed(inst.rd,id_);
 				ula.set(inst,Vj,Vk);
 				return STATE.EXECUTE;
 			}
@@ -47,7 +52,5 @@ public class RsAdd extends RS {
 				return STATE.EXECUTE;
 		}
 		return STATE.WRITE;
-	}
-	
-	
+	}	
 }

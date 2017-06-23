@@ -8,7 +8,7 @@ public class UlaT extends Ula {
 		switch (inst.getType()) {
 			case R:	arithmetic(Vj, Vk, inst.getRD(), inst.getMnemonic());
 					break;
-			case I: immediate(inst.getRS(), inst.getRT(), inst.getImmediate(), inst.getMnemonic());
+			case I: immediate(Vj, Vk, inst.getImmediate(), inst.getMnemonic());
 					break;
 			case J: jump(inst.getTargetAddress(), inst.getMnemonic());
 					break;
@@ -21,16 +21,16 @@ public class UlaT extends Ula {
 	protected void jump(int targetAddress, String mnemonic) {
 		this.target = targetAddress;
 		this.mnemonic = mnemonic;
-		ticker = 2;
+		ticker = 1;
 	}
 	
 	protected void arithmetic(int Vj, int Vk, int rd, String mnemonic){
 			this.Vj = Vj; this.Vk = Vk; this.rd = rd;
 			this.mnemonic = mnemonic;
 			if(mnemonic.equals(Instruction.MUL))
-				ticker = 4;
+				ticker = 3;
 			else
-				ticker = 2;
+				ticker = 1;
 	}
 	
 	protected void immediate(int rs, int rt, int immediate, String mnemonic){
@@ -38,9 +38,9 @@ public class UlaT extends Ula {
 		this.Vj = rs; this.Vk = rt;
 		this.mnemonic = mnemonic;
 		if(mnemonic.equals(Instruction.LW)||mnemonic.equals(Instruction.SW))
-			ticker = 5;
+			ticker = 4;
 		else
-			ticker = 2;
+			ticker = 1;
 	}
 	
 	public boolean tick(){
@@ -95,7 +95,7 @@ public class UlaT extends Ula {
 				break;
 			case Instruction.SW:
 				//MEM[R[rs]+ImmExt]=R[rt]
-				Arch.m.write(Vj+immediate, Arch.r.read(Vk));
+				//Arch.m.write(Vj+immediate, Arch.r.read(Vk));
 				System.out.print("SW/ MEM["+Vj+"+"+immediate+"] = R"+Vk+" = "+ Arch.r.read(Vk));
 				break;
 			case Instruction.JMP:

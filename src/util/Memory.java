@@ -18,11 +18,11 @@ public class Memory {
 	}
 	public void write(int pos, String value){
 		mem[pos] = value;
-		//System.out.println("mem["+pos+"] = "+mem[pos]);
+		System.out.println("Save mem["+pos+"] = "+mem[pos]);
 			
 	}	
 	public String read(int pos){
-		//System.out.println("mem["+pos+"] = "+mem[pos]);
+		System.out.println("Read mem["+pos+"] = "+mem[pos]);
 		return mem[pos];
 	}
 	public boolean mBeingUsed (int pos) {

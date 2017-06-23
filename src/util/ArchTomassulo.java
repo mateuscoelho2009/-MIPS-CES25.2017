@@ -113,16 +113,16 @@ public class ArchTomassulo {
     				rs[i].tick();
     		}
     		
-    		try {
+    		/*try {
 				TimeUnit.SECONDS.sleep(1);
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
-			}
+			}*/
     		System.out.println();
     	}
     	else {
-	    	System.out.println("Encerrando...");
+    		System.out.println("Encerrando...");
 	    	System.out.println("R2 = " + Arch.r.rInt(2));
     	}
     }
