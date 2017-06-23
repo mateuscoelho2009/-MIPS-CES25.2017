@@ -14,6 +14,7 @@ public class DynamicTableGUI extends JFrame {
 	private String[] _rowsTitle;
 	public DynamicTableGUI(String title, String[] rowsTitle, Object[][] data) {
 		setTitle(title);
+		
 		_rowsTitle = rowsTitle;
 		init(rowsTitle, data);
 		add(new JScrollPane(_mainTable));

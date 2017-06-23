@@ -19,10 +19,10 @@ public class GUI {
 		String[] bufferReordTitle = new String[] {"Entrada", "Ocupado", "Instrução", "Estado", "Destino", "Valor"};
 		Object[][] bufferReordData = populateData("rob");
 		_bufferReord = new DynamicTableGUI ("Buffer de Reordenação", bufferReordTitle, bufferReordData);
-		
+		*/
 		String[] memoryTitle = new String[] {"Endereço", "Valor"};
 		Object[][] memoryData =  populateData("memory"); 
-		_memory = new DynamicTableGUI ("Memória Recente Usada", memoryTitle, memoryData);*/
+		_memory = new DynamicTableGUI ("Memória Recente Usada", memoryTitle, memoryData);
 		
 		String[] statusTitle = new String[] {"Clock corrente", "PC", "Número de Instruções Concluídas", "CPI"};
 		Object[][] statusData = populateData("status"); 
@@ -44,6 +44,8 @@ public class GUI {
 		} else if (string == "status") {
 			data = new Object[1][];
 			data[0] = _arch.getProgramInfo();
+		} else if (string == "memory") {
+			data = Arch.m.getMemoryInfo();
 		}
 		return data;
 	}
