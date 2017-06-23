@@ -11,6 +11,8 @@ public class RsLoad extends RS {
 		_type = TYPE.LOAD;
 	}
 	public STATE issue(Instruction inst) {
+		Op = inst.getType();
+		atuInst = inst;
 		if (inst.instr_mnemonic_.equals(Instruction.NOP)
 				|| inst.instr_mnemonic_.equals(Instruction.JMP)) {
 			ula.set(inst);
@@ -27,12 +29,13 @@ public class RsLoad extends RS {
 			}
 			address = inst.immediate;
 			if (!hasDependencies()) {
-				if(inst.getMnemonic()=="100011"
-						|| inst.instr_mnemonic_.equals(Instruction.ADDI)) { // LW
+				if(inst.getMnemonic().equals("100011")
+						|| inst.getMnemonic().equals(Instruction.ADDI)) { // LW
 					Arch.r.setUsed(inst.rt,id_);
 					Vk = inst.rt;
+					System.out.println(Vk);
 				}
-				if(inst.getMnemonic()=="101011") { // SW
+				if(inst.getMnemonic().equals("101011")) { // SW
 					if(Arch.r.rBeingUsed(inst.rt)){
 						Qk = Arch.r.rBeingUsedBy(inst.rt);
 						return STATE.ISSUE;
@@ -56,7 +59,7 @@ public class RsLoad extends RS {
 	}
 	public STATE write(){
 		
-		if(ula.mnemonic=="101011"){
+		if(ula.mnemonic.equals("101011")){
 			if(Qk == -1)
 				Arch.m.write(address,String.format("%16s", Integer.toBinaryString(Vk)).replace(' ', '0'));
 			else 
@@ -92,9 +95,9 @@ public class RsLoad extends RS {
 
 	public STATE execute() {
 		if (Qj == -1 && Qk == -1) {
-			if (!ula.tick() && ula.mnemonic!="100011")
+			if (!ula.tick() && !ula.mnemonic.equals("100011"))
 				return STATE.EXECUTE;
-			if(ula.mnemonic=="100011"){
+			if(ula.mnemonic.equals("100011")){
 				address = Vj+address;
 				ula.result = Integer.parseInt(Arch.m.read(address), 2);
 			}

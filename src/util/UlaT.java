@@ -8,7 +8,7 @@ public class UlaT extends Ula {
 		switch (inst.getType()) {
 			case R:	arithmetic(Vj, Vk, inst.getRD(), inst.getMnemonic());
 					break;
-			case I: immediate(inst.getRS(), inst.getRT(), inst.getImmediate(), inst.getMnemonic());
+			case I: immediate(Vj, Vk, inst.getImmediate(), inst.getMnemonic());
 					break;
 			case J: jump(inst.getTargetAddress(), inst.getMnemonic());
 					break;

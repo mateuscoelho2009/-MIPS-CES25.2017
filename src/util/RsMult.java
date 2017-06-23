@@ -12,6 +12,8 @@ public class RsMult extends RS {
 	}
 
 	public STATE issue(Instruction inst) {
+		Op = inst.getType();
+		atuInst = inst;
 		if (inst.instr_mnemonic_.equals(Instruction.NOP)
 				|| inst.instr_mnemonic_.equals(Instruction.JMP)) {
 			ula.set(inst);

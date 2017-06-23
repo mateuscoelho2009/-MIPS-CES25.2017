@@ -42,6 +42,6 @@ public class Register {
 		return Qi[pos];
 	}
 	public Object[] getInfo(int rID) {
-		return new Object[] {rID, Qi[rID], "?"};
+		return new Object[] {rID, Qi[rID], rInt(rID)};
 	}
 }
