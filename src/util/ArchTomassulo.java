@@ -122,7 +122,7 @@ public class ArchTomassulo {
     		System.out.println();
     	}
     	else {
-	    	System.out.println("Encerrando...");
+    		System.out.println("Encerrando...");
 	    	System.out.println("R2 = " + Arch.r.rInt(2));
     	}
     }

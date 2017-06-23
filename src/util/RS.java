@@ -97,7 +97,7 @@ public class RS {
 		return STATE.FREE;
 	}
 	public Object[] getInfo() {
-		return new Object[] {id_, _type, isBusy(), (atuInst != null)? atuInst.instr_mnemonic_:"",  Vj, Vk, Qj, Qk, address};
+		return new Object[] {id_, _type, isBusy(), (atuInst != null)? atuInst.instr_mnemonic_:"",  Vj, Vk, Qj, Qk, address, state};
 	}
 
 	public STATE issue(Instruction inst) {
@@ -216,9 +216,9 @@ public class RS {
 		}*/
 
 		//if (isBusy()/* && !hasDependencies()*/) {
-			if (!ula.tick())
-				return STATE.EXECUTE;
-			return STATE.WRITE;
+		if (!ula.tick())
+			return STATE.EXECUTE;
+		return STATE.WRITE;
 
 			/*// Terminou Operacao
 			if (!isBusy()) {

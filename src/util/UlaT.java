@@ -21,16 +21,16 @@ public class UlaT extends Ula {
 	protected void jump(int targetAddress, String mnemonic) {
 		this.target = targetAddress;
 		this.mnemonic = mnemonic;
-		ticker = 2;
+		ticker = 1;
 	}
 	
 	protected void arithmetic(int Vj, int Vk, int rd, String mnemonic){
 			this.Vj = Vj; this.Vk = Vk; this.rd = rd;
 			this.mnemonic = mnemonic;
 			if(mnemonic.equals(Instruction.MUL))
-				ticker = 4;
+				ticker = 3;
 			else
-				ticker = 2;
+				ticker = 1;
 	}
 	
 	protected void immediate(int rs, int rt, int immediate, String mnemonic){
@@ -38,9 +38,9 @@ public class UlaT extends Ula {
 		this.Vj = rs; this.Vk = rt;
 		this.mnemonic = mnemonic;
 		if(mnemonic.equals(Instruction.LW)||mnemonic.equals(Instruction.SW))
-			ticker = 5;
+			ticker = 4;
 		else
-			ticker = 2;
+			ticker = 1;
 	}
 	
 	public boolean tick(){

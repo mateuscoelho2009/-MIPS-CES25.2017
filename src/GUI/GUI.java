@@ -8,8 +8,8 @@ public class GUI {
 	private ArchTomassulo _arch;
 	public GUI(ArchTomassulo arch) {
 		_arch = arch;
-		String[] estacaoReservaTitle = new String[] {"ID", "Tipo", "Busy", "Instrução", "Dest.", "Vj", "Vk", "Qj", "Qk", "A"};
-		Object[][] estacaoReservaData = populateData("estacao"); 	
+		String[] estacaoReservaTitle = new String[] {"ID", "Tipo", "Busy", "Instrução", "Vj", "Vk", "Qj", "Qk", "A", "Estado", "Dest."};
+		Object[][] estacaoReservaData = populateData("estacao");
 		_estacaoReserva = new DynamicTableGUI("Estação Reserva", estacaoReservaTitle, estacaoReservaData);
 		
 		String[] registradoresTitle = new String[] {"Nome", "Qi", "Vi"};
