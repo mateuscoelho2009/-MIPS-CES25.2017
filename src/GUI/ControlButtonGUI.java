@@ -7,7 +7,7 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
-import util.ArchTomassulo;
+import util.ArchTomasulo;
 
 import javax.swing.JButton;
 import java.awt.Button;
@@ -31,7 +31,7 @@ public class ControlButtonGUI extends JFrame {
 	public static void main(String[] args) throws IOException {
 		System.out.println("Inicializando...");
 		_running = false;
-		final ArchTomassulo arch = new ArchTomassulo("test_without_comments2.txt");
+		final ArchTomasulo arch = new ArchTomasulo("test_without_comments2.txt");
 		_userInterface = new GUI(arch);
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
@@ -48,7 +48,7 @@ public class ControlButtonGUI extends JFrame {
 	/**
 	 * Create the frame.
 	 */
-	public ControlButtonGUI(GUI userInterface, final ArchTomassulo arch) {
+	public ControlButtonGUI(GUI userInterface, final ArchTomasulo arch) {
 		_userInterface = userInterface;
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 442, 90);
@@ -68,7 +68,7 @@ public class ControlButtonGUI extends JFrame {
 		contentPane.add(button, BorderLayout.CENTER);
 	}
 	
-	public static void executeAction(ArchTomassulo arch) {
+	public static void executeAction(ArchTomasulo arch) {
 		try {
 			arch.run();
 		} catch (IOException e1) {
