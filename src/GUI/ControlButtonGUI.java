@@ -21,6 +21,9 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.awt.event.ActionEvent;
+import javax.swing.JRadioButton;
+import javax.swing.SwingConstants;
+import javax.swing.JComboBox;
 
 public class ControlButtonGUI extends JFrame {
 
@@ -35,10 +38,10 @@ public class ControlButtonGUI extends JFrame {
 	 * @throws IOException 
 	 */
 	
-	public static void main(String[] args) throws IOException {
+	public static void run(String path, String predictionType) throws IOException {
 		System.out.println("Inicializando...");
 		_running = false;
-		arch = new ArchTomasulo("test_without_comments2.txt");
+		arch = new ArchTomasulo(path);
 		_userInterface = new GUI(arch);
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
@@ -58,13 +61,13 @@ public class ControlButtonGUI extends JFrame {
 	public ControlButtonGUI(GUI userInterface) {
 		_userInterface = userInterface;
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 442, 90);
+		setBounds(100, 100, 357, 201);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		contentPane.setLayout(new BorderLayout(0, 0));
 		setContentPane(contentPane);
 		if (_running) executeAction(arch);
-		Button button = new Button("Clock");
+		Button button = new Button("Click to Clock");
 		button.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if (!_running){
@@ -73,26 +76,7 @@ public class ControlButtonGUI extends JFrame {
 			}
 		});
 		contentPane.add(button, BorderLayout.CENTER);
-		Button openFileButton = new Button("Open File...");
-		openFileButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				 int returnVal = fc.showOpenDialog(null);
-				 if (returnVal == JFileChooser.APPROVE_OPTION) {
-					 File file = fc.getSelectedFile();
-					 try {
-						arch = new ArchTomasulo(file.toString());
-						_userInterface.removeFrames();
-						_userInterface = new GUI(arch);
-						
-					} catch (IOException e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
-					}
-				 }
-				
-			}
-		});
-		contentPane.add(openFileButton, BorderLayout.WEST);
+		
 	}
 	
 	public static void executeAction(ArchTomasulo arch) {
