@@ -32,6 +32,7 @@ public class RsLoad extends RS {
 				if(inst.getMnemonic().equals("100011")
 						|| inst.getMnemonic().equals(Instruction.ADDI)) { // LW
 					Arch.r.setUsed(inst.rt,id_);
+					System.out.println("EPA" + id_);
 					Vk = inst.rt;
 					System.out.println(Vk);
 				}
@@ -47,7 +48,6 @@ public class RsLoad extends RS {
 				ula.set(inst, Vj, Vk);
 				return STATE.EXECUTE;
 			}
-					
 			
 			return STATE.ISSUE;
 		}

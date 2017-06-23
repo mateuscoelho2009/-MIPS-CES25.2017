@@ -67,6 +67,7 @@ public class RS {
 			Qk = -1;
 			address = -1;
 			hasJump = false;
+			atuInst = null;
 		}			
 	}
 
@@ -96,7 +97,7 @@ public class RS {
 		return STATE.FREE;
 	}
 	public Object[] getInfo() {
-		return new Object[] {id_, _type, isBusy(), "Dest",  Vj, Vk, Qj, Qk, address};
+		return new Object[] {id_, _type, isBusy(), (atuInst != null)? atuInst.instr_mnemonic_:"",  Vj, Vk, Qj, Qk, address};
 	}
 
 	public STATE issue(Instruction inst) {
