@@ -86,14 +86,14 @@ public class RsLoad extends RS {
 					Arch.r.setUsed(x, -1);
 				}
 			}
-			for (int i=0;i<ArchTomassulo.rs.length;i++){
-				if(ArchTomassulo.rs[i].Qj==id_){
-					ArchTomassulo.rs[i].Vj = ula.result;
-					ArchTomassulo.rs[i].Qj = -1;
+			for (int i=0;i<ArchTomasulo.rs.length;i++){
+				if(ArchTomasulo.rs[i].Qj==id_){
+					ArchTomasulo.rs[i].Vj = ula.result;
+					ArchTomasulo.rs[i].Qj = -1;
 				}
-				if(ArchTomassulo.rs[i].Qk==id_){
-					ArchTomassulo.rs[i].Vk = ula.result;
-					ArchTomassulo.rs[i].Qk = -1;
+				if(ArchTomasulo.rs[i].Qk==id_){
+					ArchTomasulo.rs[i].Vk = ula.result;
+					ArchTomasulo.rs[i].Qk = -1;
 				}
     		}
 		}

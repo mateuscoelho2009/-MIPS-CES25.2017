@@ -7,7 +7,7 @@ import org.hamcrest.core.IsAnything;
 
 import GUI.GUI;
 
-public class ArchTomassulo {
+public class ArchTomasulo {
 
 	//public static enum STATION_ID {LOAD1, LOAD2, ADD1, ADD2, ADD3, MULT1, MULT2, NONE};
 	
@@ -21,7 +21,7 @@ public class ArchTomassulo {
 	private int _clock = 0;
 	public static Instruction inst;
 	private static boolean[] ticked= new boolean[7];
-	public ArchTomassulo(String path) throws IOException {
+	public ArchTomasulo(String path) throws IOException {
 		rs[0] = new RsLoad(0);
 		rs[1] = new RsLoad(1);
 		rs[2] = new RsAdd(2);

@@ -1,12 +1,12 @@
 package GUI;
 
 import util.Arch;
-import util.ArchTomassulo;
+import util.ArchTomasulo;
 
 public class GUI {
 	private DynamicTableGUI _estacaoReserva, _registradores, _bufferReord, _memory, _status;
-	private ArchTomassulo _arch;
-	public GUI(ArchTomassulo arch) {
+	private ArchTomasulo _arch;
+	public GUI(ArchTomasulo arch) {
 		_arch = arch;
 		String[] estacaoReservaTitle = new String[] {"ID", "Tipo", "Busy", "Instrução", "Vj", "Vk", "Qj", "Qk", "A", "Estado", "Dest."};
 		Object[][] estacaoReservaData = populateData("estacao");
