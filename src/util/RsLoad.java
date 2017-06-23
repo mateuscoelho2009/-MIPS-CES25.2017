@@ -21,23 +21,28 @@ public class RsLoad extends RS {
 		else if (inst.instr_mnemonic_.equals(Instruction.LW)
 				|| inst.instr_mnemonic_.equals(Instruction.SW)
 				|| inst.instr_mnemonic_.equals(Instruction.ADDI)) {
-			if(Arch.r.rBeingUsed(inst.rs))
-				Qj = Arch.r.rBeingUsedBy(inst.rs);
-			else {
-				Vj = Arch.r.rInt(inst.rs);
-				Qj = -1;
-			}
-			if (!hasDependencies()) {
-				if(inst.getMnemonic().equals("100011")
-						|| inst.getMnemonic().equals(Instruction.ADDI)) { // LW
-					Arch.r.setUsed(inst.rt,id_);
-					Vk = inst.rt;
-					if(inst.getMnemonic().equals("100011")){
-						address = inst.immediate;
-						address = Vj+address;
-					}
+			if (firstTimeIssue) {
+				if(Arch.r.rBeingUsed(inst.rs))
+					Qj = Arch.r.rBeingUsedBy(inst.rs);
+				else {
+					Vj = Arch.r.rInt(inst.rs);
+					Qj = -1;
 				}
-				if(inst.getMnemonic().equals("101011")) { // SW
+			}
+			if(inst.getMnemonic().equals("100011")
+					|| inst.getMnemonic().equals(Instruction.ADDI)) { // LW
+				if (firstTimeIssue) {
+					Arch.r.setUsed(inst.rt,id_);
+					firstTimeIssue = false;
+				}
+				Vk = inst.rt;
+				if(inst.getMnemonic().equals("100011")){
+					address = inst.immediate;
+					address = Vj+address;
+				}
+			}
+			if(inst.getMnemonic().equals("101011")) { // SW
+				if (firstTimeIssue) {
 					if(Arch.r.rBeingUsed(inst.rt)){
 						Qk = Arch.r.rBeingUsedBy(inst.rt);
 						return STATE.ISSUE;
@@ -47,7 +52,11 @@ public class RsLoad extends RS {
 						address = inst.immediate;
 						address += Vj;
 					}
+					firstTimeIssue = false;
 				}
+			}
+			if (!hasDependencies()) {
+				address = Vj + atuInst.immediate;
 				ula.set(inst, Vj, Vk);
 				return STATE.EXECUTE;
 			}
@@ -63,8 +72,10 @@ public class RsLoad extends RS {
 	public STATE write(){
 		
 		if(ula.mnemonic.equals("101011")){
-			if(Qk == -1)
-				Arch.m.write(address,String.format("%16s", Integer.toBinaryString(Vk)).replace(' ', '0'));
+			if(Qk == -1) {
+				Arch.m.write(Vj + atuInst.immediate,String.format("%16s", Integer.toBinaryString(Vk)).replace(' ', '0'));
+				System.out.println("MEM[" + address + "] = " + String.format("%16s", Integer.toBinaryString(Vk)).replace(' ', '0'));
+			}
 			else 
 				return STATE.WRITE;
 		}
@@ -74,15 +85,17 @@ public class RsLoad extends RS {
 					Arch.r.wInt(x,ula.result);
 					Arch.r.setUsed(x, -1);
 				}
-				if(Qj==id_){
-					Vj = ula.result;
-					Qj = -1;
-				}
-				if(Qk==id_){
-					Vk = ula.result;
-					Qk = -1;
-				}
 			}
+			for (int i=0;i<ArchTomassulo.rs.length;i++){
+				if(ArchTomassulo.rs[i].Qj==id_){
+					ArchTomassulo.rs[i].Vj = ula.result;
+					ArchTomassulo.rs[i].Qj = -1;
+				}
+				if(ArchTomassulo.rs[i].Qk==id_){
+					ArchTomassulo.rs[i].Vk = ula.result;
+					ArchTomassulo.rs[i].Qk = -1;
+				}
+    		}
 		}
 		
 		Op = INSTR_TYPE.UNDEFINED;
@@ -92,16 +105,17 @@ public class RsLoad extends RS {
 		Qk = -1;
 		address = -1;
 		hasJump = false;
+		firstTimeIssue = true;
 		return STATE.FREE;
 	}
 	
 
 	public STATE execute() {
 		if (Qj == -1 && Qk == -1) {
-			if (!ula.tick() && !ula.mnemonic.equals("100011"))
+			if (!ula.tick())
 				return STATE.EXECUTE;
 			if(ula.mnemonic.equals("100011")){
-				address = Vj+address;
+				address = Vj+atuInst.immediate;
 				//ula.result = Integer.parseInt(Arch.m.read(address), 2);
 			}
 			//RS[r].A ← RS[r].Vj + RS[r].A; 
