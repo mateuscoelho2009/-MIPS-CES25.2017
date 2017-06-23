@@ -57,7 +57,7 @@ public class ControlButtonGUI extends JFrame {
 		contentPane.setLayout(new BorderLayout(0, 0));
 		setContentPane(contentPane);
 		if (_running) executeAction(arch);
-		Button button = new Button("Play");
+		Button button = new Button("Clock");
 		button.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if (!_running){
@@ -65,24 +65,7 @@ public class ControlButtonGUI extends JFrame {
 				}
 			}
 		});
-		contentPane.add(button, BorderLayout.WEST);
-		
-		Button button_1 = new Button("Pause");
-		button_1.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				_running = false;
-			}
-		});
-		contentPane.add(button_1, BorderLayout.EAST);
-		
-		Button button_2 = new Button("Fast Foward");
-		button_2.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				System.out.println("Fast Foward NOW");
-				_running = true;
-			}
-		});
-		contentPane.add(button_2, BorderLayout.CENTER);
+		contentPane.add(button, BorderLayout.CENTER);
 	}
 	
 	public static void executeAction(ArchTomassulo arch) {

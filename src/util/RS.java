@@ -5,6 +5,7 @@ import util.Instruction.INSTR_TYPE;
 import util.RS.STATE;
 
 public class RS {
+	
 	public static enum TYPE {NONE,LOAD,ADD,MULT}
 	public static enum STATE {FREE,ISSUE,EXECUTE,WRITE}
 	int id_;
@@ -99,6 +100,7 @@ public class RS {
 		Qk = -1;
 		address = -1;
 		hasJump = false;
+		ArchTomassulo.incrementInstructions();
 		return STATE.FREE;
 	}
 	public Object[] getInfo() {

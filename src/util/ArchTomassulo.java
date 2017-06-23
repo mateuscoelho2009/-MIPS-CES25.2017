@@ -15,6 +15,7 @@ public class ArchTomassulo {
 	//public static Register r = new Register();
 	//public static Memory m = new Memory(4000);
 	//public static Program p;
+	private static int concludedInstructions = 0;
 	public static Cdb cdb = new Cdb();
 	public static RS[] rs = new RS[7];
 	private int N_RS = 7;
@@ -142,6 +143,11 @@ public class ArchTomassulo {
 	}
 
 	public Object[] getProgramInfo() {
-		return new Object[] {_clock, Arch.p.getPC(), "TODO", "TODO"};
+		return new Object[] {_clock, Arch.p.getPC(), concludedInstructions, (double)_clock/(double)concludedInstructions};
+	}
+
+	public static void incrementInstructions() {
+		concludedInstructions++;
+		
 	}
 }
