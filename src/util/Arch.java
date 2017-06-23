@@ -31,5 +31,14 @@ public class Arch {
     	System.out.println("Encerrando...");
     	System.out.println("R2 = " + Arch.r.rInt(2));
     }
+
+
+
+	public static void restart() {
+		r = new Register();
+		m = new Memory(4000);
+		ula = new Ula();
+		
+	}
 }
 

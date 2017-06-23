@@ -23,6 +23,8 @@ public class ArchTomasulo {
 	public static Instruction inst;
 	private static boolean[] ticked= new boolean[7];
 	public ArchTomasulo(String path) throws IOException {
+		Arch.restart();
+		concludedInstructions = 0;
 		rs[0] = new RsLoad(0);
 		rs[1] = new RsLoad(1);
 		rs[2] = new RsAdd(2);

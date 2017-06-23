@@ -1,5 +1,7 @@
 package GUI;
 
+import java.awt.Container;
+
 import util.Arch;
 import util.ArchTomasulo;
 
@@ -67,8 +69,15 @@ public class GUI {
 		
 	}
 	public void setRunning(boolean b) {
-		// TODO Auto-generated method stub
+		
 		
 	}
-
+	public void removeFrames() {
+		_memory.dispose();
+		_status.dispose();
+		_estacaoReserva.dispose();
+		_status.dispose();
+		_registradores.dispose();
+		
+	}
 }
