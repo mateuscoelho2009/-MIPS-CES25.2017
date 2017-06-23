@@ -27,14 +27,15 @@ public class RsLoad extends RS {
 				Vj = Arch.r.rInt(inst.rs);
 				Qj = -1;
 			}
-			address = inst.immediate;
 			if (!hasDependencies()) {
 				if(inst.getMnemonic().equals("100011")
 						|| inst.getMnemonic().equals(Instruction.ADDI)) { // LW
 					Arch.r.setUsed(inst.rt,id_);
-					System.out.println("EPA" + id_);
 					Vk = inst.rt;
-					System.out.println(Vk);
+					if(inst.getMnemonic().equals("100011")){
+						address = inst.immediate;
+						address = Vj+address;
+					}
 				}
 				if(inst.getMnemonic().equals("101011")) { // SW
 					if(Arch.r.rBeingUsed(inst.rt)){
@@ -43,6 +44,8 @@ public class RsLoad extends RS {
 					} else {
 						Vk = Arch.r.rInt(inst.rt);
 						Qk = -1;
+						address = inst.immediate;
+						address += Vj;
 					}
 				}
 				ula.set(inst, Vj, Vk);
@@ -99,7 +102,7 @@ public class RsLoad extends RS {
 				return STATE.EXECUTE;
 			if(ula.mnemonic.equals("100011")){
 				address = Vj+address;
-				ula.result = Integer.parseInt(Arch.m.read(address), 2);
+				//ula.result = Integer.parseInt(Arch.m.read(address), 2);
 			}
 			//RS[r].A ← RS[r].Vj + RS[r].A; 
 			//Read from Mem[RS[r].A]
