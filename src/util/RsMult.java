@@ -44,10 +44,13 @@ public class RsMult extends RS {
 		}
 	}
 	public STATE execute() {
+		System.out.println("Qj: " + Qj + " - Qk: " + Qk);
 		if(Qj == -1 && Qk == -1){
+			System.out.println("Vj: " + Vj + " - Vk: " + Vk);
 			if (!ula.tick())
 				return STATE.EXECUTE;
+			return STATE.WRITE;
 		}
-		return STATE.WRITE;
+		return STATE.EXECUTE;
 	}
 }

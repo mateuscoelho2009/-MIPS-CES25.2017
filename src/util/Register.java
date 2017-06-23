@@ -24,7 +24,7 @@ public class Register {
 	public void wInt(int pos, int number){
 		if (pos!=0)
 			r[pos] = String.format("%16s", Integer.toBinaryString(number)).replace(' ', '0');
-		//System.out.println("r["+pos+"] = "+r[pos]);
+		System.out.println("r["+pos+"] = "+r[pos]);
 	}
 	public int rInt(int pos){
 		return Integer.parseInt(r[pos], 2);
