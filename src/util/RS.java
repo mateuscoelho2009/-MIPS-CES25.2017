@@ -100,7 +100,7 @@ public class RS {
 		Qk = -1;
 		address = -1;
 		hasJump = false;
-		ArchTomassulo.incrementInstructions();
+		ArchTomasulo.incrementInstructions();
 		return STATE.FREE;
 	}
 	public Object[] getInfo() {
