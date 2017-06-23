@@ -41,4 +41,7 @@ public class Register {
 	public int rBeingUsedBy(int pos) {
 		return Qi[pos];
 	}
+	public Object[] getInfo(int rID) {
+		return new Object[] {rID, Qi[rID], "?"};
+	}
 }

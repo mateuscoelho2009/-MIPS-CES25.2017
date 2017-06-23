@@ -21,6 +21,7 @@ public class ControlButtonGUI extends JFrame {
 
 	private JPanel contentPane;
 	private static GUI _userInterface;
+	private static boolean _running;
 
 	/**
 	 * Launch the application.
@@ -29,9 +30,9 @@ public class ControlButtonGUI extends JFrame {
 	
 	public static void main(String[] args) throws IOException {
 		System.out.println("Inicializando...");
+		_running = false;
 		final ArchTomassulo arch = new ArchTomassulo("test_without_comments2.txt");
 		_userInterface = new GUI(arch);
-		
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
@@ -43,7 +44,7 @@ public class ControlButtonGUI extends JFrame {
 			}
 		});
 	}
-
+	
 	/**
 	 * Create the frame.
 	 */
@@ -55,17 +56,13 @@ public class ControlButtonGUI extends JFrame {
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		contentPane.setLayout(new BorderLayout(0, 0));
 		setContentPane(contentPane);
-		
+		if (_running) executeAction(arch);
 		Button button = new Button("Play");
 		button.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				try {
-					arch.run();
-				} catch (IOException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
+				if (!_running){
+					executeAction(arch);
 				}
-				_userInterface.runCycle();
 			}
 		});
 		contentPane.add(button, BorderLayout.WEST);
@@ -73,7 +70,7 @@ public class ControlButtonGUI extends JFrame {
 		Button button_1 = new Button("Pause");
 		button_1.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				_userInterface.setRunning(false);
+				_running = false;
 			}
 		});
 		contentPane.add(button_1, BorderLayout.EAST);
@@ -81,10 +78,22 @@ public class ControlButtonGUI extends JFrame {
 		Button button_2 = new Button("Fast Foward");
 		button_2.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				_userInterface.setRunning(true);
+				System.out.println("Fast Foward NOW");
+				_running = true;
 			}
 		});
 		contentPane.add(button_2, BorderLayout.CENTER);
+	}
+	
+	public static void executeAction(ArchTomassulo arch) {
+		try {
+			arch.run();
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		_userInterface.runCycle();
+		
 	}
 
 }

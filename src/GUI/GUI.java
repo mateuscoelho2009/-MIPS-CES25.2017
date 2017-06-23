@@ -1,5 +1,6 @@
 package GUI;
 
+import util.Arch;
 import util.ArchTomassulo;
 
 public class GUI {
@@ -11,10 +12,10 @@ public class GUI {
 		Object[][] estacaoReservaData = populateData("estacao"); 	
 		_estacaoReserva = new DynamicTableGUI("Estação Reserva", estacaoReservaTitle, estacaoReservaData);
 		
-		/*String[] registradoresTitle = new String[] {"Nome", "Qi", "Vi"};
+		String[] registradoresTitle = new String[] {"Nome", "Qi", "Vi"};
 		Object[][] registradoresData = populateData("registradores"); 
 		_registradores = new DynamicTableGUI ("Registradores", registradoresTitle, registradoresData);
-		
+		/*
 		String[] bufferReordTitle = new String[] {"Entrada", "Ocupado", "Instrução", "Estado", "Destino", "Valor"};
 		Object[][] bufferReordData = populateData("rob");
 		_bufferReord = new DynamicTableGUI ("Buffer de Reordenação", bufferReordTitle, bufferReordData);
@@ -35,6 +36,11 @@ public class GUI {
 			for (int i = 0; i < _arch.getNumberOfRS(); i++) {
 				data[i] = _arch.getRS()[i].getInfo();
 			}
+		} else if (string == "registradores") {
+			data = new Object[32][];
+			for (int i = 0; i < 32; i++) {
+				data[i] = Arch.r.getInfo(i);
+			}
 		}
 		return data;
 	}
@@ -42,9 +48,9 @@ public class GUI {
 		Object[][] estacaoData = populateData("estacao");
 		_estacaoReserva.updateTable(estacaoData);
 		
-		/*Object[][] registradoresData = populateData("registradores"); 
+		Object[][] registradoresData = populateData("registradores"); 
 		_registradores.updateTable(registradoresData);
-		
+		/*
 		Object[][] bufferReordData = populateData("rob");
 		_bufferReord.updateTable(bufferReordData);
 		
