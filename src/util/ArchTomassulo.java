@@ -137,4 +137,8 @@ public class ArchTomassulo {
 	public int getNumberOfRS() {
 		return N_RS;
 	}
+
+	public Object[] getProgramInfo() {
+		return new Object[] {_clock, Arch.p.getPC(), "TODO", "TODO"};
+	}
 }

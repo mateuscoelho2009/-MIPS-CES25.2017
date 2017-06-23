@@ -22,11 +22,11 @@ public class GUI {
 		
 		String[] memoryTitle = new String[] {"Endereço", "Valor"};
 		Object[][] memoryData =  populateData("memory"); 
-		_memory = new DynamicTableGUI ("Memória Recente Usada", memoryTitle, memoryData);
+		_memory = new DynamicTableGUI ("Memória Recente Usada", memoryTitle, memoryData);*/
 		
 		String[] statusTitle = new String[] {"Clock corrente", "PC", "Número de Instruções Concluídas", "CPI"};
 		Object[][] statusData = populateData("status"); 
-		_status = new DynamicTableGUI ("Status", statusTitle, statusData);*/
+		_status = new DynamicTableGUI ("Status", statusTitle, statusData);
 	
  	}
 	private Object[][] populateData(String string) {
@@ -41,6 +41,9 @@ public class GUI {
 			for (int i = 0; i < 32; i++) {
 				data[i] = Arch.r.getInfo(i);
 			}
+		} else if (string == "status") {
+			data = new Object[1][];
+			data[0] = _arch.getProgramInfo();
 		}
 		return data;
 	}
@@ -55,10 +58,10 @@ public class GUI {
 		_bufferReord.updateTable(bufferReordData);
 		
 		Object[][] memoryData =  populateData("memory"); 
-		_memory.updateTable(memoryData);
+		_memory.updateTable(memoryData);*/
 		
 		Object[][] statusData = populateData("status");
-		_status.updateTable(statusData);*/
+		_status.updateTable(statusData);
 		
 	}
 	public void setRunning(boolean b) {
