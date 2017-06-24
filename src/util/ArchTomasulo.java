@@ -159,4 +159,9 @@ public class ArchTomasulo {
 		for(int i=0;i<20;i++)
 			run();
 	}
+
+	public ReorderBuffer getReorderBuffer() {
+		// TODO Auto-generated method stub
+		return rob;
+	}
 }
