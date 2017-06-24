@@ -8,10 +8,8 @@ public class PredTomasulo {
 	public static RS[] rs = new RS[7];
 	private int N_RS = 7;
 	private int _clock = 0;
-	private int missedPredictions = 0;
-	private int instrCount = 0;
 	public static Instruction inst;
-	private static boolean[] ticked= new boolean[7];
+	private static boolean[] ticked = new boolean[7];
 	private Predictor predictor;
 	private ReorderBuffer rob;
 	
@@ -49,78 +47,102 @@ public class PredTomasulo {
     		}
     		System.out.print(_clock + " - ");
 
-    		if (hasNoBranchInst()) {
-    			inst = Arch.p.getNextInstruction();
-    			inst.setPC(Arch.p.getPC());
-    			instrCount++;
-    			rob.addInstruction(inst, instrCount);
-    			//inst.print();
-    			boolean findRS = false;
-    			rStates();
-    			for (int i=0;i<rs.length && !findRS;i++){
-    	    		switch (inst.getMnemonic()) {
-    	    		case Instruction.ADD: case Instruction.SUB:
-    	    			if (!rs[i].isBusy() && rs[i].type()==RS.TYPE.ADD){ 
-    	    				rs[i].tick(inst);
-    	    				ticked[i]=true;
-    	    				rob.updateState(rs[i]);
-    	    				findRS = true;
-    	    			}
-    	    			break;
-    	    		case Instruction.MUL:
-    	    			if (!rs[i].isBusy() && rs[i].type()==RS.TYPE.MULT){ 
-    	    				rs[i].tick(inst);
-    	    				ticked[i]=true;
-    	    				rob.updateState(rs[i]);
-    	    				findRS = true;
-    	    			}
-    	    			break;
-    	    		case Instruction.LW: case Instruction.SW: case Instruction.ADDI:
-    	    			if (!rs[i].isBusy() && rs[i].type()==RS.TYPE.LOAD){ 
-    	    				rs[i].tick(inst);
-    	    				ticked[i]=true;
-    	    				rob.updateState(rs[i]);
-    	    				findRS = true;
-    	    			}
-    	    			break;
-    	    		case Instruction.JMP: case Instruction.NOP:
-    	    			if (!rs[i].isBusy()){ 
-    	    				rs[i].tick(inst);
-    	    				ticked[i]=true;
-    	    				rob.updateState(rs[i]);
-    	    				findRS = true;
-    	    			}
-    	    			break;
-    	    		default:
-    	    			if (!isAnyOneBusy()) {
-    	    				rs[i].tick(inst);
-    	    				ticked[i]=true;
-    	    				findRS = true;
-    	    			}
-    	    			break;
-    	    		}   				
-    			}
-    			if (!findRS){
-    				Arch.p.setPC(Arch.p.getPC() - 4);
-    				System.out.println("Não há estação de reserva disponível");
-    			}
-    			rStates();
-    				
-
-    		}
+    		inst = Arch.p.getNextInstruction();
+			inst.setPC(Arch.p.getPC());
+			rob.addInstruction(inst);
+			//inst.print();
+			boolean findRS = false;
+			rStates();
+			for (int i=0;i<rs.length && !findRS;i++){
+	    		switch (inst.getMnemonic()) {
+	    		case Instruction.ADD: case Instruction.SUB:
+	    			if (!rs[i].isBusy() && rs[i].type()==RS.TYPE.ADD){ 
+	    				rs[i].tick(inst);
+	    				ticked[i]=true;
+	    				rob.updateState(rs[i]);
+	    				findRS = true;
+	    			}
+	    			break;
+	    		case Instruction.MUL:
+	    			if (!rs[i].isBusy() && rs[i].type()==RS.TYPE.MULT){ 
+	    				rs[i].tick(inst);
+	    				ticked[i]=true;
+	    				rob.updateState(rs[i]);
+	    				findRS = true;
+	    			}
+	    			break;
+	    		case Instruction.LW: case Instruction.SW: case Instruction.ADDI:
+	    			if (!rs[i].isBusy() && rs[i].type()==RS.TYPE.LOAD){ 
+	    				rs[i].tick(inst);
+	    				ticked[i]=true;
+	    				rob.updateState(rs[i]);
+	    				findRS = true;
+	    			}
+	    			break;
+	    		case Instruction.JMP: case Instruction.NOP:
+	    			if (!rs[i].isBusy()){ 
+	    				rs[i].tick(inst);
+	    				ticked[i]=true;
+	    				rob.updateState(rs[i]);
+	    				findRS = true;
+	    			}
+	    			break;
+	    		default:
+	    			if (!isAnyOneBusy()) {
+	    				rs[i].tick(inst);
+	    				ticked[i]=true;
+	    				findRS = true;
+	    			}
+	    			break;
+	    		}
+			}
+			if (!findRS){
+				Arch.p.setPC(Arch.p.getPC() - 4);
+				rob.tail--;
+				System.out.println("Não há estação de reserva disponível");
+			}
+			rStates();
 
     		//done = ula.tick();
     		for (int i=0;i<rs.length;i++){
     			if(ticked[i]==false)
-    				rs[i].tick();
+    				rs[i].tick(rob);
     		}
     		
-    		/*try {
-				TimeUnit.SECONDS.sleep(1);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}*/
+    		if (rob.headIsBranch()){
+    			boolean realBranch = rob.evaluateHeadBranch();
+    			boolean predictedBranch = rob.getPredictedBranch();
+				rob.validate();
+    			if (realBranch != predictedBranch){
+    				rob.tail = rob.head;
+    				Arch.p.setPC(rob.retrievePredictionPC());
+    				rob.resetPredictionQueue();
+    			} else {
+    				rob.popPrediction();
+    			}
+    		}
+    		else {rob.validate();}
+    		
+    		if (rob.tailIsBranch()){
+    			rob.queuePrediction(Arch.p.getPC(), predictor.executeBranch());
+    			if (predictor.executeBranch()){
+    				Instruction tail = rob.getTail();
+    				switch (tail.instr_mnemonic_) {
+					case Instruction.BEQ:
+						Arch.p.setPC(Arch.p.getPC() + 4 + tail.immediate);
+						break;
+					case Instruction.BLE:
+						Arch.p.setPC(tail.immediate);
+						break;
+					case Instruction.BNE:
+						Arch.p.setPC(Arch.p.getPC() + 4 + tail.immediate);
+						break;
+					default:
+						break;
+					}
+    			}
+    		}
+    		
     		System.out.println();
     	}
     	else {
@@ -128,13 +150,6 @@ public class PredTomasulo {
 	    	System.out.println("R2 = " + Arch.r.rInt(2));
     	}
     }
-
-	private static boolean hasNoBranchInst() {
-		for (int i = 0; i < rs.length; i++) {
-			if (rs[i].hasJump()) return false;
-		}
-		return true;
-	}
 
 	public RS[] getRS() {
 		return rs;
