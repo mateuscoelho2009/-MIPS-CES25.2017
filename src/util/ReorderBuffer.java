@@ -27,6 +27,7 @@ public class ReorderBuffer {
 	int head = 0, tail = 0;
 	
 	public void addInstruction(Instruction instr){
+		System.out.format("tail: %d, size: %d\n", tail, entries.size());
 		if (tail == entries.size())
 			entries.add(new ReorderBufferEntry(instr));
 		else
@@ -36,23 +37,23 @@ public class ReorderBuffer {
 	}
 	
 	public void updateResult(Instruction instr, int result){
-		entries.get(map.get(instr)-1).setResult(result);
+		entries.get(map.get(instr)).setResult(result);
 	}
 	
 	public int getResult(Instruction instr) {
-		return entries.get(map.get(instr) - 1).getResult();
+		return entries.get(map.get(instr)).getResult();
 	}
 	
 	public void updateState(RS register){
 		switch(register.state){
 		case ISSUE:
-			entries.get(map.get(register.atuInst)-1).setState(STATE.ISSUE);
+			entries.get(map.get(register.atuInst)).setState(STATE.ISSUE);
 			break;
 		case EXECUTE:
-			entries.get(map.get(register.atuInst)-1).setState(STATE.EXECUTE);
+			entries.get(map.get(register.atuInst)).setState(STATE.EXECUTE);
 			break;
 		case WRITE:
-			entries.get(map.get(register.atuInst)-1).setState(STATE.WRITE);
+			entries.get(map.get(register.atuInst)).setState(STATE.WRITE);
 			break;
 		default:
 			break;
@@ -67,7 +68,7 @@ public class ReorderBuffer {
 	}
 	
 	public boolean isValid(Instruction instr) {
-		return entries.get(map.get(instr) - 1).isValid();
+		return entries.get(map.get(instr)).isValid();
 	}
 	
 	public void queuePrediction(int pc, boolean jump){

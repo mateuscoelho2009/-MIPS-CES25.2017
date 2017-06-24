@@ -1,29 +1,21 @@
 package GUI;
 
 import java.awt.BorderLayout;
+import java.awt.Button;
 import java.awt.EventQueue;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.IOException;
 
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
 import util.ArchTomasulo;
-
-import javax.swing.JButton;
-import javax.swing.JFileChooser;
-
-import java.awt.Button;
-import java.awt.Container;
-
-import javax.swing.JSeparator;
-import java.awt.event.ActionListener;
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.awt.event.ActionEvent;
-import javax.swing.JRadioButton;
-import javax.swing.SwingConstants;
-import javax.swing.JComboBox;
+import util.PredTomasulo;
+import util.Predictor1Bit;
+import util.Predictor2Bit;
 
 public class ControlButtonGUI extends JFrame {
 
@@ -41,7 +33,27 @@ public class ControlButtonGUI extends JFrame {
 	public static void run(String path, String predictionType) throws IOException {
 		System.out.println("Inicializando...");
 		_running = false;
-		arch = new ArchTomasulo(path);
+		System.out.println(predictionType);
+		switch (predictionType) {
+		case "No prediction":
+			arch = new ArchTomasulo(path);
+			if (!arch.equals(null))
+				System.out.println("no pred");
+			break;
+		case "1-bit prediction":
+			arch = new PredTomasulo(path, new Predictor1Bit());
+			if (!arch.equals(null))
+				System.out.println("1 pred");
+			break;
+		case "2-bit prediction":
+			arch = new PredTomasulo(path, new Predictor2Bit());
+			if (!arch.equals(null))
+				System.out.println("2 pred");
+			break;
+		default:
+			System.out.println("default");
+			break;
+		}
 		_userInterface = new GUI(arch);
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {

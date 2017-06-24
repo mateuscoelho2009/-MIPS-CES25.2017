@@ -54,8 +54,7 @@ public class Start extends JFrame {
 				 if (returnVal == JFileChooser.APPROVE_OPTION) {
 					 File file = fc.getSelectedFile();					 
 					 try {
-						ControlButtonGUI.run(file.toString(), comboBox.toString());
-						
+						ControlButtonGUI.run(file.toString(), comboBox.getSelectedItem().toString());
 					} catch (IOException e1) {
 						// TODO Auto-generated catch block
 						e1.printStackTrace();
