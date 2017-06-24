@@ -13,6 +13,7 @@ public class PredTomasulo {
 	public static Instruction inst;
 	private static boolean[] ticked= new boolean[7];
 	private Predictor predictor;
+	private ReorderBuffer rob;
 	
 	public PredTomasulo(String path, Predictor p) throws IOException {
 		rs[0] = new RsLoad(0);
@@ -24,6 +25,7 @@ public class PredTomasulo {
 		rs[6] = new RsMult(6);
 		Arch.p = new Program(path);
 		predictor = p;
+		rob = new ReorderBuffer();
 	}
 	
 	public static void rStates(){
@@ -50,6 +52,8 @@ public class PredTomasulo {
     		if (hasNoBranchInst()) {
     			inst = Arch.p.getNextInstruction();
     			inst.setPC(Arch.p.getPC());
+    			instrCount++;
+    			rob.addInstruction(inst, instrCount);
     			//inst.print();
     			boolean findRS = false;
     			rStates();
@@ -59,6 +63,7 @@ public class PredTomasulo {
     	    			if (!rs[i].isBusy() && rs[i].type()==RS.TYPE.ADD){ 
     	    				rs[i].tick(inst);
     	    				ticked[i]=true;
+    	    				rob.updateState(rs[i]);
     	    				findRS = true;
     	    			}
     	    			break;
@@ -66,6 +71,7 @@ public class PredTomasulo {
     	    			if (!rs[i].isBusy() && rs[i].type()==RS.TYPE.MULT){ 
     	    				rs[i].tick(inst);
     	    				ticked[i]=true;
+    	    				rob.updateState(rs[i]);
     	    				findRS = true;
     	    			}
     	    			break;
@@ -73,6 +79,7 @@ public class PredTomasulo {
     	    			if (!rs[i].isBusy() && rs[i].type()==RS.TYPE.LOAD){ 
     	    				rs[i].tick(inst);
     	    				ticked[i]=true;
+    	    				rob.updateState(rs[i]);
     	    				findRS = true;
     	    			}
     	    			break;
@@ -80,6 +87,7 @@ public class PredTomasulo {
     	    			if (!rs[i].isBusy()){ 
     	    				rs[i].tick(inst);
     	    				ticked[i]=true;
+    	    				rob.updateState(rs[i]);
     	    				findRS = true;
     	    			}
     	    			break;

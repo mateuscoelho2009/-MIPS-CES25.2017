@@ -2,7 +2,6 @@ package util;
 
 //import util.ArchTomassulo.STATION_ID;
 import util.Instruction.INSTR_TYPE;
-import util.RS.STATE;
 
 public class RS {
 	
@@ -73,6 +72,35 @@ public class RS {
 			atuInst = null;
 		}			
 	}
+	
+	public void tick(ReorderBuffer rob){
+		switch(state){
+		case FREE:
+			//System.out.println("NÃ£o era pra estar aqui!");
+			//state=issue(ArchTomassulo.inst);
+			break;
+		case ISSUE:
+			state=issue(atuInst);
+			break;
+		case EXECUTE:
+			state=execute();
+			break;		
+		case WRITE:
+			rob.updateResult(atuInst, ula.result);
+			if (rob.isValid(atuInst)){
+				state=write(rob.getResult(atuInst));
+				Op = INSTR_TYPE.UNDEFINED;
+				Vj = -1;
+				Vk = -1;
+				Qj = -1;
+				Qk = -1;
+				address = -1;
+				hasJump = false;
+				firstTimeIssue = true;
+				atuInst = null;
+			}
+		}			
+	}
 
 	public STATE write(){
 		for(int x=0;x<32;x++){
@@ -103,6 +131,37 @@ public class RS {
 		ArchTomasulo.incrementInstructions();
 		return STATE.FREE;
 	}
+	
+	public STATE write(int result){
+		for(int x=0;x<32;x++){
+			if(Arch.r.rBeingUsedBy(x)==id_){
+				Arch.r.wInt(x,result);
+				Arch.r.setUsed(x, -1);
+			}
+			for (int i=0;i<ArchTomasulo.rs.length;i++){
+				if(ArchTomasulo.rs[i].Qj==id_){
+					ArchTomasulo.rs[i].Vj = result;
+					ArchTomasulo.rs[i].Qj = -1;
+				}
+				if(ArchTomasulo.rs[i].Qk==id_){
+					ArchTomasulo.rs[i].Vk = result;
+					ArchTomasulo.rs[i].Qk = -1;
+				}
+    		}
+			
+		}
+
+		Op = INSTR_TYPE.UNDEFINED;
+		Vj = -1;
+		Vk = -1;
+		Qj = -1;
+		Qk = -1;
+		address = -1;
+		hasJump = false;
+		ArchTomasulo.incrementInstructions();
+		return STATE.FREE;
+	}
+	
 	public Object[] getInfo() {
 		return new Object[] {id_, _type, isBusy(), (atuInst != null)? atuInst.instr_mnemonic_:"",  Vj, Vk, Qj, Qk, address, state};
 	}

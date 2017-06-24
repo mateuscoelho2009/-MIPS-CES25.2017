@@ -1,8 +1,6 @@
 package util;
 
 import util.Instruction.INSTR_TYPE;
-import util.RS.STATE;
-import util.RS.TYPE;
 
 public class RsLoad extends RS {
 
@@ -93,6 +91,46 @@ public class RsLoad extends RS {
 				}
 				if(ArchTomasulo.rs[i].Qk==id_){
 					ArchTomasulo.rs[i].Vk = ula.result;
+					ArchTomasulo.rs[i].Qk = -1;
+				}
+    		}
+		}
+		
+		Op = INSTR_TYPE.UNDEFINED;
+		Vj = -1;
+		Vk = -1;
+		Qj = -1;
+		Qk = -1;
+		address = -1;
+		hasJump = false;
+		firstTimeIssue = true;
+		return STATE.FREE;
+	}
+	
+public STATE write(int result){
+		
+		if(ula.mnemonic.equals("101011")){
+			if(Qk == -1) {
+				Arch.m.write(Vj + atuInst.immediate,String.format("%16s", Integer.toBinaryString(Vk)).replace(' ', '0'));
+				System.out.println("MEM[" + address + "] = " + String.format("%16s", Integer.toBinaryString(Vk)).replace(' ', '0'));
+			}
+			else 
+				return STATE.WRITE;
+		}
+		else{
+			for(int x=0;x<32;x++){
+				if(Arch.r.rBeingUsedBy(x)==id_){
+					Arch.r.wInt(x,result);
+					Arch.r.setUsed(x, -1);
+				}
+			}
+			for (int i=0;i<ArchTomasulo.rs.length;i++){
+				if(ArchTomasulo.rs[i].Qj==id_){
+					ArchTomasulo.rs[i].Vj = result;
+					ArchTomasulo.rs[i].Qj = -1;
+				}
+				if(ArchTomasulo.rs[i].Qk==id_){
+					ArchTomasulo.rs[i].Vk = result;
 					ArchTomasulo.rs[i].Qk = -1;
 				}
     		}

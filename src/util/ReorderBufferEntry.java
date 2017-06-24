@@ -1,7 +1,7 @@
 package util;
 
 public class ReorderBufferEntry {
-	public static enum STATE {READ, ISSUE, EXECUTE, WRITE, COMMIT};
+	public static enum STATE {ISSUE, EXECUTE, WRITE, COMMIT};
 
 	private Instruction instruction;
 	private int destination;
@@ -29,5 +29,9 @@ public class ReorderBufferEntry {
 
 	public void setResult(int result) {
 		this.result = result;		
+	}
+	
+	public int getResult(){
+		return result;
 	}
 }

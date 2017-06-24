@@ -11,11 +11,14 @@ public class ReorderBuffer {
 	public void addInstruction(Instruction instr, int instrCount){
 		entries.add(new ReorderBufferEntry(instr));
 		map.put(instr, instrCount);
-		entries.get(instrCount-1).setState(STATE.READ);
 	}
 	
 	public void updateResult(Instruction instr, int result){
 		entries.get(map.get(instr)-1).setResult(result);
+	}
+	
+	public int getResult(Instruction instr) {
+		return entries.get(map.get(instr) - 1).getResult();
 	}
 	
 	public void updateState(RS register){
@@ -37,5 +40,9 @@ public class ReorderBuffer {
 	public void validate(Instruction instr){
 		entries.get(map.get(instr)-1).validate();
 		entries.get(map.get(instr)-1).setState(STATE.COMMIT);
+	}
+	
+	public boolean isValid(Instruction instr) {
+		return entries.get(map.get(instr) - 1).isValid();
 	}
 }

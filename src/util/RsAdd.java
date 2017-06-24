@@ -1,8 +1,5 @@
 package util;
 
-import util.Instruction.INSTR_TYPE;
-import util.RS.STATE;
-
 public class RsAdd extends RS {
 	public RsAdd(int id) {
 		super(id);

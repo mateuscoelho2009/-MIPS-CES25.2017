@@ -1,9 +1,5 @@
 package util;
 
-import util.Instruction.INSTR_TYPE;
-import util.RS.STATE;
-import util.RS.TYPE;
-
 public class RsMult extends RS {
 
 	public RsMult(int id) {

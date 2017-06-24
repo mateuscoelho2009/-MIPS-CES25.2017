@@ -1,11 +1,6 @@
 package util;
 
 import java.io.IOException;
-import java.util.concurrent.TimeUnit;
-
-import org.hamcrest.core.IsAnything;
-
-import GUI.GUI;
 
 public class ArchTomasulo {
 
