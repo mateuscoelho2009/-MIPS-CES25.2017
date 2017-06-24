@@ -81,6 +81,7 @@ public class ControlButtonGUI extends JFrame {
 		if (_running) executeAction(arch);
 		Button button = new Button("Click to Clock");
 		Button button2 = new Button("Run All");
+		Button button3 = new Button("Run 20 clocks");
 		button.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if (!_running){
@@ -95,11 +96,27 @@ public class ControlButtonGUI extends JFrame {
 				}
 			}
 		});
+		button3.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if (!_running){
+					execute20(arch);
+				}
+			}
+		});
 		contentPane.add(button, BorderLayout.NORTH);
 		contentPane.add(button2, BorderLayout.CENTER);
+		contentPane.add(button3, BorderLayout.SOUTH);
 		
 	}
-	
+	public static void execute20(ArchTomasulo arch) {
+		try {
+			arch.run20();
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		_userInterface.runCycle();
+	}	
 	public static void executeAction(ArchTomasulo arch) {
 		try {
 			arch.run();
