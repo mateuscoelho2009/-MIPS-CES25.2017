@@ -63,6 +63,7 @@ public class PredTomasulo extends ArchTomasulo{
 	    			if (!isAnyOneBusy()) {
 	    				rs[i].tick(inst);
 	    				ticked[i]=true;
+	    				rob.updateState(rs[i]);
 	    				findRS = true;
 	    			}
 	    			break;

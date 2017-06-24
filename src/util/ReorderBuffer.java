@@ -27,7 +27,7 @@ public class ReorderBuffer {
 	int head = 0, tail = 0;
 	
 	public void addInstruction(Instruction instr){
-		System.out.format("tail: %d, size: %d\n", tail, entries.size());
+		System.out.format("head: %d, tail: %d, size: %d\n", head, tail, entries.size());
 		if (tail == entries.size())
 			entries.add(new ReorderBufferEntry(instr));
 		else
