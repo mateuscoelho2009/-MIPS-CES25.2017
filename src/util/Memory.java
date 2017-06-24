@@ -49,7 +49,7 @@ public class Memory {
 		System.out.println("MEM SIZE USED: " + usedMem.size());
 		Object[][] data = new Object[usedMem.size()][];
 		for (int i = 0; i < usedMem.size(); i++) {
-			data[i] = new Object[] {usedMem.get(i), mem[usedMem.get(i)]}; 
+			data[i] = new Object[] {usedMem.get(i), mem[usedMem.get(i)], Integer.parseInt(mem[usedMem.get(i)],2)}; 
 		}
 		return data;
 		

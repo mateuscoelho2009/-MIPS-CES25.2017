@@ -28,7 +28,7 @@ public class GUI {
 		_bufferReord = new DynamicTableGUI ("Buffer de Reordenação", bufferReordTitle, bufferReordData, xPos, yPos);
 		*/
 		//xPos += _bufferReord.getWidth();
-		String[] memoryTitle = new String[] {"Endereço", "Valor"};
+		String[] memoryTitle = new String[] {"Endereço", "Valor Bin", "Valor Int"};
 		Object[][] memoryData =  populateData("memory"); 
 		_memory = new DynamicTableGUI ("Memória Recente Usada", memoryTitle, memoryData, xPos, yPos);
 		yPos += _memory.getHeight();
