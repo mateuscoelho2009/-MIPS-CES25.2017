@@ -1,6 +1,6 @@
 package util;
 
-public class Predictor2Bit {
+public class Predictor2Bit implements Predictor{
 	public enum STATE {BRANCH1, BRANCH2, NOBRANCH1, NOBRANCH2};
 	
 	private STATE state;
@@ -9,10 +9,12 @@ public class Predictor2Bit {
 		state = STATE.NOBRANCH1;
 	}
 	
+	@Override
 	public boolean executeBranch(){
 		return state == STATE.BRANCH1 || state == STATE.BRANCH2;
 	}
 	
+	@Override
 	public void updateState(boolean correctAction) {
 		switch (state) {
 		case BRANCH1:
