@@ -117,8 +117,10 @@ public class PredTomasulo {
     				rob.tail = rob.head;
     				Arch.p.setPC(rob.retrievePredictionPC());
     				rob.resetPredictionQueue();
+    				predictor.updateState(false);
     			} else {
     				rob.popPrediction();
+    				predictor.updateState(true);
     			}
     		}
     		else {rob.validate();}
