@@ -45,15 +45,15 @@ public class Start extends JFrame {
 		final JComboBox comboBox = new JComboBox(predictionTypes);
 		contentPane.add(comboBox, BorderLayout.NORTH);
 		JButton btnChooseFile = new JButton("Choose File & Start");
-		contentPane.add(btnChooseFile, BorderLayout.CENTER);
+		contentPane.add(btnChooseFile, BorderLayout.SOUTH);
 		btnChooseFile.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				
 				 int returnVal = fc.showOpenDialog(null);
 				 if (returnVal == JFileChooser.APPROVE_OPTION) {
 					 File file = fc.getSelectedFile();					 
 					 try {
-						ControlButtonGUI.run(file.toString(), comboBox.toString());
-						
+						ControlButtonGUI.run(file.toString(), comboBox.getSelectedItem().toString());
 					} catch (IOException e1) {
 						// TODO Auto-generated catch block
 						e1.printStackTrace();

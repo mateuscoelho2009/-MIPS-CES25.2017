@@ -2,41 +2,15 @@ package util;
 
 import java.io.IOException;
 
-public class PredTomasulo {
+public class PredTomasulo extends ArchTomasulo{
 	
-	public static Cdb cdb = new Cdb();
-	public static RS[] rs = new RS[7];
-	private int N_RS = 7;
-	private int _clock = 0;
-	public static Instruction inst;
-	private static boolean[] ticked = new boolean[7];
 	private Predictor predictor;
 	private ReorderBuffer rob;
 	
 	public PredTomasulo(String path, Predictor p) throws IOException {
-		rs[0] = new RsLoad(0);
-		rs[1] = new RsLoad(1);
-		rs[2] = new RsAdd(2);
-		rs[3] = new RsAdd(3);
-		rs[4] = new RsAdd(4);
-		rs[5] = new RsMult(5);
-		rs[6] = new RsMult(6);
-		Arch.p = new Program(path);
+		super(path);
 		predictor = p;
 		rob = new ReorderBuffer();
-	}
-	
-	public static void rStates(){
-		for (int i=0; i< rs.length;i++)
-			System.out.print(i+":"+rs[i].getState()+"/");
-		System.out.println();
-	}
-	
-	static boolean isAnyOneBusy () {
-		for (int i = 0; i < rs.length; i++) {
-			if (rs[i].isBusy()) return true;
-		}
-		return false;
 	}
 	
 	public void run () throws IOException{   	
@@ -117,8 +91,10 @@ public class PredTomasulo {
     				rob.tail = rob.head;
     				Arch.p.setPC(rob.retrievePredictionPC());
     				rob.resetPredictionQueue();
+    				predictor.updateState(false);
     			} else {
     				rob.popPrediction();
+    				predictor.updateState(true);
     			}
     		}
     		else {rob.validate();}
@@ -150,15 +126,4 @@ public class PredTomasulo {
 	    	System.out.println("R2 = " + Arch.r.rInt(2));
     	}
     }
-
-	public RS[] getRS() {
-		return rs;
-	}
-	public int getNumberOfRS() {
-		return N_RS;
-	}
-
-	public Object[] getProgramInfo() {
-		return new Object[] {_clock, Arch.p.getPC(), "TODO", "TODO"};
-	}
 }
