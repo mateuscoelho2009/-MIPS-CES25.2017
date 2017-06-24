@@ -139,4 +139,14 @@ public class ReorderBuffer {
 	public int retrievePredictionPC() {
 		return predictions.peek().pc;
 	}
+
+	public Object[][] getListInfo() {
+		Object[][] data = new Object[entries.size()][];
+		int i = 0;
+		for (ReorderBufferEntry robEntry : entries) {
+			data[i] = new Object[] {robEntry.getInstruction().toString(), robEntry.getResult(), robEntry.isValid(), robEntry.getState()};
+			i++;
+		}
+		return data;
+	}
 }

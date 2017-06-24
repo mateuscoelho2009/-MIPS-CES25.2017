@@ -22,16 +22,17 @@ public class GUI {
 		Object[][] registradoresData = populateData("registradores"); 
 		_registradores = new DynamicTableGUI ("Registradores", registradoresTitle, registradoresData, xPos, yPos);
 		xPos += _registradores.getWidth();
-		/*
-		String[] bufferReordTitle = new String[] {"Entrada", "Ocupado", "Instrução", "Estado", "Destino", "Valor"};
+		
+		String[] bufferReordTitle = new String[] {"Instrução", "Estado", "Validado", "Resultado"};
 		Object[][] bufferReordData = populateData("rob");
 		_bufferReord = new DynamicTableGUI ("Buffer de Reordenação", bufferReordTitle, bufferReordData, xPos, yPos);
-		*/
-		//xPos += _bufferReord.getWidth();
+		
+		xPos = 0;
+		yPos = _bufferReord.getHeight();
 		String[] memoryTitle = new String[] {"Endereço", "Valor Bin", "Valor Int"};
 		Object[][] memoryData =  populateData("memory"); 
 		_memory = new DynamicTableGUI ("Memória Recente Usada", memoryTitle, memoryData, xPos, yPos);
-		yPos += _memory.getHeight();
+		xPos += _memory.getWidth();
 		String[] statusTitle = new String[] {"Clock corrente", "PC", "Número de Instruções Concluídas", "CPI"};
 		Object[][] statusData = populateData("status"); 
 		_status = new DynamicTableGUI ("Status", statusTitle, statusData, xPos, yPos);
@@ -54,6 +55,8 @@ public class GUI {
 			data[0] = _arch.getProgramInfo();
 		} else if (string == "memory") {
 			data = Arch.m.getMemoryInfo();
+		} else if (string == "rob") {
+			data = _arch.getReorderBuffer().getListInfo();
 		}
 		return data;
 	}
@@ -63,10 +66,10 @@ public class GUI {
 		
 		Object[][] registradoresData = populateData("registradores"); 
 		_registradores.updateTable(registradoresData);
-		/*
+		
 		Object[][] bufferReordData = populateData("rob");
 		_bufferReord.updateTable(bufferReordData);
-		*/
+		
 		Object[][] memoryData =  populateData("memory"); 
 		_memory.updateTable(memoryData);
 		
