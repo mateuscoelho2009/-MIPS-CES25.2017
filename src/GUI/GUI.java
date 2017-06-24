@@ -2,6 +2,8 @@ package GUI;
 
 import java.awt.Container;
 
+import javax.swing.JFrame;
+
 import util.Arch;
 import util.ArchTomasulo;
 
@@ -9,26 +11,30 @@ public class GUI {
 	private DynamicTableGUI _estacaoReserva, _registradores, _bufferReord, _memory, _status;
 	private ArchTomasulo _arch;
 	public GUI(ArchTomasulo arch) {
+		int xPos = 0;
+		int yPos = 0;
 		_arch = arch;
 		String[] estacaoReservaTitle = new String[] {"ID", "Tipo", "Busy", "Instrução", "Vj", "Vk", "Qj", "Qk", "A", "Estado", "Dest."};
 		Object[][] estacaoReservaData = populateData("estacao");
-		_estacaoReserva = new DynamicTableGUI("Estação Reserva", estacaoReservaTitle, estacaoReservaData);
-		
+		_estacaoReserva = new DynamicTableGUI("Estação Reserva", estacaoReservaTitle, estacaoReservaData, xPos, yPos);
+		xPos += _estacaoReserva.getWidth();
 		String[] registradoresTitle = new String[] {"Nome", "Qi", "Vi"};
 		Object[][] registradoresData = populateData("registradores"); 
-		_registradores = new DynamicTableGUI ("Registradores", registradoresTitle, registradoresData);
+		_registradores = new DynamicTableGUI ("Registradores", registradoresTitle, registradoresData, xPos, yPos);
+		xPos += _registradores.getWidth();
 		/*
 		String[] bufferReordTitle = new String[] {"Entrada", "Ocupado", "Instrução", "Estado", "Destino", "Valor"};
 		Object[][] bufferReordData = populateData("rob");
-		_bufferReord = new DynamicTableGUI ("Buffer de Reordenação", bufferReordTitle, bufferReordData);
+		_bufferReord = new DynamicTableGUI ("Buffer de Reordenação", bufferReordTitle, bufferReordData, xPos, yPos);
 		*/
+		//xPos += _bufferReord.getWidth();
 		String[] memoryTitle = new String[] {"Endereço", "Valor"};
 		Object[][] memoryData =  populateData("memory"); 
-		_memory = new DynamicTableGUI ("Memória Recente Usada", memoryTitle, memoryData);
-		
+		_memory = new DynamicTableGUI ("Memória Recente Usada", memoryTitle, memoryData, xPos, yPos);
+		yPos += _memory.getHeight();
 		String[] statusTitle = new String[] {"Clock corrente", "PC", "Número de Instruções Concluídas", "CPI"};
 		Object[][] statusData = populateData("status"); 
-		_status = new DynamicTableGUI ("Status", statusTitle, statusData);
+		_status = new DynamicTableGUI ("Status", statusTitle, statusData, xPos, yPos);
 	
  	}
 	private Object[][] populateData(String string) {

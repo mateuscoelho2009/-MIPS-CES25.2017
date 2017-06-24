@@ -12,8 +12,9 @@ public class DynamicTableGUI extends JFrame {
 	private JTable _mainTable;
 	private DefaultTableModel _modelTable;
 	private String[] _rowsTitle;
-	public DynamicTableGUI(String title, String[] rowsTitle, Object[][] data) {
+	public DynamicTableGUI(String title, String[] rowsTitle, Object[][] data, int xPos, int yPos) {
 		setTitle(title);
+		setLocation(xPos, yPos);
 		
 		_rowsTitle = rowsTitle;
 		init(rowsTitle, data);
