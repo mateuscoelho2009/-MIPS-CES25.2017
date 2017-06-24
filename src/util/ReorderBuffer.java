@@ -144,7 +144,7 @@ public class ReorderBuffer {
 		Object[][] data = new Object[entries.size()][];
 		int i = 0;
 		for (ReorderBufferEntry robEntry : entries) {
-			data[i] = new Object[] {robEntry.getInstruction().toString(), robEntry.getResult(), robEntry.isValid(), robEntry.getState()};
+			data[i] = new Object[] {robEntry.getInstruction().toString(), robEntry.getState(), robEntry.getResult(), robEntry.isValid()};
 			i++;
 		}
 		return data;
