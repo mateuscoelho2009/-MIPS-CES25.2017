@@ -46,9 +46,10 @@ public class Start extends JFrame {
 		contentPane.add(comboBox, BorderLayout.NORTH);
 		
 		JButton btnChooseFile = new JButton("Choose File & Start");
-		contentPane.add(btnChooseFile, BorderLayout.CENTER);
+		contentPane.add(btnChooseFile, BorderLayout.SOUTH);
 		btnChooseFile.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				
 				 int returnVal = fc.showOpenDialog(null);
 				 if (returnVal == JFileChooser.APPROVE_OPTION) {
 					 File file = fc.getSelectedFile();					 

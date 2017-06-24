@@ -29,7 +29,8 @@ public class Instruction {
 				break;
 			case JMP: type_ = INSTR_TYPE.J; instr_mnemonic_ = opcode;
 				break;
-			default: type_ = INSTR_TYPE.UNDEFINED; instr_mnemonic_ = opcode;
+			//Caso qualquer outra opção, considera LI e processa como ADDI
+			default: type_ = INSTR_TYPE.I; instr_mnemonic_ = ADDI;
 		}
 		
 		if (type_ == INSTR_TYPE.R)
