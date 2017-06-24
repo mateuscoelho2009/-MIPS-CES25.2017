@@ -151,6 +151,10 @@ public class ArchTomasulo {
 	public void runAll() throws IOException {
 		while(!Arch.p.end())
 			run();
-		
+	}
+
+	public void run20() throws IOException {
+		for(int i=0;i<20;i++)
+			run();
 	}
 }
