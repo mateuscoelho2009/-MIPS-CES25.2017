@@ -153,17 +153,43 @@ public class Instruction {
 	}
 
 	public void print() {
-		System.out.println(instr_mnemonic_);
-		if (instr_mnemonic_.equals(ADD)) System.out.println("ADD");
-		if (instr_mnemonic_.equals(ADDI)) System.out.println("ADDI");
-		if (instr_mnemonic_.equals(BEQ)) System.out.println("BEQ");
-		if (instr_mnemonic_.equals(BLE)) System.out.println("BLE");
-		if (instr_mnemonic_.equals(BNE)) System.out.println("BNE");
-		if (instr_mnemonic_.equals(JMP)) System.out.println("JMP");
-		if (instr_mnemonic_.equals(LW)) System.out.println("LW");
-		if (instr_mnemonic_.equals(MUL)) System.out.println("MUL");
-		if (instr_mnemonic_.equals(NOP)) System.out.println("NOP");
-		if (instr_mnemonic_.equals(SUB)) System.out.println("SUB");
-		if (instr_mnemonic_.equals(SW)) System.out.println("SW");
+		String mnemonic;
+		switch(instr_mnemonic_){
+		case ADD:
+			mnemonic = "ADD R"+rd+",R"+rs+",R"+rt;
+			break;
+		case ADDI:
+			mnemonic = "ADDI R"+rt+",R"+rs+","+immediate;
+			break;
+		case BEQ:
+			mnemonic = "BEQ R"+rs+",R"+rt+","+targetAddress;
+			break;
+		case BLE:
+			mnemonic = "BLE ";
+			break;
+		case BNE:
+			mnemonic = "BNE ";
+			break;
+		case JMP:
+			mnemonic = "JMP ";
+			break;
+		case LW:
+			mnemonic = "LW ";
+			break;
+		case MUL:
+			mnemonic = "MUL ";
+			break;
+		case NOP:
+			mnemonic = "NOP";
+			break;
+		case SUB:
+			mnemonic = "SUB ";
+			break;
+		case SW:
+			mnemonic = "SW ";
+			break;
+		default:
+			break;
+		}
 	}
 }

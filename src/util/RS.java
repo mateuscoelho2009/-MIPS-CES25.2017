@@ -86,19 +86,16 @@ public class RS {
 			state=execute();
 			break;		
 		case WRITE:
-			rob.updateResult(atuInst, ula.result);
-			if (rob.isValid(atuInst)){
-				state=write(rob.getResult(atuInst));
-				Op = INSTR_TYPE.UNDEFINED;
-				Vj = -1;
-				Vk = -1;
-				Qj = -1;
-				Qk = -1;
-				address = -1;
-				hasJump = false;
-				firstTimeIssue = true;
-				atuInst = null;
-			}
+			state=write(rob);
+			Op = INSTR_TYPE.UNDEFINED;
+			Vj = -1;
+			Vk = -1;
+			Qj = -1;
+			Qk = -1;
+			address = -1;
+			hasJump = false;
+			firstTimeIssue = true;
+			atuInst = null;
 		}			
 	}
 
@@ -132,19 +129,16 @@ public class RS {
 		return STATE.FREE;
 	}
 	
-	public STATE write(int result){
+	public STATE write(ReorderBuffer rob){
 		for(int x=0;x<32;x++){
-			if(Arch.r.rBeingUsedBy(x)==id_){
-				Arch.r.wInt(x,result);
-				Arch.r.setUsed(x, -1);
-			}
+			// TODO: write to ROB
 			for (int i=0;i<ArchTomasulo.rs.length;i++){
 				if(ArchTomasulo.rs[i].Qj==id_){
-					ArchTomasulo.rs[i].Vj = result;
+					ArchTomasulo.rs[i].Vj = ula.result;
 					ArchTomasulo.rs[i].Qj = -1;
 				}
 				if(ArchTomasulo.rs[i].Qk==id_){
-					ArchTomasulo.rs[i].Vk = result;
+					ArchTomasulo.rs[i].Vk = ula.result;
 					ArchTomasulo.rs[i].Qk = -1;
 				}
     		}
