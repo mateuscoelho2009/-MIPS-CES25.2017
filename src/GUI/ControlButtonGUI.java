@@ -68,6 +68,7 @@ public class ControlButtonGUI extends JFrame {
 		setContentPane(contentPane);
 		if (_running) executeAction(arch);
 		Button button = new Button("Click to Clock");
+		Button button2 = new Button("Run All");
 		button.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if (!_running){
@@ -75,7 +76,15 @@ public class ControlButtonGUI extends JFrame {
 				}
 			}
 		});
-		contentPane.add(button, BorderLayout.CENTER);
+		button2.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if (!_running){
+					executeAll(arch);
+				}
+			}
+		});
+		contentPane.add(button, BorderLayout.NORTH);
+		contentPane.add(button2, BorderLayout.CENTER);
 		
 	}
 	
@@ -87,7 +96,14 @@ public class ControlButtonGUI extends JFrame {
 			e1.printStackTrace();
 		}
 		_userInterface.runCycle();
-		
 	}
-
+	public static void executeAll(ArchTomasulo arch) {
+		try {
+			arch.runAll();
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		_userInterface.runCycle();
+	}
 }

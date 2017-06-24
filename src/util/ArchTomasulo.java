@@ -147,4 +147,10 @@ public class ArchTomasulo {
 		concludedInstructions++;
 		
 	}
+
+	public void runAll() throws IOException {
+		while(!Arch.p.end())
+			run();
+		
+	}
 }
