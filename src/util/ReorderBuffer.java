@@ -60,11 +60,14 @@ public class ReorderBuffer {
 		}
 	}
 	
-	public void validate(){
+	public boolean validate(){
+		System.out.println(entries.get(head).getState());
 		if (entries.get(head).getState() == STATE.WRITE){
 			entries.get(head).validate();
 			head++;
+			return true;
 		}
+		return false;
 	}
 	
 	public boolean isValid(Instruction instr) {
@@ -79,8 +82,10 @@ public class ReorderBuffer {
 		Instruction instr = entries.get(tail-1).getInstruction();
 		switch (instr.instr_mnemonic_) {
 		case Instruction.BEQ: case Instruction.BLE: case Instruction.BNE:
+			System.out.println("tail has branch");
 			return true;
 		default:
+			System.out.println("tail isn't branch");
 			return false;
 		}
 	}
@@ -93,21 +98,27 @@ public class ReorderBuffer {
 		Instruction instr = entries.get(head).getInstruction();
 		switch (instr.instr_mnemonic_) {
 		case Instruction.BEQ: case Instruction.BLE: case Instruction.BNE:
+			System.out.println("head has branch");
 			return true;
 		default:
+			System.out.println("head isn't branch");
 			return false;
 		}
+	}
+	
+	public Instruction getHead(){
+		return entries.get(head).getInstruction();
 	}
 	
 	public boolean evaluateHeadBranch(){
 		Instruction instr = entries.get(head).getInstruction();
 		switch (instr.instr_mnemonic_) {
 		case Instruction.BEQ:
-			return instr.rs == instr.rt;
+			return Arch.r.rInt(instr.rs) == Arch.r.rInt(instr.rt);
 		case Instruction.BLE:
-			return instr.rs <= instr.rt;
+			return Arch.r.rInt(instr.rs) <= Arch.r.rInt(instr.rt);
 		case Instruction.BNE:
-			return instr.rs != instr.rt;
+			return Arch.r.rInt(instr.rs) != Arch.r.rInt(instr.rt);
 		default:
 			return true;
 		}

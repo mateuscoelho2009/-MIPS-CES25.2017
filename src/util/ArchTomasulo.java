@@ -17,6 +17,7 @@ public class ArchTomasulo {
 	protected int _clock = 0;
 	public static Instruction inst;
 	protected static boolean[] ticked= new boolean[7];
+	protected ReorderBuffer rob;
 	public ArchTomasulo(String path) throws IOException {
 		Arch.restart();
 		concludedInstructions = 0;
@@ -28,6 +29,7 @@ public class ArchTomasulo {
 		rs[5] = new RsMult(5);
 		rs[6] = new RsMult(6);
 		Arch.p = new Program(path);
+		rob = new ReorderBuffer();
 	}
 	
 	public static void rStates(){

@@ -5,12 +5,10 @@ import java.io.IOException;
 public class PredTomasulo extends ArchTomasulo{
 	
 	private Predictor predictor;
-	private ReorderBuffer rob;
 	
 	public PredTomasulo(String path, Predictor p) throws IOException {
 		super(path);
 		predictor = p;
-		rob = new ReorderBuffer();
 	}
 	
 	public void run () throws IOException{   	
@@ -79,23 +77,26 @@ public class PredTomasulo extends ArchTomasulo{
 
     		//done = ula.tick();
     		for (int i=0;i<rs.length;i++){
-    			if(ticked[i]==false)
+    			if(ticked[i]==false){
     				rs[i].tick(rob);
+    				rob.updateState(rs[i]);
+    			}
     		}
-    		
+    		    		
     		if (rob.headIsBranch()){
     			boolean realBranch = rob.evaluateHeadBranch();
     			boolean predictedBranch = rob.getPredictedBranch();
-				rob.validate();
-    			if (realBranch != predictedBranch){
-    				rob.tail = rob.head;
-    				Arch.p.setPC(rob.retrievePredictionPC());
-    				rob.resetPredictionQueue();
-    				predictor.updateState(false);
-    			} else {
-    				rob.popPrediction();
-    				predictor.updateState(true);
-    			}
+				if (rob.validate()){
+	    			if (realBranch != predictedBranch){
+	    				rob.tail = rob.head;
+	    				Arch.p.setPC(rob.retrievePredictionPC());
+	    				rob.resetPredictionQueue();
+	    				predictor.updateState(false);
+	    			} else {
+	    				rob.popPrediction();
+	    				predictor.updateState(true);
+	    			}
+				}
     		}
     		else {rob.validate();}
     		
