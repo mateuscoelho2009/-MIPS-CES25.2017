@@ -56,7 +56,7 @@ public class Rob {
 		}
 	}*/
 	
-	public void getResult(Rs rs){
+	/*public void getResult(Rs rs){
 		for (RobEntry entry : entries){
 			if (rs.id_ == entry.isIn()){
 				entry.setResult(rs.ula.result);
@@ -65,7 +65,7 @@ public class Rob {
 				return;
 			}
 		}
-	}
+	}*/
 	
 	public void commit(){
 		if(!entries.isEmpty() && entries.getFirst().isReady()){
@@ -120,5 +120,11 @@ public class Rob {
 	public void setAddress(int h, int a) {
 		entries.get(h).setAddress(a);
 		
+	}
+	public void setValue(int b, int result) {
+		entries.get(b).setValue(result);
+	}
+	public void setReady(int b) {
+		entries.get(b).setReady(true);
 	}
 }

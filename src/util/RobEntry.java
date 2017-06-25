@@ -8,7 +8,7 @@ public class RobEntry {
 	private STATE state;
 	private int dest;
 	private int address;
-	private int result;
+	private int value;
 	private boolean ready;
 	private int isIn;
 	private TYPE type;
@@ -47,12 +47,14 @@ public class RobEntry {
 		this.dest = destination;
 	}
 
-	public int getResult() {
-		return result;
+	public int getValue() {
+		return value;
 	}
-
-	public void setResult(int result) {
-		this.result = result;
+	public int getResult() {
+		return value;
+	}
+	public void setValue(int result) {
+		value = result;
 	}
 
 	public boolean isReady() {

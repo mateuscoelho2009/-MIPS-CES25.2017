@@ -17,7 +17,7 @@ public class Arch {
 	protected static int _clock = 0;
 	public static Instruction inst;
 	protected static boolean[] ticked= new boolean[7];
-	protected static Rob rob;
+	protected static Rob ROB;
 	private static int reorder_uid = 0;
 	public Arch(String path, Predictor pred) throws IOException {
 		//Arch.restart();

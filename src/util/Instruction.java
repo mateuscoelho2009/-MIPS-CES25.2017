@@ -26,8 +26,8 @@ public class Instruction {
 	public void issue (int r) {
 		if (Arch.RegisterStat.isBusy(rs)){
 			h = Arch.RegisterStat.reorder[rs];
-			if(Arch.rob.ready(h)){
-				Arch.rs[r].Vj = Arch.rob.value(h);
+			if(Arch.ROB.ready(h)){
+				Arch.rs[r].Vj = Arch.ROB.value(h);
 				Arch.rs[r].Qj = -1;
 			} else {
 				Arch.rs[r].Qj = h;
@@ -37,7 +37,7 @@ public class Instruction {
 			Arch.rs[r].Qj = -1;
 		}
 		Arch.rs[r].setBusy(true);
-		b = Arch.rob.addInstruction(this,r);
+		b = Arch.ROB.addInstruction(this,r);
 		Arch.rs[r].setDest(b);
 		specific_issue(r,b);
 		state = STATE.ISSUE;
@@ -53,8 +53,8 @@ public class Instruction {
 				instr_mnemonic_.equals(SW)){
 			if (Arch.RegisterStat.isBusy(rt)){
 				h = Arch.RegisterStat.reorder[rt];
-				if(Arch.rob.ready(h)){
-					Arch.rs[r].Vk = Arch.rob.value(h);
+				if(Arch.ROB.ready(h)){
+					Arch.rs[r].Vk = Arch.ROB.value(h);
 					Arch.rs[r].Qk = -1;
 				} else {
 					Arch.rs[r].Qk = h;
@@ -71,14 +71,14 @@ public class Instruction {
 				instr_mnemonic_.equals(SUB)){
 			Arch.RegisterStat.setReorder(rd,b);
 			Arch.RegisterStat.setBusy(rd);
-			Arch.rob.setDest(b,rd);
+			Arch.ROB.setDest(b,rd);
 		}	
 		if(instr_mnemonic_.equals(LW)){
 			lw_step2 = false;
 			Arch.rs[r].A = imm;
 			Arch.RegisterStat.reorder[rt] = b;
 			Arch.RegisterStat.setBusy(rt);
-			Arch.rob.setDest(b, rt);
+			Arch.ROB.setDest(b, rt);
 		}	
 		if(instr_mnemonic_.equals(SW)){
 			Arch.rs[r].A = imm;
@@ -122,11 +122,32 @@ public class Instruction {
 			}
 			//Caso Store
 			if(getMnemonic().equals(SW)){
-				Arch.rob.setAddress(h,Vj+A);
+				Arch.ROB.setAddress(h,Vj+A);
 				done=true;
 			}
 		}	
 		return done;
+	}
+	
+	public void write(int r){
+		if(!getMnemonic().equals(SW)){
+			b = Arch.rs[r].dest;
+			Arch.rs[r].setBusy(false);
+			for(int x=0;x<Arch.rs.length;x++){
+				if(Arch.rs[x].Qj==b){
+					Arch.rs[x].Vj = result;
+					Arch.rs[x].Qj = -1;
+				}
+				if(Arch.rs[x].Qk==b){
+					Arch.rs[x].Vk = result;
+					Arch.rs[x].Qk = -1;
+				}
+			}
+			Arch.ROB.setValue(b,result);
+			Arch.ROB.setReady(b);
+		} else {
+			Arch.ROB.setValue(h, Arch.rs[r].Vk);
+		}
 	}
 	
 	public Instruction (String byteCode) {
