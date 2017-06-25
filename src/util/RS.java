@@ -165,7 +165,7 @@ public class RS {
 	public STATE issue(Instruction inst) {
 		atuInst = inst;
 		Op = inst.getType();
-		//checkDependencies();
+		checkDependencies();
 		//ula.set(inst,Vj,Vk);
 		return STATE.ISSUE;
 	}
