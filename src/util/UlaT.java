@@ -15,7 +15,7 @@ public class UlaT extends Ula {
 			default: System.out.println("Instrução Incorreta");
 					break;
 		}
-		System.out.println("Inst Carregada:"+mnemonic +" PC:"+inst.getPC() );
+		//System.out.println("Inst Carregada:"+mnemonic +" PC:"+inst.getPC() );
 	}
 	
 	protected void jump(int targetAddress, String mnemonic) {
@@ -26,6 +26,7 @@ public class UlaT extends Ula {
 	
 	protected void arithmetic(int Vj, int Vk, int rd, String mnemonic){
 			this.Vj = Vj; this.Vk = Vk; this.rd = rd;
+			//this.rs = Vj; this.rt = Vk;
 			this.mnemonic = mnemonic;
 			if(mnemonic.equals(Instruction.MUL))
 				ticker = 3;
@@ -47,7 +48,7 @@ public class UlaT extends Ula {
 		ticker--;
 		if(ticker>0)
 			return false;
-		System.out.println("UlaT: "+this.mnemonic);
+		//System.out.println("UlaT: "+this.mnemonic);
 		switch (this.mnemonic){
 			case Instruction.ADD:
 				//Arch.r.wInt(rd, (Vj+Vk));
@@ -94,8 +95,7 @@ public class UlaT extends Ula {
 				//MEM[R[rs]+ImmExt]=R[rt]
 				//Arch.m.write(Vj+immediate, Arch.r.read(Vk));
 				//System.out.print("SW/ MEM["+Vj+"+"+immediate+"] = R"+Vk+" = "+ Arch.r.read(Vk));
-				
-				result = Integer.parseInt (Arch.r.read(Vk),2);
+				result =  Integer.parseInt(Arch.r.read(Vk),2);
 				break;
 			case Instruction.JMP:
 				Arch.p.setPC(target);

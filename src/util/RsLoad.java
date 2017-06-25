@@ -107,7 +107,7 @@ public class RsLoad extends RS {
 		return STATE.FREE;
 	}
 	
-public STATE write(int result){
+	/*public STATE write(int result){
 		
 		if(ula.mnemonic.equals("101011")){
 			if(Qk == -1) {
@@ -145,7 +145,7 @@ public STATE write(int result){
 		hasJump = false;
 		firstTimeIssue = true;
 		return STATE.FREE;
-	}
+	}*/
 	
 
 	public STATE execute() {

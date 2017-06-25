@@ -59,15 +59,7 @@ public class Start extends JFrame {
 						e1.printStackTrace();
 					}
 				 }
-				
 			}
 		});
-		
-		
-		
-		
-		
-		
-		
 	}
 }

@@ -22,7 +22,7 @@ public class ReorderBufferEntry {
 			break;
 		case I:
 			switch (instr.instr_mnemonic_) {
-			case Instruction.ADDI:
+			case Instruction.ADDI: case Instruction.LW:
 				setDestination(instr.rt);
 				type = TYPE.REGISTER;
 				break;
@@ -34,7 +34,7 @@ public class ReorderBufferEntry {
 				setDestination(instr.immediate);
 				type = TYPE.BRANCH;
 				break;
-			case Instruction.SW: case Instruction.LW:
+			case Instruction.SW:
 				setDestination(Arch.r.rInt(instr.rs)+instr.immediate);
 				type = TYPE.STORE;
 				break;

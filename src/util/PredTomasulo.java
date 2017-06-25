@@ -18,11 +18,11 @@ public class PredTomasulo extends ArchTomasulo{
     		for(int j=0;j<ticked.length;j++){
     			ticked[j]=false;
     		}
-    		System.out.print(_clock + " - ");
+    		System.out.println(_clock + ":");
 
     		inst = Arch.p.getNextInstruction();
 			inst.setPC(Arch.p.getPC());
-			rStates();
+			//rStates();
 			boolean findRS = false;
 			for(int i=0;i<ticked.length && !findRS;i++){
 				switch (inst.getMnemonic()) {
@@ -115,7 +115,7 @@ public class PredTomasulo extends ArchTomasulo{
 				Arch.p.setPC(Arch.p.getPC() - 4);
 				System.out.println("Não há estação de reserva disponível");
 			}
-			rStates();
+			//rStates();
 			
 			for (int i=0;i<rs.length;i++){
     			if(ticked[i]==false){

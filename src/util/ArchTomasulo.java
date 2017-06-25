@@ -58,7 +58,7 @@ public class ArchTomasulo {
     			inst.setPC(Arch.p.getPC());
     			//inst.print();
     			boolean findRS = false;
-    			rStates();
+    			//rStates();
     			for (int i=0;i<rs.length && !findRS;i++){
     	    		switch (inst.getMnemonic()) {
     	    		case Instruction.ADD: case Instruction.SUB:
@@ -102,7 +102,7 @@ public class ArchTomasulo {
     				Arch.p.setPC(Arch.p.getPC() - 4);
     				System.out.println("Não há estação de reserva disponível");
     			}
-    			rStates();
+    			//rStates();
     				
 
     		}
