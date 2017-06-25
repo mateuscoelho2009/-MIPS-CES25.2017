@@ -66,7 +66,6 @@ public class ReorderBuffer {
 			ReorderBufferEntry entry = entries.removeFirst();
 			switch (entry.type()) {
 			case JUMP:
-				Arch.p.setPC(entry.getDestination());
 				break;
 			case REGISTER:
 				Arch.r.wInt(entry.getDestination(), entry.getResult());
