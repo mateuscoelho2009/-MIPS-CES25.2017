@@ -1,44 +1,56 @@
 package util;
 
-//import util.ArchTomassulo.STATION_ID;
-import util.Instruction.INSTR_TYPE;
+//import util.Instruction.INSTR_TYPE;
 
-public class RS {
+public class Rs {
 	
 	public static enum TYPE {NONE,LOAD,ADD,MULT}
 	public static enum STATE {FREE,ISSUE,EXECUTE,WRITE}
 	int id_;
-	UlaT ula;
+	Ula ula;
 	Instruction atuInst;
-	//boolean busy;
-	STATE state;
-	boolean hasJump;
-	INSTR_TYPE Op;
-	public int Vj, Vk, address;
-	public int Qj, Qk;
-	boolean firstTimeIssue = true;
+	boolean busy;
+	//STATE state;
+	//boolean hasJump;
+	//INSTR_TYPE Op;
+	public int Vj, Vk, A;
+	public int Qj, Qk, dest;
+	//boolean firstTimeIssue = true;
 	protected TYPE _type = TYPE.NONE;
 
-	public RS(int id) {
+	public Rs(int id, TYPE type) {
+		_type = type;
 		id_ = id;
-		ula = new UlaT();
-		state = STATE.FREE;
-		//busy = false;
-		Op = INSTR_TYPE.UNDEFINED;
+		ula = new Ula();
+		//state = STATE.FREE;
+		busy = false;
+		//Op = INSTR_TYPE.UNDEFINED;
 		Vj = -1;
 		Vk = -1;
 		Qj = -1;
 		Qk = -1;
-		address = -1;
-		hasJump = false;
+		A = -1;
+		//hasJump = false;
 	}
 
 	public boolean isBusy() {
-		if(state==STATE.FREE)
-			return false;
-		return true;
+		return busy;
 	}
-	public void tick(Instruction inst){
+	public void setBusy(boolean b) {
+		busy = b;	
+	}
+
+	public void setDest(int b) {
+		dest = b;
+		
+	}
+	//public STATE getState(){
+	//	return state;
+	//}
+	public TYPE getType() {
+		return _type;
+	}
+	/*public void tick(Instruction inst){
 		if(state==STATE.FREE) {
 			state=issue(inst);
 			atuInst = inst;
@@ -66,7 +78,7 @@ public class RS {
 			Vk = -1;
 			Qj = -1;
 			Qk = -1;
-			address = -1;
+			A = -1;
 			hasJump = false;
 			firstTimeIssue = true;
 			atuInst = null;
@@ -92,7 +104,7 @@ public class RS {
 			Vk = -1;
 			Qj = -1;
 			Qk = -1;
-			address = -1;
+			A = -1;
 			hasJump = false;
 			firstTimeIssue = true;
 			atuInst = null;
@@ -101,18 +113,18 @@ public class RS {
 
 	public STATE write(){
 		for(int x=0;x<32;x++){
-			if(Arch.r.rBeingUsedBy(x)==id_){
-				Arch.r.wInt(x,ula.result);
-				Arch.r.setUsed(x, -1);
+			if(Arch.RegisterStat.rBeingUsedBy(x)==id_){
+				Arch.RegisterStat.wInt(x,ula.result);
+				Arch.RegisterStat.setUsed(x, -1);
 			}
-			for (int i=0;i<ArchTomasulo.rs.length;i++){
-				if(ArchTomasulo.rs[i].Qj==id_){
-					ArchTomasulo.rs[i].Vj = ula.result;
-					ArchTomasulo.rs[i].Qj = -1;
+			for (int i=0;i<Arch.rs.length;i++){
+				if(Arch.rs[i].Qj==id_){
+					Arch.rs[i].Vj = ula.result;
+					Arch.rs[i].Qj = -1;
 				}
-				if(ArchTomasulo.rs[i].Qk==id_){
-					ArchTomasulo.rs[i].Vk = ula.result;
-					ArchTomasulo.rs[i].Qk = -1;
+				if(Arch.rs[i].Qk==id_){
+					Arch.rs[i].Vk = ula.result;
+					Arch.rs[i].Qk = -1;
 				}
     		}			
 		}
@@ -122,26 +134,26 @@ public class RS {
 		Vk = -1;
 		Qj = -1;
 		Qk = -1;
-		address = -1;
+		A = -1;
 		hasJump = false;
-		ArchTomasulo.incrementInstructions();
+		Arch.incrementInstructions();
 		return STATE.FREE;
 	}
 	
 	public STATE write(ReorderBuffer rob){
 		rob.getResult(this);
 		for(int x=0;x<32;x++){
-			if(Arch.r.rBeingUsedBy(x)==id_){
-				Arch.r.setUsed(x, 0);
+			if(Arch.RegisterStat.rBeingUsedBy(x)==id_){
+				Arch.RegisterStat.setUsed(x, 0);
 			}
-			for (int i=0;i<ArchTomasulo.rs.length;i++){
-				if(ArchTomasulo.rs[i].Qj==id_){
-					ArchTomasulo.rs[i].Vj = ula.result;
-					ArchTomasulo.rs[i].Qj = -1;
+			for (int i=0;i<Arch.rs.length;i++){
+				if(Arch.rs[i].Qj==id_){
+					Arch.rs[i].Vj = ula.result;
+					Arch.rs[i].Qj = -1;
 				}
-				if(ArchTomasulo.rs[i].Qk==id_){
-					ArchTomasulo.rs[i].Vk = ula.result;
-					ArchTomasulo.rs[i].Qk = -1;
+				if(Arch.rs[i].Qk==id_){
+					Arch.rs[i].Vk = ula.result;
+					Arch.rs[i].Qk = -1;
 				}
     		}
 			
@@ -152,14 +164,14 @@ public class RS {
 		Vk = -1;
 		Qj = -1;
 		Qk = -1;
-		address = -1;
+		A = -1;
 		hasJump = false;
-		ArchTomasulo.incrementInstructions();
+		Arch.incrementInstructions();
 		return STATE.FREE;
 	}
 	
 	public Object[] getInfo() {
-		return new Object[] {id_, _type, isBusy(), (atuInst != null)? atuInst.instr_mnemonic_:"",  Vj, Vk, Qj, Qk, address, state};
+		return new Object[] {id_, _type, isBusy(), (atuInst != null)? atuInst.instr_mnemonic_:"",  Vj, Vk, Qj, Qk, A, state};
 	}
 
 	public STATE issue(Instruction inst) {
@@ -198,67 +210,67 @@ public class RS {
 			if (atuInst.instr_mnemonic_.equals(Instruction.NOP)) {
 				break;
 			}
-			if (Arch.r.rBeingUsed(atuInst.rs) && Vj == -1)
-				Qj = Arch.r.rBeingUsedBy(atuInst.rs);
+			if (Arch.RegisterStat.rBeingUsed(atuInst.rs) && Vj == -1)
+				Qj = Arch.RegisterStat.rBeingUsedBy(atuInst.rs);
 			else {
 				Qj = -1;
-				Vj = Arch.r.rInt(atuInst.rs);
+				Vj = Arch.RegisterStat.rInt(atuInst.rs);
 			}
-			if (Arch.r.rBeingUsed(atuInst.rt) && Vk == -1)
-				Qk = Arch.r.rBeingUsedBy(atuInst.rt);
+			if (Arch.RegisterStat.rBeingUsed(atuInst.rt) && Vk == -1)
+				Qk = Arch.RegisterStat.rBeingUsedBy(atuInst.rt);
 			else {
 				Qk = -1;
-				Vk = Arch.r.rInt(atuInst.rt);
+				Vk = Arch.RegisterStat.rInt(atuInst.rt);
 			}
 			if (!hasDependencies()) {
 				ula.set(atuInst, Vj, Vk);
-				Arch.r.setUsed(atuInst.rd, id_);
+				Arch.RegisterStat.setUsed(atuInst.rd, id_);
 			}
 			break;
 		case I:
 			if (atuInst.instr_mnemonic_.equals(Instruction.ADDI)) {
-				if (Arch.r.rBeingUsed(atuInst.rs) && Vj == -1)
-					Qj = Arch.r.rBeingUsedBy(atuInst.rs);
+				if (Arch.RegisterStat.rBeingUsed(atuInst.rs) && Vj == -1)
+					Qj = Arch.RegisterStat.rBeingUsedBy(atuInst.rs);
 				else {
 					Qj = -1;
-					Vj = Arch.r.rInt(atuInst.rs);
+					Vj = Arch.RegisterStat.rInt(atuInst.rs);
 				}
 				if (!hasDependencies()) {
 					Vk = atuInst.rt;
 					ula.set(atuInst, Vj, Vk);
-					Arch.r.setUsed(Vk, id_);
+					Arch.RegisterStat.setUsed(Vk, id_);
 				}
 			} else if (atuInst.instr_mnemonic_.equals(Instruction.LW)) {
-				if (Arch.r.rBeingUsed(atuInst.rs) && Vj == -1)
-					Qj = Arch.r.rBeingUsedBy(atuInst.rs);
+				if (Arch.RegisterStat.rBeingUsed(atuInst.rs) && Vj == -1)
+					Qj = Arch.RegisterStat.rBeingUsedBy(atuInst.rs);
 				else {
 					Qj = -1;
-					Vj = Arch.r.rInt(atuInst.rs);
+					Vj = Arch.RegisterStat.rInt(atuInst.rs);
 				}
 				if (!hasDependencies()) {
-					address = (Vj+atuInst.immediate);
+					A = (Vj+atuInst.immediate);
 					Vk = atuInst.rt;
 					ula.set(atuInst, Vj, Vk);
-					Arch.r.setUsed(atuInst.rt, id_);
+					Arch.RegisterStat.setUsed(atuInst.rt, id_);
 				}
 			} else if (atuInst.instr_mnemonic_.equals(Instruction.SW)) {
-				if (Arch.r.rBeingUsed(atuInst.rs) && Vj == -1)
-					Qj = Arch.r.rBeingUsedBy(atuInst.rs);
+				if (Arch.RegisterStat.rBeingUsed(atuInst.rs) && Vj == -1)
+					Qj = Arch.RegisterStat.rBeingUsedBy(atuInst.rs);
 				else {
 					Qj = -1;
-					Vj = Arch.r.rInt(atuInst.rs);
+					Vj = Arch.RegisterStat.rInt(atuInst.rs);
 				}
-				if (Arch.r.rBeingUsed(atuInst.rt) && Vj == -1)
-					Qk = Arch.r.rBeingUsedBy(atuInst.rt);
+				if (Arch.RegisterStat.rBeingUsed(atuInst.rt) && Vj == -1)
+					Qk = Arch.RegisterStat.rBeingUsedBy(atuInst.rt);
 				else {
 					Qk = -1;
-					Vk = Arch.r.rInt(atuInst.rt);
+					Vk = Arch.RegisterStat.rInt(atuInst.rt);
 				}
 				if (!hasDependencies()) {
-					address = (Vj+atuInst.immediate);
+					A = (Vj+atuInst.immediate);
 					Vk = atuInst.rt;
 					ula.set(atuInst, Vj, Vk);
-					Arch.m.setUsed(Vj + atuInst.immediate, id_);
+					Arch.Mem.setUsed(Vj + atuInst.immediate, id_);
 				}
 			}
 			else {
@@ -277,6 +289,9 @@ public class RS {
 	}
 
 	public STATE execute() {
+		System.out.println("RS.execute()");
+		System.out.println("Qj: " + Qj + " - Qk: " + Qk);
+		System.out.println("Vj: " + Vj + " - Vk: " + Vk);
 		if (!ula.tick())
 			return STATE.EXECUTE;
 		return STATE.WRITE;		
@@ -296,10 +311,8 @@ public class RS {
 			this.Vk = result;
 		}
 	}
-	public STATE getState(){
-		return state;
-	}
-	public TYPE type() {
-		return _type;
-	}
+	*/
+
+
+
 }

@@ -5,15 +5,14 @@ import java.awt.Container;
 import javax.swing.JFrame;
 
 import util.Arch;
-import util.ArchTomasulo;
 
 public class GUI {
 	private DynamicTableGUI _estacaoReserva, _registradores, _bufferReord, _memory, _status;
-	private ArchTomasulo _arch;
-	public GUI(ArchTomasulo arch) {
+	//private ArchTomasulo _arch;
+	public GUI() {
 		int xPos = 0;
 		int yPos = 0;
-		_arch = arch;
+		//_arch = arch;
 		String[] estacaoReservaTitle = new String[] {"ID", "Tipo", "Busy", "Instrução", "Vj", "Vk", "Qj", "Qk", "A", "Estado", "Dest."};
 		Object[][] estacaoReservaData = populateData("estacao");
 		_estacaoReserva = new DynamicTableGUI("Estação Reserva", estacaoReservaTitle, estacaoReservaData, xPos, yPos);
@@ -40,22 +39,22 @@ public class GUI {
 	private Object[][] populateData(String string) {
 		Object[][] data = null;
 		if (string == "estacao") {
-			data = new Object [_arch.getNumberOfRS()][];
-			for (int i = 0; i < _arch.getNumberOfRS(); i++) {
-				data[i] = _arch.getRS()[i].getInfo();
+			data = new Object [Arch.getNumberOfRS()][];
+			for (int i = 0; i < Arch.getNumberOfRS(); i++) {
+				data[i] = Arch.getRS()[i].getInfo();
 			}
 		} else if (string == "registradores") {
 			data = new Object[32][];
 			for (int i = 0; i < 32; i++) {
-				data[i] = Arch.r.getInfo(i);
+				data[i] = Arch.RegisterStat.getInfo(i);
 			}
 		} else if (string == "status") {
 			data = new Object[1][];
-			data[0] = _arch.getProgramInfo();
+			data[0] = Arch.getProgramInfo();
 		} else if (string == "memory") {
-			data = Arch.m.getMemoryInfo();
+			data = Arch.Mem.getMemoryInfo();
 		} else if (string == "rob") {
-			data = _arch.getReorderBuffer().getListInfo();
+			data = Arch.getReorderBuffer().getListInfo();
 		}
 		return data;
 	}

@@ -1,56 +1,28 @@
 package util;
 
-public class ReorderBufferEntry {
+public class RobEntry {
 	public static enum STATE {ISSUE, EXECUTE, WRITE, COMMIT};
 	public static enum TYPE {BRANCH, STORE, REGISTER, JUMP};
-
+	private int uid;
 	private Instruction instruction;
 	private STATE state;
-	private int destination;
+	private int dest;
+	private int address;
 	private int result;
 	private boolean ready;
 	private int isIn;
 	private TYPE type;
 	private boolean branch;
 	
-	public ReorderBufferEntry(Instruction instr){
+	public RobEntry(Instruction instr, int uid){
 		setInstruction(instr);
-		switch (instr.type_) {
-		case R:
-			setDestination(instr.rd);
-			type = TYPE.REGISTER;
-			break;
-		case I:
-			switch (instr.instr_mnemonic_) {
-			case Instruction.ADDI: case Instruction.LW:
-				setDestination(instr.rt);
-				type = TYPE.REGISTER;
-				break;
-			case Instruction.BEQ: case Instruction.BNE:
-				setDestination(instr.immediate+instr.pc);
-				type = TYPE.BRANCH;
-				break;
-			case Instruction.BLE:
-				setDestination(instr.immediate);
-				type = TYPE.BRANCH;
-				break;
-			case Instruction.SW:
-				setDestination(Arch.r.rInt(instr.rs)+instr.immediate);
-				type = TYPE.STORE;
-				break;
-			}
-			break;
-		case J:
-			setDestination(instr.targetAddress);
-			type = TYPE.JUMP;
-			break;
-		default:
-			break;
-		}
-		ready = false;
-		setResult(0);
+		setDestination(instr.rd);
+		setReady(false);
+		this.uid = uid;
 	}
-
+	public int getUid(){
+		return uid;
+	}
 	public Instruction getInstruction() {
 		return instruction;
 	}
@@ -68,11 +40,11 @@ public class ReorderBufferEntry {
 	}
 
 	public int getDestination() {
-		return destination;
+		return dest;
 	}
 
 	public void setDestination(int destination) {
-		this.destination = destination;
+		this.dest = destination;
 	}
 
 	public int getResult() {
@@ -109,5 +81,15 @@ public class ReorderBufferEntry {
 
 	public void setBranch(boolean branch) {
 		this.branch = branch;
+	}
+
+	public void setReady(boolean b) {
+		ready = b;
+	}
+	public int getAddress() {
+		return address;
+	}
+	public void setAddress(int address) {
+		this.address = address;
 	}
 }

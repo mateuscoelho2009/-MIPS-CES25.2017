@@ -2,6 +2,8 @@ package util;
 
 public class Ula {
 	protected int rs,rt,rd,target,immediate,ticker=1;
+	public int Vj, Vk, A, result;
+	public String auxRes;
 	protected String mnemonic;
 	public Ula(){
     	System.out.println("Inicializando a ULA.");
@@ -19,83 +21,96 @@ public class Ula {
 		}
 		System.out.println("Inst Carregada:"+mnemonic +" PC:"+Arch.p.getPC());
 	}
+	public void set(Instruction inst, int Vj, int Vk){
+		switch (inst.getType()) {
+			case R:	arithmetic(Vj, Vk, inst.getRD(), inst.getMnemonic());
+					break;
+			case I: immediate(Vj, Vk, inst.getImmediate(), inst.getMnemonic());
+					break;
+			case J: jump(inst.getTargetAddress(), inst.getMnemonic());
+					break;
+			default: System.out.println("Instrução Incorreta");
+					break;
+		}
+	}
 	
 	protected void jump(int targetAddress, String mnemonic) {
 		this.target = targetAddress;
 		this.mnemonic = mnemonic;
-		ticker = 2;
+		ticker = 1;
 	}
 	
-	protected void arithmetic(int rs, int rt, int rd, String mnemonic){
-			this.rs = rs; this.rt = rt; this.rd = rd;
-			this.mnemonic = mnemonic;
-			if(mnemonic.equals(Instruction.MUL))
-				ticker = 4;
-			else
-				ticker = 2;
-	}
+	protected void arithmetic(int Vj, int Vk, int rd, String mnemonic){
+		this.Vj = Vj; this.Vk = Vk; this.rd = rd;
+		//this.rs = Vj; this.rt = Vk;
+		this.mnemonic = mnemonic;
+		if(mnemonic.equals(Instruction.MUL))
+			ticker = 3;
+		else
+			ticker = 1;
+}
 	
 	protected void immediate(int rs, int rt, int immediate, String mnemonic){
 		this.rs = rs; this.rt = rt; this.immediate = immediate;
+		this.Vj = rs; this.Vk = rt;
 		this.mnemonic = mnemonic;
 		if(mnemonic.equals(Instruction.LW)||mnemonic.equals(Instruction.SW))
-			ticker = 5;
+			ticker = 4;
 		else
-			ticker = 2;
+			ticker = 1;
 	}
-	
 	public boolean tick(){
 		ticker--;
 		if(ticker>0)
 			return false;
-		switch (mnemonic){
+		//System.out.println("UlaT: "+this.mnemonic);
+		switch (this.mnemonic){
 			case Instruction.ADD:
-				Arch.r.wInt(rd, (Arch.r.rInt(rs)+Arch.r.rInt(rt)));
-				System.out.print("ADD/ R"+rd+" = "+Arch.r.read(rd) + " = "+ Arch.r.rInt(rd));
+				//Arch.RegisterStat.wInt(rd, (Vj+Vk));
+				result = Vj + Vk;
 				break;
 			case Instruction.MUL:
-				Arch.r.wInt(rd, (Arch.r.rInt(rs)*Arch.r.rInt(rt)));
-				System.out.print("MUL/ R"+rd+" = "+Arch.r.read(rd) + " = "+ Arch.r.rInt(rd));
+				//Arch.RegisterStat.wInt(rd, (Vj*Vk));
+				result = Vj * Vk;
 				break;
 			case Instruction.NOP:
 				System.out.print("NOP");
 				break;
 			case Instruction.SUB:
-				Arch.r.wInt(rd, (Arch.r.rInt(rs)-Arch.r.rInt(rt)));
-				System.out.print("SUB/ R"+rd+" = "+Arch.r.read(rd) + " = "+ Arch.r.rInt(rd));
+				//Arch.RegisterStat.wInt(rd, (Vj-Vk));
+				result = Vj - Vk;
 				break;
 			case Instruction.ADDI:
-				Arch.r.wInt(rt, (Arch.r.rInt(rs)+immediate));
-				System.out.print("ADDI/ R"+rt+" = "+Arch.r.read(rt) + " = "+ Arch.r.rInt(rt));
+				//Arch.RegisterStat.wInt(Vk, (Vj+immediate));
+				result = Vj + immediate;
 				break;
 			case Instruction.BEQ:
 				//If(R[rs]=R[rt]) { PC=PC+4+Imm}
-				if(Arch.r.rInt(rs)==Arch.r.rInt(rt)) 
-					Arch.p.setPC(Arch.p.getPC()+4+immediate);
+				result = Arch.RegisterStat.rInt(rs)==Arch.RegisterStat.rInt(rt) ? 1 : 0;
 				System.out.print("BEQ/ PC = "+ Arch.p.getPC());
 				break;
 			case Instruction.BLE:
 				//If(R[rs]<=R[rt]) { PC=Imm }
-				if(Arch.r.rInt(rs)<=Arch.r.rInt(rt)) 
-					Arch.p.setPC(immediate);
+				result = Arch.RegisterStat.rInt(rs)<=Arch.RegisterStat.rInt(rt) ? 1 : 0; 
 				System.out.print("BLE/ PC = "+ Arch.p.getPC());
 				break;
 			case Instruction.BNE:
 				//If(R[rs]!=R[rt]) { PC=PC+4+Imm}
-				if(Arch.r.rInt(rs)!=Arch.r.rInt(rt)) 
-					Arch.p.setPC(Arch.p.getPC()+4+immediate);
+				result = Arch.RegisterStat.rInt(rs)!=Arch.RegisterStat.rInt(rt) ? 1 : 0;
 				System.out.print("BNE/ PC = "+ Arch.p.getPC());
 				break;
 			case Instruction.LW:
 				//R[rt]=MEM[R[rs]+ImmExt]
-				System.out.print("LW/ R"+rt+" = MEM["+Arch.r.rInt(rs)+"+"+immediate+"] = ");
-				Arch.r.write(rt, Arch.m.read(Arch.r.rInt(rs)+immediate));
-				System.out.print(Arch.r.read(rt));
+				System.out.print("LW/ R"+Vk+" = MEM["+Vj+"+"+immediate+"] = ");
+				//Arch.RegisterStat.write(Vk, Arch.Mem.read(Vj+immediate));
+				auxRes = Arch.Mem.read(Vj+immediate);
+				result = Integer.parseInt (auxRes, 2);
 				break;
 			case Instruction.SW:
 				//MEM[R[rs]+ImmExt]=R[rt]
-				Arch.m.write(Arch.r.rInt(rs)+immediate, Arch.r.read(rt));
-				System.out.print("SW/ MEM["+Arch.r.rInt(rs)+"+"+immediate+"] = R"+rt+" = "+ Arch.r.read(rt));
+				//Arch.Mem.write(Vj+immediate, Arch.RegisterStat.read(Vk));
+				//System.out.print("SW/ MEM["+Vj+"+"+immediate+"] = R"+Vk+" = "+ Arch.RegisterStat.read(Vk));
+				result =  Integer.parseInt(Arch.RegisterStat.read(Vk),2);
 				break;
 			case Instruction.JMP:
 				Arch.p.setPC(target);

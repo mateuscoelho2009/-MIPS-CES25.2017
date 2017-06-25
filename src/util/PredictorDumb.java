@@ -1,6 +1,6 @@
 package util;
 
-public class StaticPredictor implements Predictor{
+public class PredictorDumb implements Predictor {
 
 	@Override
 	public boolean executeBranch() {
@@ -9,7 +9,9 @@ public class StaticPredictor implements Predictor{
 
 	@Override
 	public void updateState(boolean correctAction) {
-		return;
+		// TODO Auto-generated method stub
+
 	}
+
 
 }

@@ -12,10 +12,10 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
-import util.ArchTomasulo;
-import util.PredTomasulo;
+import util.Arch;
 import util.Predictor1Bit;
 import util.Predictor2Bit;
+import util.PredictorDumb;
 
 public class ControlButtonGUI extends JFrame {
 
@@ -23,7 +23,7 @@ public class ControlButtonGUI extends JFrame {
 	private static GUI _userInterface;
 	private final JFileChooser fc = new JFileChooser();
 	private static boolean _running;
-	private static ArchTomasulo arch = null;
+	private static Arch arch = null;
 
 	/**
 	 * Launch the application.
@@ -36,17 +36,17 @@ public class ControlButtonGUI extends JFrame {
 		System.out.println(predictionType);
 		switch (predictionType) {
 		case "No prediction":
-			arch = new ArchTomasulo(path);
+			arch = new Arch(path, new PredictorDumb());
 			if (!arch.equals(null))
 				System.out.println("no pred");
 			break;
 		case "1-bit prediction":
-			arch = new PredTomasulo(path, new Predictor1Bit());
+			arch = new Arch(path, new Predictor1Bit());
 			if (!arch.equals(null))
 				System.out.println("1 pred");
 			break;
 		case "2-bit prediction":
-			arch = new PredTomasulo(path, new Predictor2Bit());
+			arch = new Arch(path, new Predictor2Bit());
 			if (!arch.equals(null))
 				System.out.println("2 pred");
 			break;
@@ -54,7 +54,7 @@ public class ControlButtonGUI extends JFrame {
 			System.out.println("default");
 			break;
 		}
-		_userInterface = new GUI(arch);
+		_userInterface = new GUI();
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
@@ -78,28 +78,28 @@ public class ControlButtonGUI extends JFrame {
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		contentPane.setLayout(new BorderLayout(0, 0));
 		setContentPane(contentPane);
-		if (_running) executeAction(arch);
+		if (_running) executeAction();
 		Button button = new Button("Click to Clock");
 		Button button2 = new Button("Run All");
 		Button button3 = new Button("Run 20 clocks");
 		button.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if (!_running){
-					executeAction(arch);
+					executeAction();
 				}
 			}
 		});
 		button2.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if (!_running){
-					executeAll(arch);
+					executeAll();
 				}
 			}
 		});
 		button3.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if (!_running){
-					execute20(arch);
+					execute20();
 				}
 			}
 		});
@@ -108,27 +108,27 @@ public class ControlButtonGUI extends JFrame {
 		contentPane.add(button3, BorderLayout.SOUTH);
 		
 	}
-	public static void execute20(ArchTomasulo arch) {
+	public static void execute20() {
 		try {
-			arch.run20();
+			Arch.run20();
 		} catch (IOException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
 		_userInterface.runCycle();
 	}	
-	public static void executeAction(ArchTomasulo arch) {
+	public static void executeAction() {
 		try {
-			arch.run();
+			Arch.run();
 		} catch (IOException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
 		_userInterface.runCycle();
 	}
-	public static void executeAll(ArchTomasulo arch) {
+	public static void executeAll() {
 		try {
-			arch.runAll();
+			Arch.runAll();
 		} catch (IOException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();

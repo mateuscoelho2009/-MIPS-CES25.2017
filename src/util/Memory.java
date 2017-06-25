@@ -22,6 +22,12 @@ public class Memory {
 		System.out.println("Save mem["+pos+"] = "+mem[pos]);
 			
 	}	
+	public void write(int pos, int value){
+		setUsed(pos, 1);
+		mem[pos] = String.format("%16s", Integer.toBinaryString(value)).replace(' ', '0');
+		System.out.println("Save mem["+pos+"] = "+mem[pos]);
+			
+	}	
 	public String read(int pos){
 		setUsed(pos, 1);
 		System.out.println("Read mem["+pos+"] = "+mem[pos]);
@@ -53,5 +59,8 @@ public class Memory {
 		}
 		return data;
 		
+	}
+	public int rInt(int pos) {
+		return Integer.parseInt(mem[pos], 2);
 	}
 }

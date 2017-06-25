@@ -12,7 +12,6 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
-import util.ArchTomasulo;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 

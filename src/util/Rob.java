@@ -2,18 +2,18 @@ package util;
 
 import java.util.LinkedList;
 
-import util.ReorderBufferEntry.STATE;
+import util.RobEntry.STATE;
 
-public class ReorderBuffer {
-	private LinkedList<ReorderBufferEntry> entries = new LinkedList<>();
+public class Rob {
+	private LinkedList<RobEntry> entries = new LinkedList<>();
 	
-	public void addInstruction(Instruction instr, int RSid){
-		System.out.println("Size: " + entries.size());
-		entries.add(new ReorderBufferEntry(instr));
-		System.out.println("Size2: " + entries.size());
-		System.out.println("");
+	public int addInstruction(Instruction instr, int RSid){
+		int b = Arch.reorderUID();
+		entries.add(new RobEntry(instr,b));
 		entries.getLast().setRSid(RSid);
 		entries.getLast().setState(STATE.ISSUE);
+		entries.getLast().setReady(false);
+		return b;
 	}
 	public boolean isEmpty(){
 		return (entries.size()<=0);
@@ -35,8 +35,8 @@ public class ReorderBuffer {
 		}
 		return data;
 	}
-	public void setInstructionState(RS rs){
-		for (ReorderBufferEntry entry : entries){
+	/*public void setInstructionState(Rs rs){
+		for (RobEntry entry : entries){
 			if (rs.id_ == entry.isIn()){
 				switch (rs.state) {
 				case ISSUE:
@@ -54,10 +54,10 @@ public class ReorderBuffer {
 				return;
 			}
 		}
-	}
+	}*/
 	
-	public void getResult(RS rs){
-		for (ReorderBufferEntry entry : entries){
+	public void getResult(Rs rs){
+		for (RobEntry entry : entries){
 			if (rs.id_ == entry.isIn()){
 				entry.setResult(rs.ula.result);
 				entry.makeReady();
@@ -69,36 +69,56 @@ public class ReorderBuffer {
 	
 	public void commit(){
 		if(!entries.isEmpty() && entries.getFirst().isReady()){
-			ReorderBufferEntry entry = entries.removeFirst();
+			RobEntry entry = entries.removeFirst();
 			switch (entry.type()) {
 			case JUMP:
 				break;
 			case REGISTER:
-				Arch.r.wInt(entry.getDestination(), entry.getResult());
-				Arch.r.setUsed(entry.getDestination(), -1);
+				Arch.RegisterStat.wInt(entry.getDestination(), entry.getResult());
+				Arch.RegisterStat.setUsed(entry.getDestination(), -1);
 				break;
 			case STORE:
-				Arch.m.write(entry.getDestination(),
+				Arch.Mem.write(entry.getDestination(),
 						String.format("%16s", Integer.toBinaryString(entry.getResult())).replace(' ', '0'));
-				Arch.m.setUsed(entry.getDestination(), -1);
+				Arch.Mem.setUsed(entry.getDestination(), -1);
 			case BRANCH:
 				if (entry.getResult() == 1 && !entry.hasBranched()){
 					Arch.p.setPC(entry.getDestination());
 					entries.clear();
-					PredTomasulo.predictor.updateState(false);
+					Arch.predictor.updateState(false);
 				} else if (entry.getResult() == 0 && entry.hasBranched()) {
 					Arch.p.setPC(entry.getInstruction().pc);
 					entries.clear();
-					PredTomasulo.predictor.updateState(false);
+					Arch.predictor.updateState(false);
 				} else if (entry.getResult() == 1 && entry.hasBranched()) {
-					PredTomasulo.predictor.updateState(true);
+					Arch.predictor.updateState(true);
 				} else if (entry.getResult() == 0 && !entry.hasBranched()) {
-					PredTomasulo.predictor.updateState(true);
+					Arch.predictor.updateState(true);
 				}
 				break;
 			default:
 				break;
 			}
 		}
+	}
+	public boolean ready(int h) {
+		return entries.get(h).isReady();
+	}
+	public int value(int h) {
+		return entries.get(h).getResult();
+	}
+	public int getRealId(int b){
+		int real = -1;
+		for(int i=0;i<entries.size();i++)
+			if (entries.get(i).getUid()==b)
+				real=i;
+		return real;
+	}
+	public void setDest(int b, int rd) {
+		entries.get(b).setDestination(rd);
+	}
+	public void setAddress(int h, int a) {
+		entries.get(h).setAddress(a);
+		
 	}
 }
