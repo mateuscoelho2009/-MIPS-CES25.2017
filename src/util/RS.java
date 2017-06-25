@@ -131,7 +131,7 @@ public class RS {
 	
 	public STATE write(ReorderBuffer rob){
 		for(int x=0;x<32;x++){
-			// TODO: write to ROB
+			rob.getResult(this);
 			for (int i=0;i<ArchTomasulo.rs.length;i++){
 				if(ArchTomasulo.rs[i].Qj==id_){
 					ArchTomasulo.rs[i].Vj = ula.result;

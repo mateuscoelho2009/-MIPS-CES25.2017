@@ -2,38 +2,48 @@ package util;
 
 public class ReorderBufferEntry {
 	public static enum STATE {ISSUE, EXECUTE, WRITE, COMMIT};
+	public static enum TYPE {BRANCH, STORE, REGISTER, JUMP};
 
 	private Instruction instruction;
 	private STATE state;
 	private int destination;
 	private int result;
 	private boolean ready;
+	private int isIn;
+	private TYPE type;
 	
 	public ReorderBufferEntry(Instruction instr){
 		setInstruction(instr);
 		switch (instr.type_) {
 		case R:
 			setDestination(instr.rd);
+			type = TYPE.REGISTER;
 			break;
 		case I:
 			switch (instr.instr_mnemonic_) {
 			case Instruction.ADDI: case Instruction.LW:
 				setDestination(instr.rt);
+				type = TYPE.REGISTER;
 				break;
 			case Instruction.BEQ: case Instruction.BLE: case Instruction.BNE:
 				setDestination(instr.immediate);
+				type = TYPE.BRANCH;
 				break;
 			case Instruction.SW:
 				setDestination(Arch.r.rInt(instr.rs)+instr.immediate);
+				type = TYPE.STORE;
 				break;
 			}
 			break;
 		case J:
 			setDestination(instr.targetAddress);
+			type = TYPE.JUMP;
 			break;
 		default:
 			break;
 		}
+		ready = false;
+		setResult(0);
 	}
 
 	public Instruction getInstruction() {
@@ -71,8 +81,20 @@ public class ReorderBufferEntry {
 	public boolean isReady() {
 		return ready;
 	}
+	
+	public void makeReady() {
+		this.ready = true;
+	}
 
-	public void setReady(boolean ready) {
-		this.ready = ready;
+	public int isIn() {
+		return isIn;
+	}
+
+	public void setRSid(int isIn) {
+		this.isIn = isIn;
+	}
+	
+	public TYPE type(){
+		return type;
 	}
 }

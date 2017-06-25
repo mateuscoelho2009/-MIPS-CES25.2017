@@ -21,17 +21,13 @@ public class PredTomasulo extends ArchTomasulo{
 
     		inst = Arch.p.getNextInstruction();
 			inst.setPC(Arch.p.getPC());
-			rob.addInstruction(inst);
-			//inst.print();
 			boolean findRS = false;
-			rStates();
-			for (int i=0;i<rs.length && !findRS;i++){
-	    		switch (inst.getMnemonic()) {
+			for(int i=0;i<ticked.length;i++){
+				switch (inst.getMnemonic()) {
 	    		case Instruction.ADD: case Instruction.SUB:
 	    			if (!rs[i].isBusy() && rs[i].type()==RS.TYPE.ADD){ 
 	    				rs[i].tick(inst);
 	    				ticked[i]=true;
-	    				rob.updateState(rs[i]);
 	    				findRS = true;
 	    			}
 	    			break;
@@ -39,7 +35,6 @@ public class PredTomasulo extends ArchTomasulo{
 	    			if (!rs[i].isBusy() && rs[i].type()==RS.TYPE.MULT){ 
 	    				rs[i].tick(inst);
 	    				ticked[i]=true;
-	    				rob.updateState(rs[i]);
 	    				findRS = true;
 	    			}
 	    			break;
@@ -47,7 +42,6 @@ public class PredTomasulo extends ArchTomasulo{
 	    			if (!rs[i].isBusy() && rs[i].type()==RS.TYPE.LOAD){ 
 	    				rs[i].tick(inst);
 	    				ticked[i]=true;
-	    				rob.updateState(rs[i]);
 	    				findRS = true;
 	    			}
 	    			break;
@@ -55,7 +49,6 @@ public class PredTomasulo extends ArchTomasulo{
 	    			if (!rs[i].isBusy()){ 
 	    				rs[i].tick(inst);
 	    				ticked[i]=true;
-	    				rob.updateState(rs[i]);
 	    				findRS = true;
 	    			}
 	    			break;
@@ -63,65 +56,11 @@ public class PredTomasulo extends ArchTomasulo{
 	    			if (!isAnyOneBusy()) {
 	    				rs[i].tick(inst);
 	    				ticked[i]=true;
-	    				rob.updateState(rs[i]);
 	    				findRS = true;
 	    			}
 	    			break;
 	    		}
-			}
-			if (!findRS){
-				Arch.p.setPC(Arch.p.getPC() - 4);
-				rob.tail--;
-				System.out.println("Não há estação de reserva disponível");
-			}
-			rStates();
-
-    		//done = ula.tick();
-    		for (int i=0;i<rs.length;i++){
-    			if(ticked[i]==false){
-    				rs[i].tick(rob);
-    				rob.updateState(rs[i]);
-    			}
-    		}
-    		    		
-    		if (rob.headIsBranch()){
-    			boolean realBranch = rob.evaluateHeadBranch();
-    			boolean predictedBranch = rob.getPredictedBranch();
-				if (rob.validate()){
-	    			if (realBranch != predictedBranch){
-	    				rob.tail = rob.head;
-	    				Arch.p.setPC(rob.retrievePredictionPC());
-	    				rob.resetPredictionQueue();
-	    				predictor.updateState(false);
-	    			} else {
-	    				rob.popPrediction();
-	    				predictor.updateState(true);
-	    			}
-				}
-    		}
-    		else {rob.validate();}
-    		
-    		if (rob.tailIsBranch()){
-    			rob.queuePrediction(Arch.p.getPC(), predictor.executeBranch());
-    			if (predictor.executeBranch()){
-    				Instruction tail = rob.getTail();
-    				switch (tail.instr_mnemonic_) {
-					case Instruction.BEQ:
-						Arch.p.setPC(Arch.p.getPC() + 4 + tail.immediate);
-						break;
-					case Instruction.BLE:
-						Arch.p.setPC(tail.immediate);
-						break;
-					case Instruction.BNE:
-						Arch.p.setPC(Arch.p.getPC() + 4 + tail.immediate);
-						break;
-					default:
-						break;
-					}
-    			}
-    		}
-    		
-    		System.out.println();
+    		}			
     	}
     	else {
     		System.out.println("Encerrando...");
