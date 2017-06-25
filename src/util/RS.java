@@ -131,6 +131,9 @@ public class RS {
 	public STATE write(ReorderBuffer rob){
 		rob.getResult(this);
 		for(int x=0;x<32;x++){
+			if(Arch.r.rBeingUsedBy(x)==id_){
+				Arch.r.setUsed(x, 0);
+			}
 			for (int i=0;i<ArchTomasulo.rs.length;i++){
 				if(ArchTomasulo.rs[i].Qj==id_){
 					ArchTomasulo.rs[i].Vj = ula.result;
@@ -187,6 +190,91 @@ public class RS {
 		}
 	}
 
+	public void checkDependencies () {
+		if (!isBusy()) return;
+
+		switch(Op) {
+		case R:
+			if (atuInst.instr_mnemonic_.equals(Instruction.NOP)) {
+				break;
+			}
+			if (Arch.r.rBeingUsed(atuInst.rs) && Vj == -1)
+				Qj = Arch.r.rBeingUsedBy(atuInst.rs);
+			else {
+				Qj = -1;
+				Vj = Arch.r.rInt(atuInst.rs);
+			}
+			if (Arch.r.rBeingUsed(atuInst.rt) && Vk == -1)
+				Qk = Arch.r.rBeingUsedBy(atuInst.rt);
+			else {
+				Qk = -1;
+				Vk = Arch.r.rInt(atuInst.rt);
+			}
+			if (!hasDependencies()) {
+				ula.set(atuInst, Vj, Vk);
+				Arch.r.setUsed(atuInst.rd, id_);
+			}
+			break;
+		case I:
+			if (atuInst.instr_mnemonic_.equals(Instruction.ADDI)) {
+				if (Arch.r.rBeingUsed(atuInst.rs) && Vj == -1)
+					Qj = Arch.r.rBeingUsedBy(atuInst.rs);
+				else {
+					Qj = -1;
+					Vj = Arch.r.rInt(atuInst.rs);
+				}
+				if (!hasDependencies()) {
+					Vk = atuInst.rt;
+					ula.set(atuInst, Vj, Vk);
+					Arch.r.setUsed(Vk, id_);
+				}
+			} else if (atuInst.instr_mnemonic_.equals(Instruction.LW)) {
+				if (Arch.r.rBeingUsed(atuInst.rs) && Vj == -1)
+					Qj = Arch.r.rBeingUsedBy(atuInst.rs);
+				else {
+					Qj = -1;
+					Vj = Arch.r.rInt(atuInst.rs);
+				}
+				if (!hasDependencies()) {
+					address = (Vj+atuInst.immediate);
+					Vk = atuInst.rt;
+					ula.set(atuInst, Vj, Vk);
+					Arch.r.setUsed(atuInst.rt, id_);
+				}
+			} else if (atuInst.instr_mnemonic_.equals(Instruction.SW)) {
+				if (Arch.r.rBeingUsed(atuInst.rs) && Vj == -1)
+					Qj = Arch.r.rBeingUsedBy(atuInst.rs);
+				else {
+					Qj = -1;
+					Vj = Arch.r.rInt(atuInst.rs);
+				}
+				if (Arch.r.rBeingUsed(atuInst.rt) && Vj == -1)
+					Qk = Arch.r.rBeingUsedBy(atuInst.rt);
+				else {
+					Qk = -1;
+					Vk = Arch.r.rInt(atuInst.rt);
+				}
+				if (!hasDependencies()) {
+					address = (Vj+atuInst.immediate);
+					Vk = atuInst.rt;
+					ula.set(atuInst, Vj, Vk);
+					Arch.m.setUsed(Vj + atuInst.immediate, id_);
+				}
+			}
+			else {
+				ula.set(atuInst);
+				hasJump = true;
+			}
+			break;
+		case J:
+			ula.set(atuInst);
+			hasJump = true;
+			break;
+		default:
+			ula.set(atuInst);
+			break;
+		}
+	}
 
 	public STATE execute() {
 		if (!ula.tick())

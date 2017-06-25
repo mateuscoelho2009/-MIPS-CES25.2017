@@ -26,7 +26,11 @@ public class ReorderBufferEntry {
 				setDestination(instr.rt);
 				type = TYPE.REGISTER;
 				break;
-			case Instruction.BEQ: case Instruction.BLE: case Instruction.BNE:
+			case Instruction.BEQ: case Instruction.BNE:
+				setDestination(instr.immediate+instr.pc);
+				type = TYPE.BRANCH;
+				break;
+			case Instruction.BLE:
 				setDestination(instr.immediate);
 				type = TYPE.BRANCH;
 				break;

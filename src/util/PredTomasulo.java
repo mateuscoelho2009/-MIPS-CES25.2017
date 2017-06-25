@@ -11,6 +11,7 @@ public class PredTomasulo extends ArchTomasulo{
 		predictor = p;
 	}
 	
+	@Override
 	public void run () throws IOException{   	
     	_clock++;
     	if(!Arch.p.end()){
@@ -23,12 +24,13 @@ public class PredTomasulo extends ArchTomasulo{
 			inst.setPC(Arch.p.getPC());
 			rStates();
 			boolean findRS = false;
-			for(int i=0;i<ticked.length;i++){
+			for(int i=0;i<ticked.length && !findRS;i++){
 				switch (inst.getMnemonic()) {
-	    		case Instruction.ADD: case Instruction.SUB:
+	    		case Instruction.ADD: case Instruction.SUB: case Instruction.ADDI:
 	    			if (!rs[i].isBusy() && rs[i].type()==RS.TYPE.ADD){ 
 	    				rs[i].tick(inst);
 	    				rob.addInstruction(inst, i);
+	    				rob.setInstructionState(rs[i]);
 	    				ticked[i] = true;
 	    				findRS = true;
 	    			}
@@ -37,14 +39,16 @@ public class PredTomasulo extends ArchTomasulo{
 	    			if (!rs[i].isBusy() && rs[i].type()==RS.TYPE.MULT){ 
 	    				rs[i].tick(inst);
 	    				rob.addInstruction(inst, i);
+	    				rob.setInstructionState(rs[i]);
 	    				ticked[i] = true;
 	    				findRS = true;
 	    			}
 	    			break;
-	    		case Instruction.LW: case Instruction.SW: case Instruction.ADDI:
+	    		case Instruction.LW: case Instruction.SW:
 	    			if (!rs[i].isBusy() && rs[i].type()==RS.TYPE.LOAD){ 
 	    				rs[i].tick(inst);
 	    				rob.addInstruction(inst, i);
+	    				rob.setInstructionState(rs[i]);
 	    				ticked[i] = true;
 	    				findRS = true;
 	    			}
@@ -53,6 +57,7 @@ public class PredTomasulo extends ArchTomasulo{
 	    			if (!rs[i].isBusy()){ 
 	    				rs[i].tick(inst);
 	    				rob.addInstruction(inst, i);
+	    				rob.setInstructionState(rs[i]);
 	    				ticked[i]=true;
 	    				findRS = true;
 	    			}
@@ -61,10 +66,11 @@ public class PredTomasulo extends ArchTomasulo{
 	    			if (!rs[i].isBusy()){
 	    				rs[i].tick(inst);
 	    				rob.addInstruction(inst, i);
+	    				rob.setInstructionState(rs[i]);
 	    				ticked[i] = true;
 	    				findRS = true;
 	    				if (predictor.executeBranch()){
-	    					Arch.p.setPC(Arch.p.getPC()+4+inst.immediate);
+	    					Arch.p.setPC(Arch.p.getPC()+inst.immediate);
 	    				}
 	    				rob.setBranching(predictor.executeBranch());
 	    			}
@@ -73,6 +79,7 @@ public class PredTomasulo extends ArchTomasulo{
 	    			if (!rs[i].isBusy()){
 	    				rs[i].tick(inst);
 	    				rob.addInstruction(inst, i);
+	    				rob.setInstructionState(rs[i]);
 	    				ticked[i] = true;
 	    				findRS = true;
 	    				if (predictor.executeBranch()){
@@ -85,10 +92,11 @@ public class PredTomasulo extends ArchTomasulo{
 	    			if (!rs[i].isBusy()){
 	    				rs[i].tick(inst);
 	    				rob.addInstruction(inst, i);
+	    				rob.setInstructionState(rs[i]);
 	    				ticked[i] = true;
 	    				findRS = true;
 	    				if (predictor.executeBranch()){
-	    					Arch.p.setPC(Arch.p.getPC()+4+inst.immediate);
+	    					Arch.p.setPC(Arch.p.getPC()+inst.immediate);
 	    				}
 	    				rob.setBranching(predictor.executeBranch());
 	    			}
@@ -110,8 +118,10 @@ public class PredTomasulo extends ArchTomasulo{
 			rStates();
 			
 			for (int i=0;i<rs.length;i++){
-    			if(ticked[i]==false)
-    				rs[i].tick();
+    			if(ticked[i]==false){
+    				rs[i].tick(rob);
+    				rob.setInstructionState(rs[i]);
+    			}
     		}
 			
 			rob.commit();

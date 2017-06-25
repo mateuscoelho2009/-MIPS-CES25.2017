@@ -94,6 +94,7 @@ public class UlaT extends Ula {
 				//MEM[R[rs]+ImmExt]=R[rt]
 				//Arch.m.write(Vj+immediate, Arch.r.read(Vk));
 				//System.out.print("SW/ MEM["+Vj+"+"+immediate+"] = R"+Vk+" = "+ Arch.r.read(Vk));
+				result = 0;
 				break;
 			case Instruction.JMP:
 				Arch.p.setPC(target);
