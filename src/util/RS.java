@@ -114,8 +114,7 @@ public class RS {
 					ArchTomasulo.rs[i].Vk = ula.result;
 					ArchTomasulo.rs[i].Qk = -1;
 				}
-    		}
-			
+    		}			
 		}
 
 		Op = INSTR_TYPE.UNDEFINED;
@@ -130,8 +129,8 @@ public class RS {
 	}
 	
 	public STATE write(ReorderBuffer rob){
+		rob.getResult(this);
 		for(int x=0;x<32;x++){
-			rob.getResult(this);
 			for (int i=0;i<ArchTomasulo.rs.length;i++){
 				if(ArchTomasulo.rs[i].Qj==id_){
 					ArchTomasulo.rs[i].Vj = ula.result;

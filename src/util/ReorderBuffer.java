@@ -13,6 +13,10 @@ public class ReorderBuffer {
 		entries.getLast().setState(STATE.ISSUE);
 	}
 	
+	public void setBranching(boolean branched){
+		entries.getLast().setBranch(branched);
+	}
+	
 	public void setInstructionState(RS rs){
 		for (ReorderBufferEntry entry : entries){
 			if (rs.id_ == entry.isIn()){
@@ -56,7 +60,20 @@ public class ReorderBuffer {
 				Arch.m.write(entry.getDestination(),
 						String.format("%16s", Integer.toBinaryString(entry.getResult())).replace(' ', '0'));
 			case BRANCH:
-				
+				if (entry.getResult() == 1 && !entry.hasBranched()){
+					Arch.p.setPC(entry.getDestination());
+					entries.clear();
+					PredTomasulo.predictor.updateState(false);
+				} else if (entry.getResult() == 0 && entry.hasBranched()) {
+					Arch.p.setPC(entry.getInstruction().pc + 4);
+					entries.clear();
+					PredTomasulo.predictor.updateState(false);
+				} else if (entry.getResult() == 1 && entry.hasBranched()) {
+					PredTomasulo.predictor.updateState(true);
+				} else if (entry.getResult() == 0 && !entry.hasBranched()) {
+					PredTomasulo.predictor.updateState(true);
+				}
+				break;
 			default:
 				break;
 			}

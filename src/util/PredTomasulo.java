@@ -4,7 +4,7 @@ import java.io.IOException;
 
 public class PredTomasulo extends ArchTomasulo{
 	
-	private Predictor predictor;
+	static public Predictor predictor;
 	
 	public PredTomasulo(String path, Predictor p) throws IOException {
 		super(path);
@@ -21,27 +21,28 @@ public class PredTomasulo extends ArchTomasulo{
 
     		inst = Arch.p.getNextInstruction();
 			inst.setPC(Arch.p.getPC());
+			rStates();
 			boolean findRS = false;
 			for(int i=0;i<ticked.length;i++){
 				switch (inst.getMnemonic()) {
 	    		case Instruction.ADD: case Instruction.SUB:
 	    			if (!rs[i].isBusy() && rs[i].type()==RS.TYPE.ADD){ 
 	    				rs[i].tick(inst);
-	    				ticked[i]=true;
+	    				ticked[i] = true;
 	    				findRS = true;
 	    			}
 	    			break;
 	    		case Instruction.MUL:
 	    			if (!rs[i].isBusy() && rs[i].type()==RS.TYPE.MULT){ 
 	    				rs[i].tick(inst);
-	    				ticked[i]=true;
+	    				ticked[i] = true;
 	    				findRS = true;
 	    			}
 	    			break;
 	    		case Instruction.LW: case Instruction.SW: case Instruction.ADDI:
 	    			if (!rs[i].isBusy() && rs[i].type()==RS.TYPE.LOAD){ 
 	    				rs[i].tick(inst);
-	    				ticked[i]=true;
+	    				ticked[i] = true;
 	    				findRS = true;
 	    			}
 	    			break;
@@ -52,6 +53,39 @@ public class PredTomasulo extends ArchTomasulo{
 	    				findRS = true;
 	    			}
 	    			break;
+	    		case Instruction.BEQ:
+	    			if (!rs[i].isBusy()){
+	    				rs[i].tick(inst);
+	    				ticked[i] = true;
+	    				findRS = true;
+	    				if (predictor.executeBranch()){
+	    					Arch.p.setPC(Arch.p.getPC()+4+inst.immediate);
+	    				}
+	    				rob.setBranching(predictor.executeBranch());
+	    			}
+	    			break;
+	    		case Instruction.BLE:
+	    			if (!rs[i].isBusy()){
+	    				rs[i].tick(inst);
+	    				ticked[i] = true;
+	    				findRS = true;
+	    				if (predictor.executeBranch()){
+	    					Arch.p.setPC(inst.immediate);
+	    				}
+	    				rob.setBranching(predictor.executeBranch());
+	    			}
+	    			break;
+	    		case Instruction.BNE:
+	    			if (!rs[i].isBusy()){
+	    				rs[i].tick(inst);
+	    				ticked[i] = true;
+	    				findRS = true;
+	    				if (predictor.executeBranch()){
+	    					Arch.p.setPC(Arch.p.getPC()+4+inst.immediate);
+	    				}
+	    				rob.setBranching(predictor.executeBranch());
+	    			}
+	    			break;
 	    		default:
 	    			if (!isAnyOneBusy()) {
 	    				rs[i].tick(inst);
@@ -60,7 +94,20 @@ public class PredTomasulo extends ArchTomasulo{
 	    			}
 	    			break;
 	    		}
-    		}			
+    		}
+
+			if (!findRS){
+				Arch.p.setPC(Arch.p.getPC() - 4);
+				System.out.println("Não há estação de reserva disponível");
+			}
+			rStates();
+			
+			for (int i=0;i<rs.length;i++){
+    			if(ticked[i]==false)
+    				rs[i].tick();
+    		}
+			
+			rob.commit();
     	}
     	else {
     		System.out.println("Encerrando...");

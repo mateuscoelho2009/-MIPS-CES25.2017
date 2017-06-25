@@ -70,20 +70,17 @@ public class UlaT extends Ula {
 				break;
 			case Instruction.BEQ:
 				//If(R[rs]=R[rt]) { PC=PC+4+Imm}
-				if(Arch.r.rInt(rs)==Arch.r.rInt(rt))
-					Arch.p.setPC(Arch.p.getPC()+4+immediate);
+				result = Arch.r.rInt(rs)==Arch.r.rInt(rt) ? 1 : 0;
 				System.out.print("BEQ/ PC = "+ Arch.p.getPC());
 				break;
 			case Instruction.BLE:
 				//If(R[rs]<=R[rt]) { PC=Imm }
-				if(Arch.r.rInt(rs)<=Arch.r.rInt(rt)) 
-					Arch.p.setPC(immediate);
+				result = Arch.r.rInt(rs)<=Arch.r.rInt(rt) ? 1 : 0; 
 				System.out.print("BLE/ PC = "+ Arch.p.getPC());
 				break;
 			case Instruction.BNE:
 				//If(R[rs]!=R[rt]) { PC=PC+4+Imm}
-				if(Arch.r.rInt(rs)!=Arch.r.rInt(rt)) 
-					Arch.p.setPC(Arch.p.getPC()+4+immediate);
+				result = Arch.r.rInt(rs)!=Arch.r.rInt(rt) ? 1 : 0;
 				System.out.print("BNE/ PC = "+ Arch.p.getPC());
 				break;
 			case Instruction.LW:

@@ -152,7 +152,7 @@ public class Instruction {
 		pc = pc_;
 	}
 
-	public void print() {
+	public String toString() {
 		String mnemonic;
 		switch(instr_mnemonic_){
 		case ADD:
@@ -165,31 +165,33 @@ public class Instruction {
 			mnemonic = "BEQ R"+rs+",R"+rt+","+targetAddress;
 			break;
 		case BLE:
-			mnemonic = "BLE ";
+			mnemonic = "BLE R"+rs+",R"+rt+","+targetAddress;
 			break;
 		case BNE:
-			mnemonic = "BNE ";
+			mnemonic = "BNE R"+rs+",R"+rt+","+targetAddress;
 			break;
 		case JMP:
-			mnemonic = "JMP ";
+			mnemonic = "JMP "+immediate;
 			break;
 		case LW:
-			mnemonic = "LW ";
+			mnemonic = "LW R"+rt+","+immediate+"(R"+rs+")";
 			break;
 		case MUL:
-			mnemonic = "MUL ";
+			mnemonic = "MUL R"+rd+",R"+rs+",R"+rt;
 			break;
 		case NOP:
 			mnemonic = "NOP";
 			break;
 		case SUB:
-			mnemonic = "SUB ";
+			mnemonic = "SUB R"+rd+",R"+rs+",R"+rt;
 			break;
 		case SW:
-			mnemonic = "SW ";
+			mnemonic = "SW R"+rt+","+immediate+"(R"+rs+")";
 			break;
 		default:
+			mnemonic = "invalid";
 			break;
 		}
+		return mnemonic;
 	}
 }

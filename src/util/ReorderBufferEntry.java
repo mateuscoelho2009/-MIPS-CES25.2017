@@ -11,6 +11,7 @@ public class ReorderBufferEntry {
 	private boolean ready;
 	private int isIn;
 	private TYPE type;
+	private boolean branch;
 	
 	public ReorderBufferEntry(Instruction instr){
 		setInstruction(instr);
@@ -96,5 +97,13 @@ public class ReorderBufferEntry {
 	
 	public TYPE type(){
 		return type;
+	}
+
+	public boolean hasBranched() {
+		return branch;
+	}
+
+	public void setBranch(boolean branch) {
+		this.branch = branch;
 	}
 }
