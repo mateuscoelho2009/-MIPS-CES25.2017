@@ -154,7 +154,7 @@ public STATE write(int result){
 				return STATE.EXECUTE;
 			if(ula.mnemonic.equals("100011")){
 				address = Vj+atuInst.immediate;
-				//ula.result = Integer.parseInt(Arch.m.read(address), 2);
+				ula.result = Integer.parseInt(Arch.m.read(address), 2);
 			}
 			//RS[r].A ← RS[r].Vj + RS[r].A; 
 			//Read from Mem[RS[r].A]

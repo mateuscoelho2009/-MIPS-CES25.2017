@@ -17,7 +17,7 @@ public class ArchTomasulo {
 	protected int _clock = 0;
 	public static Instruction inst;
 	protected static boolean[] ticked= new boolean[7];
-	protected ReorderBuffer rob;
+	protected static ReorderBuffer rob;
 	public ArchTomasulo(String path) throws IOException {
 		Arch.restart();
 		concludedInstructions = 0;
@@ -107,18 +107,11 @@ public class ArchTomasulo {
 
     		}
 
-    		//done = ula.tick();
     		for (int i=0;i<rs.length;i++){
     			if(ticked[i]==false)
     				rs[i].tick();
     		}
-    		
-    		/*try {
-				TimeUnit.SECONDS.sleep(1);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}*/
+    	
     		System.out.println();
     	}
     	else {

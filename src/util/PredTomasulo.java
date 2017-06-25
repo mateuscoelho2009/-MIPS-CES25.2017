@@ -14,7 +14,7 @@ public class PredTomasulo extends ArchTomasulo{
 	@Override
 	public void run () throws IOException{   	
     	_clock++;
-    	if(!Arch.p.end()){
+    	if(!Arch.p.end()||!ArchTomasulo.rob.isEmpty()){
     		for(int j=0;j<ticked.length;j++){
     			ticked[j]=false;
     		}

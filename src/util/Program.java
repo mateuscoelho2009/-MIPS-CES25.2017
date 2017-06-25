@@ -25,11 +25,13 @@ public class Program {
 		br.close();
 	}
 	public Instruction getNextInstruction () {
+		Instruction next;
 		if (pc_ < 0 || pc_ >= program.size()) {
 			pc_ = 0;
 			terminated = true;
+			next = new Instruction("00000000000000000000000000000000");
 		}
-		Instruction next = program.get(pc_);
+		next = program.get(pc_);
 		pc_++;
 		return next;
 	}
