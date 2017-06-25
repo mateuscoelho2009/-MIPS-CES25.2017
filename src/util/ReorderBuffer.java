@@ -1,8 +1,10 @@
 package util;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 
 import util.ReorderBufferEntry.STATE;
+import util.ReorderBufferEntry.TYPE;
 
 public class ReorderBuffer {
 	private LinkedList<ReorderBufferEntry> entries = new LinkedList<>();
@@ -16,7 +18,20 @@ public class ReorderBuffer {
 	public void setBranching(boolean branched){
 		entries.getLast().setBranch(branched);
 	}
-	
+	public Object[][] getListInfo() {
+		Object[][] data = new Object[entries.size()][];
+		for (int i = 0; i < entries.size(); i++) {
+			data[i] = new Object[] {entries.get(i).getInstruction(),
+					entries.get(i).getState(),
+					entries.get(i).getDestination(),
+					entries.get(i).getResult(),
+					entries.get(i).isReady(),
+					entries.get(i).isIn(),
+					entries.get(i).type(),
+					entries.get(i).hasBranched()}; 
+		}
+		return data;
+	}
 	public void setInstructionState(RS rs){
 		for (ReorderBufferEntry entry : entries){
 			if (rs.id_ == entry.isIn()){
