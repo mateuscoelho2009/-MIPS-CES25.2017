@@ -28,6 +28,7 @@ public class PredTomasulo extends ArchTomasulo{
 	    		case Instruction.ADD: case Instruction.SUB:
 	    			if (!rs[i].isBusy() && rs[i].type()==RS.TYPE.ADD){ 
 	    				rs[i].tick(inst);
+	    				rob.addInstruction(inst, i);
 	    				ticked[i] = true;
 	    				findRS = true;
 	    			}
@@ -35,6 +36,7 @@ public class PredTomasulo extends ArchTomasulo{
 	    		case Instruction.MUL:
 	    			if (!rs[i].isBusy() && rs[i].type()==RS.TYPE.MULT){ 
 	    				rs[i].tick(inst);
+	    				rob.addInstruction(inst, i);
 	    				ticked[i] = true;
 	    				findRS = true;
 	    			}
@@ -42,6 +44,7 @@ public class PredTomasulo extends ArchTomasulo{
 	    		case Instruction.LW: case Instruction.SW: case Instruction.ADDI:
 	    			if (!rs[i].isBusy() && rs[i].type()==RS.TYPE.LOAD){ 
 	    				rs[i].tick(inst);
+	    				rob.addInstruction(inst, i);
 	    				ticked[i] = true;
 	    				findRS = true;
 	    			}
@@ -49,6 +52,7 @@ public class PredTomasulo extends ArchTomasulo{
 	    		case Instruction.JMP: case Instruction.NOP:
 	    			if (!rs[i].isBusy()){ 
 	    				rs[i].tick(inst);
+	    				rob.addInstruction(inst, i);
 	    				ticked[i]=true;
 	    				findRS = true;
 	    			}
@@ -56,6 +60,7 @@ public class PredTomasulo extends ArchTomasulo{
 	    		case Instruction.BEQ:
 	    			if (!rs[i].isBusy()){
 	    				rs[i].tick(inst);
+	    				rob.addInstruction(inst, i);
 	    				ticked[i] = true;
 	    				findRS = true;
 	    				if (predictor.executeBranch()){
@@ -67,6 +72,7 @@ public class PredTomasulo extends ArchTomasulo{
 	    		case Instruction.BLE:
 	    			if (!rs[i].isBusy()){
 	    				rs[i].tick(inst);
+	    				rob.addInstruction(inst, i);
 	    				ticked[i] = true;
 	    				findRS = true;
 	    				if (predictor.executeBranch()){
@@ -78,6 +84,7 @@ public class PredTomasulo extends ArchTomasulo{
 	    		case Instruction.BNE:
 	    			if (!rs[i].isBusy()){
 	    				rs[i].tick(inst);
+	    				rob.addInstruction(inst, i);
 	    				ticked[i] = true;
 	    				findRS = true;
 	    				if (predictor.executeBranch()){
