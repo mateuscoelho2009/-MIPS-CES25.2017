@@ -162,7 +162,7 @@ public class RS {
 	public STATE issue(Instruction inst) {
 		atuInst = inst;
 		Op = inst.getType();
-		checkDependencies();
+		//checkDependencies();
 		//ula.set(inst,Vj,Vk);
 		return STATE.ISSUE;
 	}
@@ -176,7 +176,10 @@ public class RS {
 			if (atuInst.instr_mnemonic_.equals(Instruction.LW)
 					|| atuInst.instr_mnemonic_.equals(Instruction.ADDI))
 				return (Qj != -1);
-			if (atuInst.instr_mnemonic_.equals(Instruction.SW))
+			if (atuInst.instr_mnemonic_.equals(Instruction.SW)||
+					atuInst.instr_mnemonic_.equals(Instruction.BLE)||
+					atuInst.instr_mnemonic_.equals(Instruction.BNE)||
+					atuInst.instr_mnemonic_.equals(Instruction.BEQ))
 				return (Qj != -1 || Qk != -1);
 			return false;
 		case J: default:
@@ -184,170 +187,11 @@ public class RS {
 		}
 	}
 
-	public void checkDependencies () {
-		if (!isBusy()) return;
-
-		switch(Op) {
-		case R:
-			if (atuInst.instr_mnemonic_.equals(Instruction.NOP)) {
-				break;
-			}
-			if (Arch.r.rBeingUsed(atuInst.rs) && Vj == -1)
-				Qj = Arch.r.rBeingUsedBy(atuInst.rs);
-			else {
-				Qj = -1;
-				Vj = Arch.r.rInt(atuInst.rs);
-			}
-			if (Arch.r.rBeingUsed(atuInst.rt) && Vk == -1)
-				Qk = Arch.r.rBeingUsedBy(atuInst.rt);
-			else {
-				Qk = -1;
-				Vk = Arch.r.rInt(atuInst.rt);
-			}
-			if (!hasDependencies()) {
-				ula.set(atuInst, Vj, Vk);
-				Arch.r.setUsed(atuInst.rd, id_);
-			}
-			break;
-		case I:
-			if (atuInst.instr_mnemonic_.equals(Instruction.ADDI)) {
-				if (Arch.r.rBeingUsed(atuInst.rs) && Vj == -1)
-					Qj = Arch.r.rBeingUsedBy(atuInst.rs);
-				else {
-					Qj = -1;
-					Vj = Arch.r.rInt(atuInst.rs);
-				}
-				if (!hasDependencies()) {
-					Vk = atuInst.rt;
-					ula.set(atuInst, Vj, Vk);
-					Arch.r.setUsed(Vk, id_);
-				}
-			} else if (atuInst.instr_mnemonic_.equals(Instruction.LW)) {
-				if (Arch.r.rBeingUsed(atuInst.rs) && Vj == -1)
-					Qj = Arch.r.rBeingUsedBy(atuInst.rs);
-				else {
-					Qj = -1;
-					Vj = Arch.r.rInt(atuInst.rs);
-				}
-				if (!hasDependencies()) {
-					address = (Vj+atuInst.immediate);
-					Vk = atuInst.rt;
-					ula.set(atuInst, Vj, Vk);
-					Arch.r.setUsed(atuInst.rt, id_);
-				}
-			} else if (atuInst.instr_mnemonic_.equals(Instruction.SW)) {
-				if (Arch.r.rBeingUsed(atuInst.rs) && Vj == -1)
-					Qj = Arch.r.rBeingUsedBy(atuInst.rs);
-				else {
-					Qj = -1;
-					Vj = Arch.r.rInt(atuInst.rs);
-				}
-				if (Arch.r.rBeingUsed(atuInst.rt) && Vj == -1)
-					Qk = Arch.r.rBeingUsedBy(atuInst.rt);
-				else {
-					Qk = -1;
-					Vk = Arch.r.rInt(atuInst.rt);
-				}
-				if (!hasDependencies()) {
-					address = (Vj+atuInst.immediate);
-					Vk = atuInst.rt;
-					ula.set(atuInst, Vj, Vk);
-					Arch.m.setUsed(Vj + atuInst.immediate, id_);
-				}
-			}
-			else {
-				ula.set(atuInst);
-				hasJump = true;
-			}
-			break;
-		case J:
-			ula.set(atuInst);
-			hasJump = true;
-			break;
-		default:
-			ula.set(atuInst);
-			break;
-		}
-	}
 
 	public STATE execute() {
-		/*if (hasDependencies()) {
-			checkDependencies();
-		}*/
-
-		//if (isBusy()/* && !hasDependencies()*/) {
 		if (!ula.tick())
 			return STATE.EXECUTE;
-		return STATE.WRITE;
-
-			/*// Terminou Operacao
-			if (!isBusy()) {
-				switch(Op) {
-				case R:
-					if (atuInst.instr_mnemonic_.equals(Instruction.NOP)) break;
-					for (int i = 0; i < 32; i++) {
-						if (Arch.r.rBeingUsedBy(i) == id_) {
-							Arch.r.clearUsed(i);
-							Arch.r.wInt(i, ula.result);
-							System.out.print("R Op/ R"+i+" = "+Arch.r.read(i) + " = "+ Arch.r.rInt(i));
-						}
-					}
-					for (int i = 0; i < ArchTomassulo.rs.length; i++) {
-						ArchTomassulo.rs[i].putResult(id_,ula.result);
-					}
-					break;
-				case I:
-					if (atuInst.instr_mnemonic_.equals(Instruction.ADDI)) {
-						for (int i = 0; i < 32; i++) {
-							if (Arch.r.rBeingUsedBy(i) == id_) {
-								Arch.r.clearUsed(i);
-								Arch.r.wInt(i, ula.result);
-								System.out.print("ADDI/ R"+Vk+" = "+Arch.r.read(i) + " = "+ Arch.r.rInt(i));
-							}
-						}
-						for (int i = 0; i < ArchTomassulo.rs.length; i++) {
-							ArchTomassulo.rs[i].putResult(id_,ula.result);
-						}
-					} else if (atuInst.instr_mnemonic_.equals(Instruction.LW)) {
-						if (Arch.r.rBeingUsedBy(atuInst.rt) == id_) {
-							Arch.r.clearUsed(atuInst.rt);
-							System.out.print("LW/ R"+Vk+" = MEM["+Vj+"+"+address+"] = ");
-							Arch.r.write(Vk, Arch.m.read(Vj+address));
-							System.out.print(Arch.r.read(Vk));
-						}
-						
-						for (int i = 0; i < 32; i++) {
-							if (Arch.r.rBeingUsedBy(i) == id_) {
-								Arch.r.clearUsed(i);
-								Arch.r.write(i, ula.auxRes);
-							}
-						}
-						for (int i = 0; i < 2; i++) {
-
-						}
-					} else if (atuInst.instr_mnemonic_.equals(Instruction.SW)) {
-						//if (Arch.m.mBeingUsedBy(Vj + atuInst.immediate) == id_)
-							//Arch.m.clearUsed(Vj + atuInst.immediate);
-					}
-					break;
-				case J:
-					break;
-				default:
-					break;
-				}
-				Op = INSTR_TYPE.UNDEFINED;
-				Vj = -1;
-				Vk = -1;
-				Qj = -1;
-				Qk = -1;
-				address = -1;
-				hasJump = false;
-
-				return STATE.WRITE;
-			}
-
-		}*/
-		
+		return STATE.WRITE;		
 	}
 	
 	boolean hasJump () {
