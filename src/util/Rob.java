@@ -35,16 +35,18 @@ public class Rob {
 					entries.get(i).isReady(),
 					entries.get(i).isIn(),
 					entries.get(i).isBusy(),
-					entries.get(i).hasBranched()}; 
+					entries.get(i).hasBranched(),
+					entries.get(i).getAddress()}; 
 		}
 		return data;
 	}
 	
-	public void commit(){
-		if(!entries.isEmpty() && entries.get(getHead()).isReady()){
-			entries.get(getHead()).getInstruction().commit();
+	public boolean commit(){
+		if(!entries.isEmpty() && getHead()!=-1 && entries.get(getHead()).isReady()){
 			Arch.concludedInstructions++;
+			return entries.get(getHead()).getInstruction().commit();
 		}
+		return true;
 	}
 	public boolean ready(int h) {
 		return entries.get(h).isReady();
@@ -52,19 +54,11 @@ public class Rob {
 	public int value(int h) {
 		return entries.get(h).getResult();
 	}
-	/*public int getRealId(int b){
-		int real = -1;
-		for(int i=0;i<entries.size();i++)
-			if (entries.get(i).getUid()==b)
-				real=i;
-		return real;
-	}*/
 	public void setDest(int h, int rd) {
 		entries.get(h).setDestination(rd);
 	}
 	public void setAddress(int h, int a) {
 		entries.get(h).setAddress(a);
-		
 	}
 	public void setValue(int h, int result) {
 		entries.get(h).setValue(result);
@@ -85,8 +79,11 @@ public class Rob {
 		return entries.get(h).isBranch();
 	}
 	public void clear(int h) {
-		for(int i = entries.size()-1;i>=h;i--){
-			entries.remove(i);
+		for(int i = entries.size()-1;i>h;i--){
+			entries.remove(i).getInstruction().clearInst();
+		}
+		for(int i=0;i<Arch.rs.length;i++){
+			Arch.rs[i].clearRS();
 		}
 	}
 	public RobEntry getFirst() {
@@ -106,6 +103,10 @@ public class Rob {
 		return false;
 	}
 	public void setBusy(int h, boolean b) {
-		entries.get(h).setBusy(b);
+		if(entries.size()>h)
+			entries.get(h).setBusy(b);
+	}
+	public int getAddress(int h) {
+		return entries.get(h).getAddress();
 	}
 }

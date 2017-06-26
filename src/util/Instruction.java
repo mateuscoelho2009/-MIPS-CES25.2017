@@ -88,6 +88,7 @@ public class Instruction {
 	}
 	
 	public boolean execute(int Vj, int Vk, int A, int rs_id){
+		h = Arch.ROB.getHead();
 		state = STATE.EXECUTE;
 		done = false;
 		if (tick()){
@@ -124,6 +125,7 @@ public class Instruction {
 			}
 			//Caso Store
 			if(getMnemonic().equals(SW)){
+				System.out.println("h:"+h+"Vj+a:"+(Vj+A));
 				Arch.ROB.setAddress(h,Vj+A);
 				done=true;
 			}
@@ -192,6 +194,7 @@ public class Instruction {
 	public void write(int r){
 		state = STATE.WRITE;
 		done = false;
+		h = Arch.ROB.getHead();
 		if(!getMnemonic().equals(SW)){
 			b = Arch.rs[r].dest;
 			Arch.rs[r].setBusy(false);
@@ -215,7 +218,7 @@ public class Instruction {
 		}
 	}
 	
-	public void commit(){
+	public boolean commit(){
 		state = STATE.COMMIT;
 		done = false;
 		h=Arch.ROB.getHead();
@@ -232,10 +235,11 @@ public class Instruction {
 					else
 						Arch.p.setPC(imm);
 				}
+				return false;
 			}
 			Arch.predictor.updateState(true);
 		} else if(Arch.ROB.getInstruction(h).getMnemonic().equals(SW)) { //ROB[h].Instruction==Store
-			Arch.Mem.write(Arch.ROB.getDest(h), Arch.ROB.getValue(h));
+			Arch.Mem.write(Arch.ROB.getAddress(h), Arch.ROB.getValue(h));
 		} else {
 			Arch.Regs(d,Arch.ROB.getValue(h));
 		}
@@ -244,6 +248,7 @@ public class Instruction {
 			Arch.RegisterStat.setNotBusy(d);
 			Arch.RegisterStat.reorder[d]=-1;
 		}
+		return true;
 	}
 	
 	public Instruction (String byteCode) {
@@ -374,5 +379,14 @@ public class Instruction {
 
 	public STATE getState() {
 		return state;
+	}
+
+	public void clearInst() {
+		setTicker();
+		state = STATE.ISSUE;
+		done = false;
+		result = -1;
+		lw_step2=false;
+		
 	}
 }

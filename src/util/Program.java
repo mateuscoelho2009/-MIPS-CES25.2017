@@ -4,10 +4,11 @@ import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.Vector;
 
 public class Program {
-	private Vector<Instruction> program = new Vector<Instruction>();
+	private ArrayList<Instruction> program = new ArrayList<Instruction>();
 	private int pc_ = 0;
 	private boolean terminated = false;
 	

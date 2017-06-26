@@ -61,52 +61,53 @@ public class Arch {
     		inst = Arch.p.getNextInstruction();
 			//inst.setPC(Arch.p.getPC());
 			boolean findRS = false;
-			ROB.commit();
-			for(int i=0;i<ticked.length && !findRS;i++){
-				switch (inst.getMnemonic()) {
-	    		case Instruction.ADD: case Instruction.SUB: case Instruction.ADDI:
-	    			if (!rs[i].isBusy() && rs[i].getType()==Rs.TYPE.ADD){ 
-	    				rs[i].issue(inst);
-	    				ticked[i] = true;
-	    				findRS = true;
-	    			}
-	    			break;
-	    		case Instruction.MUL:
-	    			if (!rs[i].isBusy() && rs[i].getType()==Rs.TYPE.MULT){ 
-	    				rs[i].issue(inst);
-	    				ticked[i] = true;
-	    				findRS = true;
-	    			}
-	    			break;
-	    		case Instruction.LW: case Instruction.SW:
-	    			if (!rs[i].isBusy() && rs[i].getType()==Rs.TYPE.LOAD){ 
-	    				rs[i].issue(inst);
-	    				ticked[i] = true;
-	    				findRS = true;
-	    			}
-	    			break;
-	    		case Instruction.JMP: case Instruction.NOP:case Instruction.BEQ:
-	    		case Instruction.BLE:case Instruction.BNE:
-	    			if (!rs[i].isBusy()){ 
-	    				rs[i].issue(inst);
-	    				ticked[i]=true;
-	    				findRS = true;
-	    			}
-	    			break;
+			if(ROB.commit()){
+				for(int i=0;i<ticked.length && !findRS;i++){
+					switch (inst.getMnemonic()) {
+		    		case Instruction.ADD: case Instruction.SUB: case Instruction.ADDI:
+		    			if (!rs[i].isBusy() && rs[i].getType()==Rs.TYPE.ADD){ 
+		    				rs[i].issue(inst);
+		    				ticked[i] = true;
+		    				findRS = true;
+		    			}
+		    			break;
+		    		case Instruction.MUL:
+		    			if (!rs[i].isBusy() && rs[i].getType()==Rs.TYPE.MULT){ 
+		    				rs[i].issue(inst);
+		    				ticked[i] = true;
+		    				findRS = true;
+		    			}
+		    			break;
+		    		case Instruction.LW: case Instruction.SW:
+		    			if (!rs[i].isBusy() && rs[i].getType()==Rs.TYPE.LOAD){ 
+		    				rs[i].issue(inst);
+		    				ticked[i] = true;
+		    				findRS = true;
+		    			}
+		    			break;
+		    		case Instruction.JMP: case Instruction.NOP:case Instruction.BEQ:
+		    		case Instruction.BLE:case Instruction.BNE:
+		    			if (!rs[i].isBusy()){ 
+		    				rs[i].issue(inst);
+		    				ticked[i]=true;
+		    				findRS = true;
+		    			}
+		    			break;
+		    		}
 	    		}
-    		}
-
-			if (!findRS){
-				Arch.p.setPC(Arch.p.getPC() - 4);
-				System.out.println("Não há estação de reserva disponí­vel");
+	
+				if (!findRS){
+					Arch.p.setPC(Arch.p.getPC() - 4);
+					System.out.println("Não há estação de reserva disponí­vel");
+				}
+				
+				for (int i=0;i<rs.length;i++){
+	    			if(ticked[i]==false){
+	    				rs[i].tick();
+	    			}
+	    			rs[i].updateState();
+	    		}
 			}
-			
-			for (int i=0;i<rs.length;i++){
-    			if(ticked[i]==false){
-    				rs[i].tick();
-    			}
-    			rs[i].updateState();
-    		}
 			
     	}
     	else {

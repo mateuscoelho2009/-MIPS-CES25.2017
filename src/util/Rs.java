@@ -10,26 +10,21 @@ public class Rs {
 	Instruction inst;
 	boolean busy;
 	Instruction.STATE state;
-	//boolean hasJump;
-	//INSTR_TYPE Op;
 	public int Vj, Vk, A;
 	public int Qj, Qk, dest;
-	//boolean firstTimeIssue = true;
 	protected TYPE _type = TYPE.NONE;
 
 	public Rs(int id, TYPE type) {
 		_type = type;
 		id_ = id;
-		//ula = new Ula();
-		//state = STATE.FREE;
 		busy = false;
-		//Op = INSTR_TYPE.UNDEFINED;
+		inst = null;
+		state = Instruction.STATE.FREE;
 		Vj = -1;
 		Vk = -1;
 		Qj = -1;
 		Qk = -1;
 		A = -1;
-		//hasJump = false;
 	}
 	public void issue(Instruction inst) {
 		this.inst = inst;
@@ -55,7 +50,6 @@ public class Rs {
 		updateState();
 		switch(state){
 		case FREE:
-			System.out.println("RS Livre!");
 			break;
 		case ISSUE:
 			if(inst.done) {
@@ -137,7 +131,16 @@ public class Rs {
 		}			
 		
 	}
-	
+	public void clearRS(){
+		busy = false;
+		inst = null;
+		state = Instruction.STATE.FREE;
+		Vj = -1;
+		Vk = -1;
+		Qj = -1;
+		Qk = -1;
+		A = -1;
+	}
 	public void updateState() {
 		if(inst!=null)
 			state = inst.getState();
