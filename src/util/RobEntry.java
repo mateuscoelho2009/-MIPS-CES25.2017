@@ -16,7 +16,10 @@ public class RobEntry {
 	
 	public RobEntry(Instruction instr, int uid){
 		setInstruction(instr);
-		setDestination(instr.rd);
+		if(instr.rd!=0)
+			setDestination(instr.rd);
+		else
+			setDestination(instr.rt);
 		setReady(false);
 		this.uid = uid;
 	}

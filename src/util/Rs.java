@@ -373,6 +373,9 @@ public class Rs {
 	}
 	*/
 	public void updateState() {
-		state = inst.getState();
+		if(inst!=null)
+			state = inst.getState();
+		else
+			state = Instruction.STATE.FREE;
 	}
 }
