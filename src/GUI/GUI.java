@@ -21,7 +21,7 @@ public class GUI {
 		Object[][] registradoresData = populateData("registradores"); 
 		_registradores = new DynamicTableGUI ("Registradores", registradoresTitle, registradoresData, xPos, yPos);
 		xPos += _registradores.getWidth();
-		String[] bufferReordTitle = new String[] {"Instrução", "Estado", "Destino", "Resultado", "Pronto", "isIn", "Busy", "Branched","Address"};
+		String[] bufferReordTitle = new String[] {"ID","Instrução", "Estado", "Destino", "Resultado", "Pronto", "isIn", "Busy", "Branched","Address"};
 		Object[][] bufferReordData = populateData("rob");
 		_bufferReord = new DynamicTableGUI ("Buffer de Reordenação", bufferReordTitle, bufferReordData, xPos, yPos);
 		

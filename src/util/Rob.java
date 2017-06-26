@@ -28,7 +28,9 @@ public class Rob {
 	public Object[][] getListInfo() {
 		Object[][] data = new Object[entries.size()][];
 		for (int i = 0; i < entries.size(); i++) {
-			data[i] = new Object[] {entries.get(i).getInstruction(),
+			data[i] = new Object[] {
+					i,
+					entries.get(i).getInstruction(),
 					entries.get(i).getState(),
 					entries.get(i).getDestination(),
 					entries.get(i).getResult(),

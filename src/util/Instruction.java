@@ -30,7 +30,7 @@ public class Instruction implements Cloneable{
 		if (Arch.RegisterStat.isBusy(rs)){
 			h = Arch.RegisterStat.reorder[rs];
 			if(Arch.ROB.ready(h)){
-				Arch.rs[r].Vj = Arch.ROB.value(h);
+				Arch.rs[r].Vj = Arch.ROB.value(h); // troquei h por r
 				Arch.rs[r].Qj = -1;
 			} else {
 				Arch.rs[r].Qj = h;
@@ -59,7 +59,7 @@ public class Instruction implements Cloneable{
 				mnemonic.equals(BNE)){
 			if (Arch.RegisterStat.isBusy(rt)){
 				h = Arch.RegisterStat.reorder[rt];
-				if(Arch.ROB.ready(b)){	// Mudei h por b
+				if(Arch.ROB.ready(b)){	
 					Arch.rs[r].Vk = Arch.ROB.value(h);
 					Arch.rs[r].Qk = -1;
 				} else {
@@ -224,6 +224,7 @@ public class Instruction implements Cloneable{
 	public boolean commit(){
 		state = STATE.COMMIT;
 		done = false;
+		boolean ret = true;
 		h=Arch.ROB.getHead();
 		if(Arch.ROB.getDest(h)!=-1){
 			d = Arch.ROB.getDest(h);
@@ -238,8 +239,8 @@ public class Instruction implements Cloneable{
 					else
 						Arch.p.setPC(imm);
 				}
-				Arch.ROB.setBusy(h, false);
-				return false;
+				//Arch.ROB.setBusy(h, false);
+				ret = false;
 			}
 			Arch.predictor.updateState(true);
 		} else if(Arch.ROB.getInstruction(h).getMnemonic().equals(SW)) { //ROB[h].Instruction==Store
@@ -252,7 +253,7 @@ public class Instruction implements Cloneable{
 			Arch.RegisterStat.setNotBusy(d);
 			Arch.RegisterStat.reorder[d]=-1;
 		}
-		return true;
+		return ret;
 	}
 	
 	public Instruction (String byteCode) {
