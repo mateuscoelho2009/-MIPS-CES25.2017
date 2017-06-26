@@ -18,7 +18,7 @@ public class Arch {
 	public static Instruction inst;
 	protected static boolean[] ticked= new boolean[7];
 	protected static Rob ROB;
-	private static int reorder_uid = -1;
+	//private static int reorder_uid = -1;
 	public Arch(String path, Predictor pred) throws IOException {
 		//Arch.restart();
 		concludedInstructions = 0;
@@ -33,10 +33,10 @@ public class Arch {
 		ROB = new Rob();
 		predictor = pred;
 	}
-	public static int reorderUID(){
+	/*public static int reorderUID(){
 		reorder_uid++;
 		return reorder_uid;
-	}
+	}*/
 	public static int Regs(int pos){
 		return Arch.RegisterStat.rInt(pos);
 	}
@@ -61,6 +61,7 @@ public class Arch {
     		inst = Arch.p.getNextInstruction();
 			//inst.setPC(Arch.p.getPC());
 			boolean findRS = false;
+			ROB.commit();
 			for(int i=0;i<ticked.length && !findRS;i++){
 				switch (inst.getMnemonic()) {
 	    		case Instruction.ADD: case Instruction.SUB: case Instruction.ADDI:
@@ -107,7 +108,6 @@ public class Arch {
     			rs[i].updateState();
     		}
 			
-			ROB.commit();
     	}
     	else {
     		System.out.println("Encerrando...");
@@ -123,7 +123,7 @@ public class Arch {
 	}
 
 	public static Object[] getProgramInfo() {
-		return new Object[] {_clock, Arch.p.getPC(), concludedInstructions, (double)_clock/(double)concludedInstructions};
+		return new Object[] {_clock, Arch.p.getPC(), concludedInstructions, (double)_clock/(double)concludedInstructions, ROB.getHead()};
 	}
 
 	public static void incrementInstructions() {

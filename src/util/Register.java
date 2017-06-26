@@ -60,7 +60,7 @@ public class Register {
 		return Qi[pos];
 	}
 	public Object[] getInfo(int rID) {
-		return new Object[] {rID, Qi[rID], rInt(rID)};
+		return new Object[] {rID, Qi[rID], rInt(rID),reorder[rID],busy[rID]};
 	}
 	public void setReorder(int rd, int b) {
 		reorder[rd]=b;

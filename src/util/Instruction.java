@@ -17,7 +17,7 @@ public class Instruction {
 	static public enum INSTR_TYPE {R, I, J, UNDEFINED};
 	public static enum TYPE2 {NONE,LOAD,ADD,MULT}
 	public static enum STATE {FREE,ISSUE,EXECUTE,WRITE,COMMIT}
-	String instr_mnemonic_;
+	String mnemonic;
 	INSTR_TYPE type_;
 	STATE state;
 	public boolean done, lw_step2,branched;
@@ -45,15 +45,15 @@ public class Instruction {
 	}
 	
 	public void specific_issue(int r, int b){
-		if(instr_mnemonic_.equals(ADD)||
-				instr_mnemonic_.equals(ADDI)||
-				instr_mnemonic_.equals(MUL)||
-				instr_mnemonic_.equals(NOP)||
-				instr_mnemonic_.equals(SUB)||
-				instr_mnemonic_.equals(SW)||
-				instr_mnemonic_.equals(BEQ)||
-				instr_mnemonic_.equals(BLE)||
-				instr_mnemonic_.equals(BNE)){
+		if(mnemonic.equals(ADD)||
+				mnemonic.equals(ADDI)||
+				mnemonic.equals(MUL)||
+				mnemonic.equals(NOP)||
+				mnemonic.equals(SUB)||
+				mnemonic.equals(SW)||
+				mnemonic.equals(BEQ)||
+				mnemonic.equals(BLE)||
+				mnemonic.equals(BNE)){
 			if (Arch.RegisterStat.isBusy(rt)){
 				h = Arch.RegisterStat.reorder[rt];
 				if(Arch.ROB.ready(h)){
@@ -67,23 +67,22 @@ public class Instruction {
 				Arch.rs[r].Qk = -1;
 			}
 		}
-		if(instr_mnemonic_.equals(ADD)||
-				instr_mnemonic_.equals(ADDI)||
-				instr_mnemonic_.equals(MUL)||
-				instr_mnemonic_.equals(NOP)||
-				instr_mnemonic_.equals(SUB)){
+		if(mnemonic.equals(ADD)||
+				mnemonic.equals(MUL)||
+				mnemonic.equals(NOP)||
+				mnemonic.equals(SUB)){
 			Arch.RegisterStat.setReorder(rd,b);
 			Arch.RegisterStat.setBusy(rd);
 			Arch.ROB.setDest(b,rd);
 		}	
-		if(instr_mnemonic_.equals(LW)){
+		if(mnemonic.equals(ADDI)||mnemonic.equals(LW)){
 			lw_step2 = false;
 			Arch.rs[r].A = imm;
 			Arch.RegisterStat.reorder[rt] = b;
 			Arch.RegisterStat.setBusy(rt);
 			Arch.ROB.setDest(b, rt);
 		}	
-		if(instr_mnemonic_.equals(SW)){
+		if(mnemonic.equals(SW)){
 			Arch.rs[r].A = imm;
 		}	
 	}
@@ -191,6 +190,8 @@ public class Instruction {
 	}
 	
 	public void write(int r){
+		state = STATE.WRITE;
+		done = false;
 		if(!getMnemonic().equals(SW)){
 			b = Arch.rs[r].dest;
 			Arch.rs[r].setBusy(false);
@@ -206,18 +207,25 @@ public class Instruction {
 			}
 			Arch.ROB.setValue(b,result);
 			Arch.ROB.setReady(b);
+			done = true;
 		} else {
 			Arch.ROB.setValue(h, Arch.rs[r].Vk);
+			Arch.ROB.setReady(h);
+			done = true;
 		}
 	}
 	
 	public void commit(){
-		if(Arch.ROB.getDest(h)!=-1)
+		state = STATE.COMMIT;
+		done = false;
+		h=Arch.ROB.getHead();
+		if(Arch.ROB.getDest(h)!=-1){
 			d = Arch.ROB.getDest(h);
+		}
 		if(Arch.ROB.isBranch(h)){
 			if(branched != doBranch(rs,rt,getMnemonic())) {
 				Arch.predictor.updateState(false);
-				Arch.ROB.clear();
+				Arch.ROB.clear(h);
 				if(doBranch(rs,rt,getMnemonic())){
 					if(getMnemonic().equals(BEQ)||getMnemonic().equals(BNE))
 						Arch.p.setPC(Arch.p.getPC()+4+imm);
@@ -226,14 +234,16 @@ public class Instruction {
 				}
 			}
 			Arch.predictor.updateState(true);
-		} else if(Arch.ROB.getFirst().getInstruction().getMnemonic().equals(SW)) { //ROB[h].Instruction==Store
-			Arch.Mem.write(Arch.ROB.getFirst().getDestination(), Arch.ROB.getFirst().getValue());
+		} else if(Arch.ROB.getInstruction(h).getMnemonic().equals(SW)) { //ROB[h].Instruction==Store
+			Arch.Mem.write(Arch.ROB.getDest(h), Arch.ROB.getValue(h));
 		} else {
-			Arch.Regs(d,Arch.ROB.getFirst().getValue());
+			Arch.Regs(d,Arch.ROB.getValue(h));
 		}
-		Arch.ROB.delFirst();
-		if(Arch.RegisterStat.reorder[d]==h)
+		Arch.ROB.setBusy(h,false);
+		if(Arch.RegisterStat.reorder[d]==h){
 			Arch.RegisterStat.setNotBusy(d);
+			Arch.RegisterStat.reorder[d]=-1;
+		}
 	}
 	
 	public Instruction (String byteCode) {
@@ -241,16 +251,16 @@ public class Instruction {
 		switch(opcode) {
 			case TYPER: type_ = INSTR_TYPE.R; break;
 			case ADDI: case BEQ: case BLE: case LW: case SW:
-				type_ = INSTR_TYPE.I; instr_mnemonic_ = opcode;
+				type_ = INSTR_TYPE.I; mnemonic = opcode;
 				break;
-			case JMP: type_ = INSTR_TYPE.J; instr_mnemonic_ = opcode;
+			case JMP: type_ = INSTR_TYPE.J; mnemonic = opcode;
 				break;
 			//Caso qualquer outra opção, considera LI e processa como ADDI
-			default: type_ = INSTR_TYPE.I; instr_mnemonic_ = ADDI;
+			default: type_ = INSTR_TYPE.I; mnemonic = ADDI;
 		}
 		
 		if (type_ == INSTR_TYPE.R)
-			instr_mnemonic_ = byteCode.substring(26,32);
+			mnemonic = byteCode.substring(26,32);
 		
 		switch (type_) {
 			case R:
@@ -308,35 +318,7 @@ public class Instruction {
 	}
 	
 	String getMnemonic () {
-		return instr_mnemonic_;
-	}
-	
-	INSTR_TYPE getType () {
-		return type_;
-	}
-	
-	int getRS() {
-		return rs;
-	}
-	
-	int getRT() {
-		return rt;
-	}
-	
-	int getRD() {
-		return rd;
-	}
-	
-	int getShamt () {
-		return shamt;
-	}
-	
-	int getTargetAddress () {
-		return targetAddress;
-	}
-	
-	int getImmediate () {
-		return imm;
+		return mnemonic;
 	}
 	
 	int getPC() {
@@ -348,46 +330,46 @@ public class Instruction {
 	}
 
 	public String toString() {
-		String mnemonic;
-		switch(instr_mnemonic_){
+		String mnemonic_s;
+		switch(mnemonic){
 		case ADD:
-			mnemonic = "ADD R"+rd+",R"+rs+",R"+rt;
+			mnemonic_s = "ADD R"+rd+",R"+rs+",R"+rt;
 			break;
 		case ADDI:
-			mnemonic = "ADDI R"+rt+",R"+rs+","+imm;
+			mnemonic_s = "ADDI R"+rt+",R"+rs+","+imm;
 			break;
 		case BEQ:
-			mnemonic = "BEQ R"+rs+",R"+rt+","+targetAddress;
+			mnemonic_s = "BEQ R"+rs+",R"+rt+","+targetAddress;
 			break;
 		case BLE:
-			mnemonic = "BLE R"+rs+",R"+rt+","+targetAddress;
+			mnemonic_s = "BLE R"+rs+",R"+rt+","+targetAddress;
 			break;
 		case BNE:
-			mnemonic = "BNE R"+rs+",R"+rt+","+targetAddress;
+			mnemonic_s = "BNE R"+rs+",R"+rt+","+targetAddress;
 			break;
 		case JMP:
-			mnemonic = "JMP "+imm;
+			mnemonic_s = "JMP "+imm;
 			break;
 		case LW:
-			mnemonic = "LW R"+rt+","+imm+"(R"+rs+")";
+			mnemonic_s = "LW R"+rt+","+imm+"(R"+rs+")";
 			break;
 		case MUL:
-			mnemonic = "MUL R"+rd+",R"+rs+",R"+rt;
+			mnemonic_s = "MUL R"+rd+",R"+rs+",R"+rt;
 			break;
 		case NOP:
-			mnemonic = "NOP";
+			mnemonic_s = "NOP";
 			break;
 		case SUB:
-			mnemonic = "SUB R"+rd+",R"+rs+",R"+rt;
+			mnemonic_s = "SUB R"+rd+",R"+rs+",R"+rt;
 			break;
 		case SW:
-			mnemonic = "SW R"+rt+","+imm+"(R"+rs+")";
+			mnemonic_s = "SW R"+rt+","+imm+"(R"+rs+")";
 			break;
 		default:
-			mnemonic = "invalid";
+			mnemonic_s = "invalid";
 			break;
 		}
-		return mnemonic;
+		return mnemonic_s;
 	}
 
 	public STATE getState() {

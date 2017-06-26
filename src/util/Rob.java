@@ -2,21 +2,28 @@ package util;
 
 import java.util.LinkedList;
 
-import util.RobEntry.STATE;
 
 public class Rob {
-	private LinkedList<RobEntry> entries = new LinkedList<>();
-	
+	private LinkedList<RobEntry> entries = new LinkedList<RobEntry>();
+	//private int head=0;
 	public int addInstruction(Instruction instr, int RSid){
-		int b = Arch.reorderUID();
-		entries.add(new RobEntry(instr,b));
-		entries.getLast().setRSid(RSid);
-		entries.getLast().setState(STATE.ISSUE);
-		entries.getLast().setReady(false);
-		return b;
+		//int b = Arch.reorderUID();
+		RobEntry novo = new RobEntry(instr);
+		novo.setRSid(RSid);
+		novo.setReady(false);
+		entries.add(novo);
+		return entries.indexOf(novo);
 	}
 	public boolean isEmpty(){
 		return (entries.size()<=0);
+	}
+	public int getHead(){
+		//return head;
+		for(int i=0;i<entries.size();i++){
+			if(entries.get(i).isBusy())
+				return i;
+		}
+		return -1;
 	}
 	public Object[][] getListInfo() {
 		Object[][] data = new Object[entries.size()][];
@@ -27,60 +34,69 @@ public class Rob {
 					entries.get(i).getResult(),
 					entries.get(i).isReady(),
 					entries.get(i).isIn(),
-					entries.get(i).type(),
+					entries.get(i).isBusy(),
 					entries.get(i).hasBranched()}; 
 		}
 		return data;
 	}
 	
 	public void commit(){
-		if(!entries.isEmpty() && entries.getFirst().isReady()){
-			entries.getFirst().getInstruction().commit();
+		if(!entries.isEmpty() && entries.get(getHead()).isReady()){
+			entries.get(getHead()).getInstruction().commit();
+			Arch.concludedInstructions++;
 		}
 	}
 	public boolean ready(int h) {
-		return entries.get(getRealId(h)).isReady();
+		return entries.get(h).isReady();
 	}
 	public int value(int h) {
-		return entries.get(getRealId(h)).getResult();
+		return entries.get(h).getResult();
 	}
-	public int getRealId(int b){
+	/*public int getRealId(int b){
 		int real = -1;
 		for(int i=0;i<entries.size();i++)
 			if (entries.get(i).getUid()==b)
 				real=i;
 		return real;
-	}
+	}*/
 	public void setDest(int h, int rd) {
-		entries.get(getRealId(h)).setDestination(rd);
+		entries.get(h).setDestination(rd);
 	}
 	public void setAddress(int h, int a) {
 		entries.get(h).setAddress(a);
 		
 	}
 	public void setValue(int h, int result) {
-		entries.get(getRealId(h)).setValue(result);
+		entries.get(h).setValue(result);
 	}
 	public void setReady(int h) {
-		entries.get(getRealId(h)).setReady(true);
+		entries.get(h).setReady(true);
 	}
 	public int getDest(int h) {
-		return entries.get(getRealId(h)).getDestination();
+		return entries.get(h).getDestination();
+	}
+	public int getValue(int h) {
+		return entries.get(h).getValue();
+	}
+	public Instruction getInstruction(int h) {
+		return entries.get(h).getInstruction();
 	}
 	public boolean isBranch(int h) {
-		return entries.get(getRealId(h)).isBranch();
+		return entries.get(h).isBranch();
 	}
-	public void clear() {
-		entries.clear();
+	public void clear(int h) {
+		for(int i = entries.size()-1;i>=h;i--){
+			entries.remove(i);
+		}
 	}
 	public RobEntry getFirst() {
-		return entries.getFirst();
+		return entries.get(getHead());
 	}
 	public void delFirst() {
 		entries.removeFirst();
 	}
 	public boolean isHeadStore(){
-		return entries.getFirst().getInstruction().getMnemonic().equals(Instruction.SW);
+		return entries.get(getHead()).getInstruction().getMnemonic().equals(Instruction.SW);
 	}
 	public boolean haveStoreWithAddress(int a) {
 		for(int i=0;i<entries.size();i++){
@@ -88,5 +104,8 @@ public class Rob {
 				return true;
 		}
 		return false;
+	}
+	public void setBusy(int h, boolean b) {
+		entries.get(h).setBusy(b);
 	}
 }

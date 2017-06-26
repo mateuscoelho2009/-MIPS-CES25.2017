@@ -1,27 +1,29 @@
 package util;
 
 public class RobEntry {
-	public static enum STATE {ISSUE, EXECUTE, WRITE, COMMIT};
-	public static enum TYPE {BRANCH, STORE, REGISTER, JUMP};
+	//public static enum STATE {ISSUE, EXECUTE, WRITE, COMMIT};
+	//public static enum TYPE {BRANCH, STORE, REGISTER, JUMP};
 	private int uid;
 	private Instruction instruction;
-	private STATE state;
+	//private STATE state;
 	private int dest;
 	private int address;
 	private int value;
 	private boolean ready;
 	private int isIn;
-	private TYPE type;
+	//private TYPE type;
 	private boolean branch;
+	private boolean busy;
 	
-	public RobEntry(Instruction instr, int uid){
+	public RobEntry(Instruction instr){
 		setInstruction(instr);
-		if(instr.rd!=0)
-			setDestination(instr.rd);
-		else
-			setDestination(instr.rt);
+		//if(instr.rd!=0)
+		setDestination(instr.rd);
+		//else
+			//setDestination(instr.rt);
 		setReady(false);
-		this.uid = uid;
+		setBusy(true);
+		//this.uid = uid;
 	}
 	public int getUid(){
 		return uid;
@@ -34,12 +36,8 @@ public class RobEntry {
 		this.instruction = instruction;
 	}
 
-	public STATE getState() {
-		return state;
-	}
-
-	public void setState(STATE state) {
-		this.state = state;
+	public Instruction.STATE getState() {
+		return instruction.getState();
 	}
 
 	public int getDestination() {
@@ -75,10 +73,6 @@ public class RobEntry {
 	public void setRSid(int isIn) {
 		this.isIn = isIn;
 	}
-	
-	public TYPE type(){
-		return type;
-	}
 
 	public boolean hasBranched() {
 		return branch;
@@ -103,5 +97,11 @@ public class RobEntry {
 				instruction.getMnemonic().equals(Instruction.BNE))
 			return true;
 		return false;
+	}
+	public boolean isBusy() {
+		return busy;
+	}
+	public void setBusy(boolean busy) {
+		this.busy = busy;
 	}
 }

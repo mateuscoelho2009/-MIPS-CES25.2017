@@ -13,15 +13,15 @@ public class GUI {
 		int xPos = 0;
 		int yPos = 0;
 		//_arch = arch;
-		String[] estacaoReservaTitle = new String[] {"ID", "Tipo", "Busy", "Instrução", "Vj", "Vk", "Qj", "Qk", "A", "Estado", "Dest."};
+		String[] estacaoReservaTitle = new String[] {"ID", "Tipo", "Busy", "Instrução", "Vj", "Vk", "Qj", "Qk", "A", "Estado"};
 		Object[][] estacaoReservaData = populateData("estacao");
 		_estacaoReserva = new DynamicTableGUI("Estação Reserva", estacaoReservaTitle, estacaoReservaData, xPos, yPos);
 		xPos += _estacaoReserva.getWidth();
-		String[] registradoresTitle = new String[] {"Nome", "Qi", "Vi"};
+		String[] registradoresTitle = new String[] {"Nome", "Qi", "Vi","Reorder","busy"};
 		Object[][] registradoresData = populateData("registradores"); 
 		_registradores = new DynamicTableGUI ("Registradores", registradoresTitle, registradoresData, xPos, yPos);
 		xPos += _registradores.getWidth();
-		String[] bufferReordTitle = new String[] {"Instrução", "Estado", "Destino", "Resultado", "Pronto", "isIn", "Tipo", "Branched"};
+		String[] bufferReordTitle = new String[] {"Instrução", "Estado", "Destino", "Resultado", "Pronto", "isIn", "Busy", "Branched"};
 		Object[][] bufferReordData = populateData("rob");
 		_bufferReord = new DynamicTableGUI ("Buffer de Reordenação", bufferReordTitle, bufferReordData, xPos, yPos);
 		
@@ -31,7 +31,7 @@ public class GUI {
 		Object[][] memoryData =  populateData("memory"); 
 		_memory = new DynamicTableGUI ("Memória Recente Usada", memoryTitle, memoryData, xPos, yPos);
 		xPos += _memory.getWidth();
-		String[] statusTitle = new String[] {"Clock corrente", "PC", "Número de Instruções Concluídas", "CPI"};
+		String[] statusTitle = new String[] {"Clock corrente", "PC", "Número de Instruções Concluídas", "CPI", "Head"};
 		Object[][] statusData = populateData("status"); 
 		_status = new DynamicTableGUI ("Status", statusTitle, statusData, xPos, yPos);
 	
