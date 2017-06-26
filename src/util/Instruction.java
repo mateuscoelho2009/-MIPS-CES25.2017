@@ -20,8 +20,8 @@ public class Instruction {
 	String instr_mnemonic_;
 	INSTR_TYPE type_;
 	STATE state;
-	private boolean done,lw_step2;
-	int rs, rt, rd, targetAddress, shamt, imm, pc, b, h, ticker, result;
+	public boolean done, lw_step2,branched;
+	int rs, rt, rd, targetAddress, shamt, imm, pc, b, h, d, ticker, result;
 	
 	public void issue (int r) {
 		if (Arch.RegisterStat.isBusy(rs)){
@@ -50,7 +50,10 @@ public class Instruction {
 				instr_mnemonic_.equals(MUL)||
 				instr_mnemonic_.equals(NOP)||
 				instr_mnemonic_.equals(SUB)||
-				instr_mnemonic_.equals(SW)){
+				instr_mnemonic_.equals(SW)||
+				instr_mnemonic_.equals(BEQ)||
+				instr_mnemonic_.equals(BLE)||
+				instr_mnemonic_.equals(BNE)){
 			if (Arch.RegisterStat.isBusy(rt)){
 				h = Arch.RegisterStat.reorder[rt];
 				if(Arch.ROB.ready(h)){
@@ -125,8 +128,66 @@ public class Instruction {
 				Arch.ROB.setAddress(h,Vj+A);
 				done=true;
 			}
+			//Branches
+			if(getMnemonic().equals(BEQ)){
+				boolean go;
+				if(Vj!=-1 && Vk!=-1){
+					go = doBranch(Vj,Vk,BEQ);
+				} else {
+					go = Arch.predictor.executeBranch();
+				}
+				if(go){
+					Arch.p.setPC(Arch.p.getPC()+4+imm);
+					branched = true;
+				} else {
+					branched = false;
+				}
+				done=true;
+			}
+			if(getMnemonic().equals(BNE)){
+				boolean go;
+				if(Vj!=-1 && Vk!=-1){
+					go = doBranch(Vj,Vk,BNE);
+				} else {
+					go = Arch.predictor.executeBranch();
+				}
+				if(go){
+					Arch.p.setPC(Arch.p.getPC()+4+imm);
+					branched = true;
+				} else {
+					branched = false;
+				}
+				done=true;
+			}
+			if(getMnemonic().equals(BLE)){
+				boolean go;
+				if(Vj!=-1 && Vk!=-1){
+					go = doBranch(Vj,Vk,BLE);
+				} else {
+					go = Arch.predictor.executeBranch();
+				}
+				if(go){
+					Arch.p.setPC(imm);
+					branched = true;
+				} else {
+					branched = false;
+				}
+				done=true;
+			}
 		}	
 		return done;
+	}
+	
+	public boolean doBranch(int rs, int rt, String type){
+		switch(type){
+		case BEQ:
+			return (Arch.RegisterStat.rInt(rs)==Arch.RegisterStat.rInt(rt));
+		case BNE:
+			return (Arch.RegisterStat.rInt(rs)!=Arch.RegisterStat.rInt(rt));
+		case BLE:
+			return (Arch.RegisterStat.rInt(rs)<=Arch.RegisterStat.rInt(rt));
+		}
+		return false;
 	}
 	
 	public void write(int r){
@@ -148,6 +209,31 @@ public class Instruction {
 		} else {
 			Arch.ROB.setValue(h, Arch.rs[r].Vk);
 		}
+	}
+	
+	public void commit(){
+		if(Arch.ROB.getDest(h)!=-1)
+			d = Arch.ROB.getDest(h);
+		if(Arch.ROB.isBranch(h)){
+			if(branched != doBranch(rs,rt,getMnemonic())) {
+				Arch.predictor.updateState(false);
+				Arch.ROB.clear();
+				if(doBranch(rs,rt,getMnemonic())){
+					if(getMnemonic().equals(BEQ)||getMnemonic().equals(BNE))
+						Arch.p.setPC(Arch.p.getPC()+4+imm);
+					else
+						Arch.p.setPC(imm);
+				}
+			}
+			Arch.predictor.updateState(true);
+		} else if(Arch.ROB.getFirst().getInstruction().getMnemonic().equals(SW)) { //ROB[h].Instruction==Store
+			Arch.Mem.write(Arch.ROB.getFirst().getDestination(), Arch.ROB.getFirst().getValue());
+		} else {
+			Arch.Regs(d,Arch.ROB.getFirst().getValue());
+		}
+		Arch.ROB.delFirst();
+		if(Arch.RegisterStat.reorder[d]==h)
+			Arch.RegisterStat.setNotBusy(d);
 	}
 	
 	public Instruction (String byteCode) {
@@ -341,5 +427,9 @@ public class Instruction {
 			break;
 		}
 		return mnemonic;
+	}
+
+	public STATE getState() {
+		return state;
 	}
 }

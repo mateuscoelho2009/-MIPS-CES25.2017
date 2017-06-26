@@ -94,4 +94,11 @@ public class RobEntry {
 	public void setAddress(int address) {
 		this.address = address;
 	}
+	public boolean isBranch() {
+		if(instruction.getMnemonic().equals(Instruction.BEQ)||
+				instruction.getMnemonic().equals(Instruction.BLE)||
+				instruction.getMnemonic().equals(Instruction.BNE))
+			return true;
+		return false;
+	}
 }

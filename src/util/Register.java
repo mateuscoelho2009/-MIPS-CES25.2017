@@ -10,6 +10,7 @@ public class Register {
 		r = new String[32];
 		Qi = new int[32];
 		busy = new boolean[32];
+		reorder = new int[32];
 		for(int i=0; i<r.length;i++) {
 			r[i]="00000000000000000000000000000000";
 			Qi[i] = -1;
@@ -63,5 +64,8 @@ public class Register {
 	}
 	public void setReorder(int rd, int b) {
 		reorder[rd]=b;
+	}
+	public void setNotBusy(int d) {
+		busy[d]=false;
 	}
 }

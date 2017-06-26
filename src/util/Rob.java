@@ -127,4 +127,29 @@ public class Rob {
 	public void setReady(int b) {
 		entries.get(b).setReady(true);
 	}
+	public int getDest(int h) {
+		return entries.get(h).getDestination();
+	}
+	public boolean isBranch(int h) {
+		return entries.get(h).isBranch();
+	}
+	public void clear() {
+		entries.clear();
+	}
+	public RobEntry getFirst() {
+		return entries.getFirst();
+	}
+	public void delFirst() {
+		entries.removeFirst();
+	}
+	public boolean isHeadStore(){
+		return entries.getFirst().getInstruction().getMnemonic().equals(Instruction.SW);
+	}
+	public boolean haveStoreWithAddress(int a) {
+		for(int i=0;i<entries.size();i++){
+			if(entries.get(i).getAddress()==a)
+				return true;
+		}
+		return false;
+	}
 }
