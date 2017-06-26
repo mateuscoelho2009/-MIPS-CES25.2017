@@ -15,7 +15,7 @@ public class Rob {
 		return entries.indexOf(novo);
 	}
 	public boolean isEmpty(){
-		return (entries.size()<=0);
+		return (getHead()==-1);
 	}
 	public int getHead(){
 		//return head;

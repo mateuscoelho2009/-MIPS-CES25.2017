@@ -49,7 +49,7 @@ public class Instruction implements Cloneable{
 	
 	public void specific_issue(int r, int b){
 		if(mnemonic.equals(ADD)||
-				mnemonic.equals(ADDI)||
+				//mnemonic.equals(ADDI)||
 				mnemonic.equals(MUL)||
 				mnemonic.equals(NOP)||
 				mnemonic.equals(SUB)||
