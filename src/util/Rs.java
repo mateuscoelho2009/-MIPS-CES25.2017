@@ -81,7 +81,8 @@ public class Rs {
 				else {
 					inst.execute(Vj, Vk, A, id_);
 				}
-			} else {System.out.println("Erro no Issue!");}
+			} else {System.out.println("Stall Issue!");}
+			checkDependencies();
 			break;
 		case EXECUTE:
 			if(!inst.done) {
@@ -129,6 +130,19 @@ public class Rs {
 			System.out.println("Lost! 404");
 			break;
 		}			
+		
+	}
+	private void checkDependencies() {
+		if(Qj!=-1)
+			if(Arch.ROB.ready(Qj)){
+				Vj = Arch.ROB.getValue(Qj);
+				Qj=-1;
+			}
+		if(Qk!=-1)
+			if(Arch.ROB.ready(Qk)){
+				Vk = Arch.ROB.getValue(Qk);
+				Qk=-1;
+			}
 		
 	}
 	public void clearRS(){

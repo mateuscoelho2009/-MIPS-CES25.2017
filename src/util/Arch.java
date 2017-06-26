@@ -53,63 +53,56 @@ public class Arch {
 	
 	public static void run () throws IOException, CloneNotSupportedException{   	
     	_clock++;
-    	if(!p.end()||!ROB.isEmpty()){
-    		
+    	if(!p.end()||!ROB.isEmpty()||p.getPC()<p.maxPC()){
     		for(int j=0;j<ticked.length;j++){
     			ticked[j]=false;
     		}
     		System.out.println(_clock + ":");
     		inst = Arch.p.getNextInstruction();
     		System.out.println(inst);
-			//inst.setPC(Arch.p.getPC());
-			boolean findRS = false;
+			inst.setPC(Arch.p.getPC());
+			int findRS = -1;
 			if(ROB.commit()){
 				System.out.println("Hey");
-				for(int i=0;i<ticked.length && !findRS;i++){
+				for(int i=0;i<ticked.length && findRS==-1;i++){
 					switch (inst.getMnemonic()) {
 		    		case Instruction.ADD: case Instruction.SUB: case Instruction.ADDI:
 		    			if (!rs[i].isBusy() && rs[i].getType()==Rs.TYPE.ADD){ 
-		    				rs[i].issue(inst);
-		    				ticked[i] = true;
-		    				findRS = true;
+		    				findRS = i;
 		    			}
 		    			break;
 		    		case Instruction.MUL:
 		    			if (!rs[i].isBusy() && rs[i].getType()==Rs.TYPE.MULT){ 
-		    				rs[i].issue(inst);
-		    				ticked[i] = true;
-		    				findRS = true;
+		    				findRS = i;
 		    			}
 		    			break;
 		    		case Instruction.LW: case Instruction.SW:
-		    			if (!rs[i].isBusy() && rs[i].getType()==Rs.TYPE.LOAD){ 
-		    				rs[i].issue(inst);
-		    				ticked[i] = true;
-		    				findRS = true;
+		    			if (!rs[i].isBusy() && rs[i].getType()==Rs.TYPE.LOAD){
+		    				findRS = i;
 		    			}
 		    			break;
 		    		case Instruction.JMP: case Instruction.NOP:case Instruction.BEQ:
 		    		case Instruction.BLE:case Instruction.BNE:
 		    			if (!rs[i].isBusy()){ 
-		    				rs[i].issue(inst);
-		    				ticked[i]=true;
-		    				findRS = true;
+		    				findRS = i;
 		    			}
 		    			break;
 		    		}
 	    		}
 	
-				if (!findRS){
+				if (findRS==-1){
 					Arch.p.setPC(Arch.p.getPC() - 4);
 					System.out.println("Não há estação de reserva disponí­vel");
 				}
 				
 				for (int i=0;i<rs.length;i++){
-	    			if(ticked[i]==false){
+	    			if(findRS!=i){
 	    				rs[i].tick();
 	    			}
 	    			rs[i].updateState();
 	    		}
+				if(findRS!=-1)
+					rs[findRS].issue(inst);
 			}
 			
     	}
@@ -136,7 +129,7 @@ public class Arch {
 	}
 
 	public static void runAll() throws IOException, CloneNotSupportedException {
-		while(!Arch.p.end())
+		while(!p.end()||!ROB.isEmpty()||p.getPC()<p.maxPC())
 			run();
 	}
 

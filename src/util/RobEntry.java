@@ -12,7 +12,6 @@ public class RobEntry {
 	private boolean ready;
 	private int isIn;
 	//private TYPE type;
-	private boolean branch;
 	private boolean busy;
 	
 	public RobEntry(Instruction instr){
@@ -75,11 +74,11 @@ public class RobEntry {
 	}
 
 	public boolean hasBranched() {
-		return branch;
+		return instruction.branched;
 	}
 
 	public void setBranch(boolean branch) {
-		this.branch = branch;
+		instruction.branched = branch;
 	}
 
 	public void setReady(boolean b) {

@@ -38,7 +38,8 @@ public class Rob {
 					entries.get(i).isIn(),
 					entries.get(i).isBusy(),
 					entries.get(i).hasBranched(),
-					entries.get(i).getAddress()}; 
+					entries.get(i).getAddress(),
+					entries.get(i).getInstruction().done}; 
 		}
 		return data;
 	}
@@ -103,7 +104,7 @@ public class Rob {
 	}
 	public boolean haveStoreWithAddress(int a) {
 		for(int i=0;i<entries.size();i++){
-			if(entries.get(i).getAddress()==a)
+			if(entries.get(i).getAddress()==a && entries.get(i).isBusy())
 				return true;
 		}
 		return false;

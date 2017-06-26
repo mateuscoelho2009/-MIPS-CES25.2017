@@ -45,5 +45,8 @@ public class Program {
 	public boolean end(){
 		return terminated;
 	}
+	public int maxPC() {
+		return program.size()*4;
+	}
 
 }

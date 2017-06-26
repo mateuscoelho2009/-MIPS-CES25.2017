@@ -133,45 +133,19 @@ public class Instruction implements Cloneable{
 				done=true;
 			}
 			//Branches
-			if(getMnemonic().equals(BEQ)){
+			if(getMnemonic().equals(BEQ)||getMnemonic().equals(BNE)||getMnemonic().equals(BLE)){
 				boolean go;
-				if(Vj!=-1 && Vk!=-1){
-					go = doBranch(Vj,Vk,BEQ);
+				if(Arch.rs[rs_id].Qj!=-1 && Arch.rs[rs_id].Qk!=-1){
+					go = doBranch(Vj,Vk,getMnemonic());
 				} else {
 					go = Arch.predictor.executeBranch();
 				}
 				if(go){
-					Arch.p.setPC(Arch.p.getPC()+4+imm);
-					branched = true;
-				} else {
-					branched = false;
-				}
-				done=true;
-			}
-			if(getMnemonic().equals(BNE)){
-				boolean go;
-				if(Vj!=-1 && Vk!=-1){
-					go = doBranch(Vj,Vk,BNE);
-				} else {
-					go = Arch.predictor.executeBranch();
-				}
-				if(go){
-					Arch.p.setPC(Arch.p.getPC()+4+imm);
-					branched = true;
-				} else {
-					branched = false;
-				}
-				done=true;
-			}
-			if(getMnemonic().equals(BLE)){
-				boolean go;
-				if(Vj!=-1 && Vk!=-1){
-					go = doBranch(Vj,Vk,BLE);
-				} else {
-					go = Arch.predictor.executeBranch();
-				}
-				if(go){
-					Arch.p.setPC(imm);
+					if(getMnemonic().equals(BLE)){
+						Arch.p.setPC(imm);
+					} else {
+						Arch.p.setPC(Arch.p.getPC()+4+imm); 
+					}
 					branched = true;
 				} else {
 					branched = false;
@@ -238,8 +212,11 @@ public class Instruction implements Cloneable{
 						Arch.p.setPC(Arch.p.getPC()+4+imm);
 					else
 						Arch.p.setPC(imm);
+				} 
+				else {
+					Arch.p.setPC(pc + 4);
 				}
-				//Arch.ROB.setBusy(h, false);
+				Arch.ROB.setBusy(h, false);
 				ret = false;
 			}
 			Arch.predictor.updateState(true);
@@ -296,7 +273,7 @@ public class Instruction implements Cloneable{
 		setTicker();
 		state = STATE.ISSUE;
 		done = false;
-		//pc = 0;
+		pc = 0;
 	}
 	
 	public void setTicker(){
@@ -349,13 +326,13 @@ public class Instruction implements Cloneable{
 			mnemonic_s = "ADDI R"+rt+",R"+rs+","+imm;
 			break;
 		case BEQ:
-			mnemonic_s = "BEQ R"+rs+",R"+rt+","+targetAddress;
+			mnemonic_s = "BEQ R"+rs+",R"+rt+","+imm;
 			break;
 		case BLE:
-			mnemonic_s = "BLE R"+rs+",R"+rt+","+targetAddress;
+			mnemonic_s = "BLE R"+rs+",R"+rt+","+imm;
 			break;
 		case BNE:
-			mnemonic_s = "BNE R"+rs+",R"+rt+","+targetAddress;
+			mnemonic_s = "BNE R"+rs+",R"+rt+","+imm;
 			break;
 		case JMP:
 			mnemonic_s = "JMP "+imm;
@@ -392,6 +369,5 @@ public class Instruction implements Cloneable{
 		done = false;
 		result = -1;
 		lw_step2=false;
-		
 	}
 }
