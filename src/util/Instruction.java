@@ -235,6 +235,9 @@ public class Instruction {
 					else
 						Arch.p.setPC(imm);
 				}
+				else {
+					Arch.p.setPC(pc + 4);
+				}
 				return false;
 			}
 			Arch.predictor.updateState(true);
