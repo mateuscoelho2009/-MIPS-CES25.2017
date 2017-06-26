@@ -25,7 +25,7 @@ public class Program {
 		//Close the input stream
 		br.close();
 	}
-	public Instruction getNextInstruction () {
+	public Instruction getNextInstruction () throws CloneNotSupportedException {
 		Instruction next;
 		if (pc_ < 0 || pc_ >= program.size()) {
 			pc_ = 0;
@@ -34,7 +34,7 @@ public class Program {
 		}
 		next = program.get(pc_);
 		pc_++;
-		return next;
+		return (Instruction) next.clone();
 	}
 	public int getPC(){
 		return pc_*4;

@@ -69,8 +69,9 @@ public class ControlButtonGUI extends JFrame {
 	
 	/**
 	 * Create the frame.
+	 * @throws CloneNotSupportedException 
 	 */
-	public ControlButtonGUI(GUI userInterface) {
+	public ControlButtonGUI(GUI userInterface) throws CloneNotSupportedException {
 		_userInterface = userInterface;
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 357, 201);
@@ -85,21 +86,36 @@ public class ControlButtonGUI extends JFrame {
 		button.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if (!_running){
-					executeAction();
+					try {
+						executeAction();
+					} catch (CloneNotSupportedException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
 				}
 			}
 		});
 		button2.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if (!_running){
-					executeAll();
+					try {
+						executeAll();
+					} catch (CloneNotSupportedException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
 				}
 			}
 		});
 		button3.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if (!_running){
-					execute20();
+					try {
+						execute20();
+					} catch (CloneNotSupportedException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
 				}
 			}
 		});
@@ -108,7 +124,7 @@ public class ControlButtonGUI extends JFrame {
 		contentPane.add(button3, BorderLayout.SOUTH);
 		
 	}
-	public static void execute20() {
+	public static void execute20() throws CloneNotSupportedException {
 		try {
 			Arch.run20();
 		} catch (IOException e1) {
@@ -117,7 +133,7 @@ public class ControlButtonGUI extends JFrame {
 		}
 		_userInterface.runCycle();
 	}	
-	public static void executeAction() {
+	public static void executeAction() throws CloneNotSupportedException {
 		try {
 			Arch.run();
 		} catch (IOException e1) {
@@ -126,7 +142,7 @@ public class ControlButtonGUI extends JFrame {
 		}
 		_userInterface.runCycle();
 	}
-	public static void executeAll() {
+	public static void executeAll() throws CloneNotSupportedException {
 		try {
 			Arch.runAll();
 		} catch (IOException e1) {

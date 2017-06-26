@@ -51,17 +51,20 @@ public class Arch {
 		return false;
 	}
 	
-	public static void run () throws IOException{   	
+	public static void run () throws IOException, CloneNotSupportedException{   	
     	_clock++;
     	if(!p.end()||!ROB.isEmpty()){
+    		
     		for(int j=0;j<ticked.length;j++){
     			ticked[j]=false;
     		}
     		System.out.println(_clock + ":");
     		inst = Arch.p.getNextInstruction();
+    		System.out.println(inst);
 			//inst.setPC(Arch.p.getPC());
 			boolean findRS = false;
 			if(ROB.commit()){
+				System.out.println("Hey");
 				for(int i=0;i<ticked.length && !findRS;i++){
 					switch (inst.getMnemonic()) {
 		    		case Instruction.ADD: case Instruction.SUB: case Instruction.ADDI:
@@ -132,12 +135,12 @@ public class Arch {
 		
 	}
 
-	public static void runAll() throws IOException {
+	public static void runAll() throws IOException, CloneNotSupportedException {
 		while(!Arch.p.end())
 			run();
 	}
 
-	public static void run20() throws IOException {
+	public static void run20() throws IOException, CloneNotSupportedException {
 		for(int i=0;i<20;i++)
 			run();
 	}

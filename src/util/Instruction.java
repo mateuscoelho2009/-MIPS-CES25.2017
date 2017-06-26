@@ -1,6 +1,6 @@
 package util;
 
-public class Instruction {
+public class Instruction implements Cloneable{
 	static public final String TYPER = "000000",
 								ADD =  "100000", 
 								ADDI = "001000",
@@ -22,7 +22,10 @@ public class Instruction {
 	STATE state;
 	public boolean done, lw_step2,branched;
 	int rs, rt, rd, targetAddress, shamt, imm, pc, b, h, d, ticker, result;
-	
+    @Override
+    protected Object clone() throws CloneNotSupportedException {
+        return super.clone();
+    }
 	public void issue (int r) {
 		if (Arch.RegisterStat.isBusy(rs)){
 			h = Arch.RegisterStat.reorder[rs];
@@ -56,7 +59,7 @@ public class Instruction {
 				mnemonic.equals(BNE)){
 			if (Arch.RegisterStat.isBusy(rt)){
 				h = Arch.RegisterStat.reorder[rt];
-				if(Arch.ROB.ready(h)){
+				if(Arch.ROB.ready(b)){	// Mudei h por b
 					Arch.rs[r].Vk = Arch.ROB.value(h);
 					Arch.rs[r].Qk = -1;
 				} else {
@@ -235,6 +238,7 @@ public class Instruction {
 					else
 						Arch.p.setPC(imm);
 				}
+				Arch.ROB.setBusy(h, false);
 				return false;
 			}
 			Arch.predictor.updateState(true);

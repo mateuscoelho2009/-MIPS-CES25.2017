@@ -80,10 +80,14 @@ public class Rob {
 	}
 	public void clear(int h) {
 		for(int i = entries.size()-1;i>h;i--){
-			entries.remove(i).getInstruction().clearInst();
+			entries.remove(i).getInstruction();
 		}
 		for(int i=0;i<Arch.rs.length;i++){
 			Arch.rs[i].clearRS();
+		}
+		for(int i=0;i<Arch.RegisterStat.size();i++){
+			Arch.RegisterStat.reorder[i]=-1;
+			Arch.RegisterStat.setNotBusy(i);
 		}
 	}
 	public RobEntry getFirst() {

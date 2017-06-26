@@ -68,4 +68,7 @@ public class Register {
 	public void setNotBusy(int d) {
 		busy[d]=false;
 	}
+	public int size(){
+		return 32;
+	}
 }
