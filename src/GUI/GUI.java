@@ -31,7 +31,7 @@ public class GUI {
 		Object[][] memoryData =  populateData("memory"); 
 		_memory = new DynamicTableGUI ("Recently used memory", memoryTitle, memoryData, xPos, yPos);
 		xPos += _memory.getWidth();
-		String[] statusTitle = new String[] {"Current clock", "PC", "# Completed Instructions", "CPI", "Head"};
+		String[] statusTitle = new String[] {"Current clock", "PC", "# Completed Instructions", "CPI", "Head","Mispredictions"};
 		Object[][] statusData = populateData("status"); 
 		_status = new DynamicTableGUI ("Status", statusTitle, statusData, xPos, yPos);
 	

@@ -15,12 +15,15 @@ public class Arch {
 	public static Rs[] rs = new Rs[7];
 	protected static int N_RS = 7;
 	protected static int _clock = 0;
+	public static int predCount,predMist;
 	public static Instruction inst;
 	protected static boolean[] ticked= new boolean[7];
 	protected static Rob ROB;
 	public static boolean lastBranched;
 	public Arch(String path, Predictor pred) throws IOException {
 		//Arch.restart();
+		predMist = 0;
+		predCount = 0;
 		concludedInstructions = 0;
 		rs[0] = new Rs(0,Rs.TYPE.LOAD);
 		rs[1] = new Rs(1,Rs.TYPE.LOAD);
@@ -110,6 +113,7 @@ public class Arch {
     	else {
     		System.out.println("Encerrando...");
 	    	System.out.println("R2 = " + Arch.RegisterStat.rInt(2));
+	    	
     	}
     }
 
@@ -121,7 +125,10 @@ public class Arch {
 	}
 
 	public static Object[] getProgramInfo() {
-		return new Object[] {_clock, Arch.p.getPC(), concludedInstructions, (double)_clock/(double)concludedInstructions, ROB.getHead()};
+		double mispred = 0;
+		if(predCount!=0)
+			mispred = (double)predMist/(double)predCount;
+		return new Object[] {_clock, Arch.p.getPC(), concludedInstructions, (double)_clock/(double)concludedInstructions, ROB.getHead(), mispred};
 	}
 
 	public static void incrementInstructions() {

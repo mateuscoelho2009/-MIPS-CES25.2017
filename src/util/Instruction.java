@@ -139,6 +139,7 @@ public class Instruction implements Cloneable{
 					go = doBranch(Vj,Vk,getMnemonic());
 				} else {
 					go = Arch.predictor.executeBranch();
+					Arch.predCount++;
 				}
 				if(go){
 					if(getMnemonic().equals(BLE)){
@@ -206,6 +207,7 @@ public class Instruction implements Cloneable{
 		}
 		if(Arch.ROB.isBranch(h)){
 			if(branched != doBranch(rs,rt,getMnemonic())) {
+				Arch.predMist++;
 				Arch.predictor.updateState(false);
 				Arch.ROB.clear(h);
 				if(doBranch(rs,rt,getMnemonic())){
