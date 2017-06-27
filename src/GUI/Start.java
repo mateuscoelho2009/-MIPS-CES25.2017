@@ -40,7 +40,7 @@ public class Start extends JFrame {
 		setContentPane(contentPane);
 		
 		
-		String[] predictionTypes = {"No prediction", "1-bit prediction", "2-bit prediction"};
+		String[] predictionTypes = {"Static prediction", "1-bit prediction", "2-bit prediction"};
 		final JComboBox comboBox = new JComboBox(predictionTypes);
 		contentPane.add(comboBox, BorderLayout.NORTH);
 		JButton btnChooseFile = new JButton("Choose File & Start");
