@@ -1,0 +1,43 @@
+R1 = 3; // Config 1. For config 2, R1 = 4, and for config 3, R1 = 5
+R2 = 1;
+R4 = 1;
+R5 = 1;
+while (R4 <= R1){
+	R5 = 1;
+	while (R5 <= R1) {
+		R6 = R1 * R4;
+		R6 += R5;
+		MEM[R6] = R2;
+		R2++;
+		R5++;
+	}
+	R4++;
+}
+R2 = 0;
+R4 = 1;
+while (R4 <= R1) {
+	R6 = R4 * R1;
+	R6 += R4;
+	R6 = MEM[R6];
+	R2 += R6;
+	R5 = R4 + 1;
+	R9 = R1 + 1;
+	if (R5 == R9){
+		exit(); // This is equivalent to PC = 222, which has no instruction anymore
+	}
+	while (R5 <= R1) {
+		R6 = R4 * R1;
+		R6 += R5;
+		R3 = MEM[R6];
+		R7 = R5 * R1;
+		R7 += R4;
+		R8 = MEM[R7];
+		MEM[R6] = R8;
+		R2 += R8;
+		MEM[R7] = R3;
+		R2 += R3;
+		R5++;
+	}
+	R4++;
+}
+R6 = 0;
