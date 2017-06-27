@@ -28,9 +28,10 @@ public class Program {
 	public Instruction getNextInstruction () throws CloneNotSupportedException {
 		Instruction next;
 		if (pc_ < 0 || pc_ >= program.size()) {
-			pc_ = 0;
+			
 			terminated = true;
 			next = new Instruction("00000000000000000000000000000000");
+			return next;
 		}
 		next = program.get(pc_);
 		pc_++;

@@ -1,35 +1,52 @@
 package util;
 
 public class Predictor2Bit implements Predictor{
-	public enum STATE {BRANCH1, BRANCH2, NOBRANCH1, NOBRANCH2};
+	public enum STATE {S00, S01, S10, S11};
 	
 	private STATE state;
 	
 	public Predictor2Bit(){
-		state = STATE.NOBRANCH1;
+		state = STATE.S00;
 	}
 	
 	@Override
 	public boolean executeBranch(){
-		return state == STATE.BRANCH1 || state == STATE.BRANCH2;
+		switch(state){
+			case S00:
+				return false;
+			case S01:
+				return false;
+			case S10:
+				return true;
+			case S11:
+				return true;
+			default:
+				return false;
+		}
 	}
 	
 	@Override
 	public void updateState(boolean correctAction) {
 		switch (state) {
-		case BRANCH1:
-			if (!correctAction)
-				state = STATE.BRANCH2;
+		case S00:
+			if (correctAction)
+				state = STATE.S01;
 			break;
-		case BRANCH2:
-			state = correctAction ? STATE.BRANCH1 : STATE.NOBRANCH1;
+		case S01:
+			if (correctAction)
+				state = STATE.S11;
+			else
+				state = STATE.S00;
 			break;
-		case NOBRANCH1:
-			if (!correctAction)
-				state = STATE.NOBRANCH2;
+		case S10:
+			if (correctAction)
+				state = STATE.S11;
+			else
+				state = STATE.S00;
 			break;
-		case NOBRANCH2:
-			state = correctAction ? STATE.NOBRANCH1 : STATE.BRANCH1;
+		case S11:
+			if(!correctAction)
+				state = STATE.S10;
 			break;
 		}
 	}

@@ -147,6 +147,7 @@ public class Instruction implements Cloneable{
 						Arch.p.setPC(Arch.p.getPC()+4+imm); 
 					}
 					branched = true;
+					Arch.lastBranched = true;
 				} else {
 					branched = false;
 				}
@@ -214,7 +215,7 @@ public class Instruction implements Cloneable{
 						Arch.p.setPC(imm);
 				} 
 				else {
-					Arch.p.setPC(pc + 4);
+					Arch.p.setPC(pc );
 				}
 				Arch.ROB.setBusy(h, false);
 				ret = false;

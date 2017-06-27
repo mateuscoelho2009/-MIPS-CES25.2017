@@ -18,7 +18,7 @@ public class Arch {
 	public static Instruction inst;
 	protected static boolean[] ticked= new boolean[7];
 	protected static Rob ROB;
-	//private static int reorder_uid = -1;
+	public static boolean lastBranched;
 	public Arch(String path, Predictor pred) throws IOException {
 		//Arch.restart();
 		concludedInstructions = 0;
@@ -53,6 +53,7 @@ public class Arch {
 	
 	public static void run () throws IOException, CloneNotSupportedException{   	
     	_clock++;
+    	lastBranched = false;
     	if(!p.end()||!ROB.isEmpty()||p.getPC()<p.maxPC()){
     		for(int j=0;j<ticked.length;j++){
     			ticked[j]=false;
@@ -101,7 +102,7 @@ public class Arch {
 	    			}
 	    			rs[i].updateState();
 	    		}
-				if(findRS!=-1)
+				if(findRS!=-1 && !Arch.lastBranched && !inst.getMnemonic().equals(Instruction.NOP))
 					rs[findRS].issue(inst);
 			}
 			
